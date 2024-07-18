@@ -50,6 +50,7 @@ using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Diagnostics;
+using System.Threading;
 
 namespace GOSTool
 {
@@ -61,7 +62,7 @@ namespace GOSTool
         private static SerialPort serialPort;
         private static List<byte> rxBuffer = new List<byte>();
         private static Stopwatch sw = new Stopwatch();
-        private const int rxTimeout = 10000;
+        private const int rxTimeout = 1000;
 
         /// <summary>
         /// Port initialized property.
@@ -89,8 +90,8 @@ namespace GOSTool
 
                 serialPort = new SerialPort(port, baud);
                 serialPort.DataReceived += SerialPort_DataReceived;
-                serialPort.WriteTimeout = 2000;
-                serialPort.ReadTimeout = 2000;
+                serialPort.WriteTimeout = 5000;
+                serialPort.ReadTimeout = 5000;
                 serialPort.Open();
 
                 serialPort.DiscardInBuffer();
@@ -203,9 +204,10 @@ namespace GOSTool
                     }
                 }
 
+                Thread.Sleep(25);
                 return true;
             }
-
+            
             return false;
         }
 

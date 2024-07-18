@@ -539,6 +539,8 @@ namespace GOSTool
         BLD_MSG_PACKET_RESP_ID = 0xA040,
         BLD_MSG_DISCONN_REQ_ID = 0x1050,
         BLD_MSG_DISCONN_RESP_ID = 0xA050,
+        BLD_MSG_CONFIG_REQ_ID = 0x1060,
+        BLD_MSG_CONFIG_RESP_ID = 0xA060,
 
         // Custom messages.
         BLD_MSG_SWITCH_TO_BOOT_MODE = 0x9999
@@ -673,7 +675,7 @@ namespace GOSTool
 
     public class bld_data_struct_t
     {
-        public const int ExpectedSize = 16 + 2 * lib_version_t.ExpectedSize + /*bld_app_data_struct_t.ExpectedSize +*/ 1 + 4 + 3;
+        public const int ExpectedSize = 16 + 2 * lib_version_t.ExpectedSize + /*bld_app_data_struct_t.ExpectedSize +*/ 1 + 4 /*+ 3*/;
         public UInt32 initPattern { get; set; }
         public UInt32 bldStartAddress { get; set; }
         public UInt32 bldSize { get; set; }
@@ -823,6 +825,48 @@ namespace GOSTool
             int idx = 0;
             sequenceCounter = Helper<UInt32>.GetVariable(bytes, ref idx);
             result = (bld_com_install_packet_req_result_t)Helper<byte>.GetVariable(bytes, ref idx);
+        }
+    }
+
+    public class bld_bootloaderConfig_t
+    {
+        public UInt32 initPattern { get; set; }
+        public bool waitForConnectionOnStartup { get; set; }
+        public byte startupCounter { get; set; }
+        public UInt32 connectionTimeout { get; set; }
+        public UInt32 requestTimeout { get; set; }
+        public UInt32 installTimeout { get; set; }
+        public UInt32 dataCrc { get; set; }
+        public byte[] GetBytes()
+        {
+            List<byte> bytes = new List<byte>();
+            bytes.AddRange(Helper<UInt32>.GetBytes(initPattern));
+            bytes.AddRange(Helper<bool>.GetBytes(waitForConnectionOnStartup));
+            bytes.AddRange(Helper<byte>.GetBytes(startupCounter));
+            bytes.AddRange(Helper<UInt32>.GetBytes(connectionTimeout));
+            bytes.AddRange(Helper<UInt32>.GetBytes(requestTimeout));
+            bytes.AddRange(Helper<UInt32>.GetBytes(installTimeout));
+            bytes.AddRange(Helper<UInt32>.GetBytes(dataCrc));
+            return bytes.ToArray();
+        }
+    }
+
+    public class bld_com_config_req_msg_t
+    {
+        public bld_bootloaderConfig_t config { get; set; }
+        public byte[] GetBytes()
+        {
+            return config.GetBytes();
+        }
+    }
+
+    public class bld_com_config_resp_msg_t
+    {
+        public byte result { get; set; }
+        public void GetFromBytes(byte[] bytes)
+        {
+            int idx = 0;
+            result = Helper<byte>.GetVariable(bytes, ref idx);
         }
     }
 

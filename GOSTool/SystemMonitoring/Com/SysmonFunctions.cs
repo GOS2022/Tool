@@ -34,7 +34,7 @@ namespace GOSTool
             }
             else
             {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 250) != true)
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 1000) != true)
                 {
                     result = PingResult.NOK;
                 }
@@ -69,11 +69,12 @@ namespace GOSTool
             messageHeader.PayloadSize = TaskDataGetMessage.ExpectedSize;
 
             sysmonSemaphore.Wait();
-            GCP.TransmitMessage(0, messageHeader, taskDataGetMessage.GetBytes());           
+
+            GCP.TransmitMessage(0, messageHeader, taskDataGetMessage.GetBytes());        
 
             while (true)
             {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 500) == true)
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 1000) == true)
                 {
                     taskDataMessage.GetFromBytes(recvBuf);
 
@@ -111,7 +112,7 @@ namespace GOSTool
             sysmonSemaphore.Wait();
             if (GCP.TransmitMessage(0, messageHeader, new byte[] { }) == true)
             {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf) == true)
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 1000) == true)
                 {
                     respMsg.GetFromBytes(recvBuf);
 
@@ -209,6 +210,30 @@ namespace GOSTool
             return bootloaderData;
         }
 
+        public static SysmonMessageResult ModifyTask(int taskIndex, SysmonTaskModifyType modifyType)
+        {
+            byte[] recvBuf;
+
+            TaskModifyMessage taskModifyMessage = new TaskModifyMessage();
+            taskModifyMessage.TaskIndex = (UInt16)taskIndex;
+            taskModifyMessage.TaskModifyType = modifyType;
+            TaskModifyResultMessage taskModifyResultMessage = new TaskModifyResultMessage();
+
+            GcpMessageHeader messageHeader = new GcpMessageHeader();
+            messageHeader.MessageId = (UInt16)SysmonMessageId.GOS_SYSMON_MSG_TASK_MODIFY_STATE_ID;
+            messageHeader.ProtocolVersion = (UInt16)SysmonMessagePv.GOS_SYSMON_MSG_TASK_MODIFY_STATE_PV;
+            messageHeader.PayloadSize = TaskModifyMessage.ExpectedSize;
+
+            sysmonSemaphore.Wait();
+            GCP.TransmitMessage(0, messageHeader, taskModifyMessage.GetBytes());
+            GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 50);
+            sysmonSemaphore.Release();
+
+            taskModifyResultMessage.GetFromBytes(recvBuf);
+
+            return taskModifyResultMessage.MessageResult;
+        }
+
         public static void SendResetRequest()
         {
             GcpMessageHeader messageHeader = new GcpMessageHeader();
@@ -236,7 +261,7 @@ namespace GOSTool
             sysmonSemaphore.Wait();
             if (GCP.TransmitMessage(0, messageHeader, new byte[] { }) == true)
             {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 250) == true)
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 1000) == true)
                 {
                     cpuUsageMessage.GetFromBytes(recvBuf);
 
@@ -266,7 +291,7 @@ namespace GOSTool
             sysmonSemaphore.Wait();
             if (GCP.TransmitMessage(0, messageHeader, new byte[] { }) == true)
             {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 250) == true)
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 1000) == true)
                 {
                     sysRuntimeMessage.GetFromBytes(recvBuf);
 
@@ -303,7 +328,7 @@ namespace GOSTool
             
             if (GCP.TransmitMessage(0, messageHeader, taskDataGetMessage.GetBytes()) == true)
             {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 500) == true)
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 1000) == true)
                 {
                     taskDataMessage.GetFromBytes(recvBuf);
 

@@ -61,13 +61,8 @@ namespace GOSTool
             this.taskNameCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.taskStackCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.taskPrioCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.taskCSCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.taskStackMaxCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.taskCpuCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.taskCpuLimitCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.taskPrivCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.taskStateCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.taskRuntimeCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.sampleNUD)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -387,13 +382,8 @@ namespace GOSTool
             this.taskNameCol,
             this.taskStackCol,
             this.taskPrioCol,
-            this.taskCSCol,
-            this.taskStackMaxCol,
-            this.taskCpuCol,
             this.taskCpuLimitCol,
-            this.taskPrivCol,
-            this.taskStateCol,
-            this.taskRuntimeCol});
+            this.taskPrivCol});
             this.taskListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.taskListView.HideSelection = false;
             this.taskListView.Location = new System.Drawing.Point(0, 0);
@@ -424,21 +414,6 @@ namespace GOSTool
             this.taskPrioCol.Text = "Priority";
             this.taskPrioCol.Width = 64;
             // 
-            // taskCSCol
-            // 
-            this.taskCSCol.Text = "Context Switch Counter";
-            this.taskCSCol.Width = 150;
-            // 
-            // taskStackMaxCol
-            // 
-            this.taskStackMaxCol.Text = "Max. Stack Usage";
-            this.taskStackMaxCol.Width = 123;
-            // 
-            // taskCpuCol
-            // 
-            this.taskCpuCol.Text = "CPU Usage";
-            this.taskCpuCol.Width = 87;
-            // 
             // taskCpuLimitCol
             // 
             this.taskCpuLimitCol.Text = "CPU Usage Limit";
@@ -448,15 +423,6 @@ namespace GOSTool
             // 
             this.taskPrivCol.Text = "Privileges";
             this.taskPrivCol.Width = 73;
-            // 
-            // taskStateCol
-            // 
-            this.taskStateCol.Text = "State";
-            // 
-            // taskRuntimeCol
-            // 
-            this.taskRuntimeCol.Text = "Runtime";
-            this.taskRuntimeCol.Width = 67;
             // 
             // MonitoringWindow
             // 
@@ -520,12 +486,7 @@ namespace GOSTool
         private System.Windows.Forms.ColumnHeader taskNameCol;
         private System.Windows.Forms.ColumnHeader taskStackCol;
         private System.Windows.Forms.ColumnHeader taskPrioCol;
-        private System.Windows.Forms.ColumnHeader taskCSCol;
-        private System.Windows.Forms.ColumnHeader taskStackMaxCol;
-        private System.Windows.Forms.ColumnHeader taskCpuCol;
         private System.Windows.Forms.ColumnHeader taskCpuLimitCol;
         private System.Windows.Forms.ColumnHeader taskPrivCol;
-        private System.Windows.Forms.ColumnHeader taskStateCol;
-        private System.Windows.Forms.ColumnHeader taskRuntimeCol;
     }
 }

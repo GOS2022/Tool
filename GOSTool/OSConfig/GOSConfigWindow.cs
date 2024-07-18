@@ -105,14 +105,9 @@ namespace GOSTool
         {
             selectedOsPath = ProgramData.OSPath + "\\" + osVersionComboBox.SelectedItem;
             dataGridView1.Rows.Clear();
-            if (_projectData.OsConfig.Version != osVersionComboBox.SelectedItem.ToString())
-            {
-                GetConfigParameters();
-            }
-            else
-            {
-                FillDataGridViewFromConfig();
-            }            
+
+            GetConfigParameters();
+            FillDataGridViewFromConfig();         
         }
 
         private void okButton_Click(object sender, EventArgs e)

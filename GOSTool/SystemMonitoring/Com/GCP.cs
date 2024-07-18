@@ -47,6 +47,7 @@
 //*************************************************************************************************
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace GOSTool
@@ -98,22 +99,22 @@ namespace GOSTool
     /// <summary>
     /// GCP frame header class.
     /// </summary>
-    class GcpFrameHeader
+    class GcpHeaderFrame
     {
-        public UInt16 ProtocolVersion { get; set; }
-        public UInt16 SessionId { get; set; }
-        public UInt16 DataSize { get; set; }
-        public UInt16 FrameSize { get; set; }
+        public byte ProtocolMajor { get; set; }
+        public byte ProtocolMinor { get; set; }
+        public byte AckType { get; set; }
+        public UInt16 MessageId { get; set; }
+        public UInt16 DataSize { get; set; }        
         public UInt32 DataCrc { get; set; }
         public UInt32 HeaderCrc { get; set; }
 
         public const UInt16 ExpectedFrameSize = 48;
 
-        public const UInt16 ExpectedProtocolVersion = ((1 << 8) + 0);
+        public const byte ExpectedProtocolVersionMajor = 2;
+        public const byte ExpectedProtocolVersionMinor = 0;
 
         public const UInt16 ExpectedSize = 16;
-
-        public static UInt32 SyncPattern = 0xAFBC8C55;
 
         /// <summary>
         /// Fills out the class members from the given byte array.
@@ -121,10 +122,12 @@ namespace GOSTool
         /// <param name="bytes"></param>
         public void GetFromBytes(byte[] bytes)
         {
-            ProtocolVersion = (UInt16)((bytes[1] << 8) + bytes[0]);
-            SessionId = (UInt16)((bytes[3] << 8) + bytes[2]);
-            DataSize = (UInt16)((bytes[5] << 8) + bytes[4]);
-            FrameSize = (UInt16)((bytes[7] << 8) + bytes[6]);
+            ProtocolMajor = bytes[0];
+            ProtocolMinor = bytes[1];
+            AckType = bytes[2];
+            var dummy = bytes[3];
+            MessageId = (UInt16)((bytes[5] << 8) + bytes[4]);
+            DataSize = (UInt16)((bytes[7] << 8) + bytes[6]);
             DataCrc = (UInt32)((bytes[11] << 24) + (bytes[10] << 16) + (bytes[9] << 8) + bytes[8]);
             HeaderCrc = (UInt32)((bytes[15] << 24) + (bytes[14] << 16) + (bytes[13] << 8) + bytes[12]);
         }
@@ -139,10 +142,10 @@ namespace GOSTool
             List<byte> headerBytes = new List<byte>();
             byte[] headerBytesWithoutHeaderCrc = new byte[]
             {
-                (byte)(ProtocolVersion), (byte)(ProtocolVersion >> 8),
-                (byte)(SessionId), (byte)(SessionId >> 8),
+                (byte)(ProtocolMajor), (byte)(ProtocolMinor),
+                (byte)(AckType), (byte)(0),
+                (byte)(MessageId), (byte)(MessageId >> 8),
                 (byte)(DataSize), (byte)(DataSize >> 8),
-                (byte)(FrameSize), (byte)(FrameSize >> 8),
                 (byte)(DataCrc), (byte)(DataCrc >> 8), (byte)(DataCrc >> 16), (byte)(DataCrc >> 24),
             };
             HeaderCrc = Crc.GetCrc32(headerBytesWithoutHeaderCrc);
@@ -160,7 +163,7 @@ namespace GOSTool
         /// <summary>
         /// Virtually unused.
         /// </summary>
-        private static UInt16 sessionId;
+        //private static UInt16 sessionId;
 
         /// <summary>
         /// Transmits the given message defined by the header and payload
@@ -174,19 +177,77 @@ namespace GOSTool
         {
             // TODO
             Uart.ClearRxBuffer();
+            messageHeader.PayloadCrc = Crc.GetCrc32(payload);
+
+            GcpHeaderFrame frameHeader = new GcpHeaderFrame();
+            frameHeader.AckType = 0;
+            frameHeader.ProtocolMajor = GcpHeaderFrame.ExpectedProtocolVersionMajor;
+            frameHeader.ProtocolMinor = GcpHeaderFrame.ExpectedProtocolVersionMinor;
+            frameHeader.DataSize = messageHeader.PayloadSize;
+            frameHeader.MessageId = messageHeader.MessageId;
+            frameHeader.DataCrc = messageHeader.PayloadCrc;
+            frameHeader.HeaderCrc = Crc.GetCrc32(frameHeader.GetHeaderBytes().Take(GcpHeaderFrame.ExpectedSize - 4).ToArray());
+
+            GcpHeaderFrame responseHeader = new GcpHeaderFrame();
 
             if (messageHeader != null && ((payload != null) || (payload == null && messageHeader.PayloadSize == 0u)))
             {
-                messageHeader.PayloadCrc = Crc.GetCrc32(payload);
-
-                if (TransmitFrames(channelNumber, messageHeader.GetHeaderBytes(), (UInt16)messageHeader.GetHeaderBytes().Length) == true &&
-                    TransmitFrames(channelNumber, payload, messageHeader.PayloadSize) == true)
+                if (Uart.Send(frameHeader.GetHeaderBytes(), GcpHeaderFrame.ExpectedSize) &&
+                    Uart.Send(payload, frameHeader.DataSize) &&
+                    Uart.Receive(out byte[] rxBuffer, GcpHeaderFrame.ExpectedSize))
                 {
-                    return true;
+                    responseHeader.GetFromBytes(rxBuffer);
+
+                    if (ValidateHeader(responseHeader, out byte ack) &&
+                        responseHeader.AckType == 1)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
 
             return false;
+        }
+
+        private static bool ValidateHeader (GcpHeaderFrame headerFrame, out byte ack)
+        {
+            if (Crc.GetCrc32(headerFrame.GetHeaderBytes().Take(GcpHeaderFrame.ExpectedSize - 4).ToArray()) == headerFrame.HeaderCrc)
+            {
+                if (headerFrame.ProtocolMajor == GcpHeaderFrame.ExpectedProtocolVersionMajor &&
+                    headerFrame.ProtocolMinor == GcpHeaderFrame.ExpectedProtocolVersionMinor)
+                {
+                    ack = 0;
+                    return true;
+                }
+                else
+                {
+                    ack = 5;
+                    return false;
+                }
+            }
+            else
+            {
+                ack = 2;
+                return false;
+            }
+        }
+
+        private static bool ValidateData (GcpHeaderFrame headerFrame, byte[] data, out byte ack)
+        {
+            if(Crc.GetCrc32(data) ==  headerFrame.DataCrc)
+            {
+                ack = 0;
+                return true;
+            }
+            else
+            {
+                ack = 2;
+                return false;
+            }
         }
 
         /// <summary>
@@ -198,169 +259,60 @@ namespace GOSTool
         /// <returns></returns>
         public static bool ReceiveMessage(int channelNumber, out GcpMessageHeader messageHeader, out byte[] payload, int timeout = 250)
         {
-            byte[] messageHeaderBytes;
-
-            if (ReceiveFrames(channelNumber, out messageHeaderBytes, GcpMessageHeader.ExpectedSize, timeout) == true)
-            {
-                messageHeader = new GcpMessageHeader();
-                messageHeader.GetFromBytes(messageHeaderBytes);
-
-                if (ReceiveFrames(channelNumber, out payload, messageHeader.PayloadSize, timeout) == true &&
-                   messageHeader.PayloadCrc == Crc.GetCrc32(payload))
-                {
-                    return true;
-                }
-                else
-                {
-                    _ = 2;
-                }
-            }
-            else
-            {
-                _ = 2;
-            }
-
-            messageHeader = null;
+            GcpHeaderFrame rxHeader = new GcpHeaderFrame();
+            messageHeader = new GcpMessageHeader();
             payload = null;
-            return false;
-        }
+            GcpHeaderFrame responseHeader = new GcpHeaderFrame();
+            responseHeader.DataSize = 0;
+            responseHeader.DataCrc = 0;
+            responseHeader.ProtocolMajor = GcpHeaderFrame.ExpectedProtocolVersionMajor;
+            responseHeader.ProtocolMinor = GcpHeaderFrame.ExpectedProtocolVersionMinor;
 
-        /// <summary>
-        /// Transmits the frames of the given message on the given channel.
-        /// </summary>
-        /// <param name="channelNumber"></param>
-        /// <param name="messageBytes"></param>
-        /// <param name="messageSize"></param>
-        /// <returns></returns>
-        private static bool TransmitFrames(int channelNumber, byte[] messageBytes, UInt16 messageSize)
-        {
-            GcpFrameHeader frameHeader = new GcpFrameHeader();
-            UInt16 frameNumber = 0;
-            UInt16 frameCounter = 0;
-
-            frameHeader.ProtocolVersion = GcpFrameHeader.ExpectedProtocolVersion;
-            frameHeader.FrameSize = GcpFrameHeader.ExpectedFrameSize;
-            frameHeader.DataSize = messageSize;
-            frameHeader.SessionId = sessionId++;
-            frameHeader.DataCrc = Crc.GetCrc32(messageBytes);
-
-            frameNumber = (UInt16)(messageSize / GcpFrameHeader.ExpectedFrameSize + ((messageSize % GcpFrameHeader.ExpectedFrameSize != 0) ? 1 : 0));
-
-            if (Uart.Send(frameHeader.GetHeaderBytes(), GcpFrameHeader.ExpectedSize) == true)
+            if (Uart.Receive(out byte[] receivedBytes, GcpHeaderFrame.ExpectedSize))
             {
-                Thread.Sleep(10);
-
-                // Transmit frames.
-                for (frameCounter = 0; frameCounter < frameNumber; frameCounter++)
+                rxHeader.GetFromBytes(receivedBytes);
+                if (ValidateHeader(rxHeader, out byte ack) &&
+                    ((rxHeader.DataSize == 0) || (rxHeader.DataSize > 0 && Uart.Receive(out payload, rxHeader.DataSize, timeout))) &&
+                    ValidateData(rxHeader, payload, out ack))
                 {
-                    byte[] frame = new byte[GcpFrameHeader.ExpectedFrameSize];
+                    messageHeader.MessageId = rxHeader.MessageId;
+                    messageHeader.PayloadSize = rxHeader.DataSize;
+                    messageHeader.PayloadCrc = rxHeader.DataCrc;
 
-                    if (frameCounter * GcpFrameHeader.ExpectedFrameSize + GcpFrameHeader.ExpectedFrameSize > messageBytes.Length)
-                    {
-                        if (messageBytes.Length > GcpFrameHeader.ExpectedFrameSize)
-                        {
-                            Array.Copy(messageBytes, frameCounter * GcpFrameHeader.ExpectedFrameSize, frame, 0, messageBytes.Length - frameCounter * GcpFrameHeader.ExpectedFrameSize);
-                        }
-                        else
-                        {
-                            Array.Copy(messageBytes, frameCounter * GcpFrameHeader.ExpectedFrameSize, frame, 0, messageBytes.Length);
-                        }
-                    }
-                    else
-                    {
-                        Array.Copy(messageBytes, frameCounter * GcpFrameHeader.ExpectedFrameSize, frame, 0, GcpFrameHeader.ExpectedFrameSize);
-                    }
+                    responseHeader.AckType = 1;
+                    responseHeader.HeaderCrc = Crc.GetCrc32(responseHeader.GetHeaderBytes().Take(GcpHeaderFrame.ExpectedSize - 4).ToArray());
 
-                    // Transmit frame.
-                    if (Uart.Send(frame, GcpFrameHeader.ExpectedFrameSize) != true)
-                    {
-                        break;
-                    }
-                    Thread.Sleep(1);
-                }
-
-                if (frameCounter == frameNumber)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Receives frames on the given channel.
-        /// </summary>
-        /// <param name="channelNumber"></param>
-        /// <param name="target"></param>
-        /// <param name="targetSize"></param>
-        /// <returns></returns>
-        private static bool ReceiveFrames(int channelNumber, out byte[] target, UInt16 targetSize, int timeout = 10000)
-        {
-            GcpFrameHeader frameHeader = new GcpFrameHeader();
-            UInt16 frameNumber;
-            UInt16 frameCounter;
-            byte[] frameHeaderBytes;
-
-            if (Uart.Receive(out frameHeaderBytes, GcpFrameHeader.ExpectedSize, timeout) == true)
-            {
-                frameHeader.GetFromBytes(frameHeaderBytes);
-                byte[] frameHeaderForCrcCheck = new byte[GcpFrameHeader.ExpectedSize - 4];
-                Array.Copy(frameHeaderBytes, frameHeaderForCrcCheck, GcpFrameHeader.ExpectedSize - 4);
-
-                if (frameHeader.HeaderCrc == Crc.GetCrc32(frameHeaderForCrcCheck) &&
-                    frameHeader.ProtocolVersion == GcpFrameHeader.ExpectedProtocolVersion)
-                {
-                    frameNumber = (UInt16)(frameHeader.DataSize / frameHeader.FrameSize + ((frameHeader.DataSize % frameHeader.FrameSize != 0) ? 1 : 0));
-                    target = new byte[frameHeader.DataSize];
-
-                    // Receive frames.
-                    for (frameCounter = 0; frameCounter < frameNumber; frameCounter++)
-                    {
-                        byte[] frameBuffer;
-                        if (Uart.Receive(out frameBuffer, frameHeader.FrameSize, timeout) == true)
-                        {
-                            if ((frameCounter * frameHeader.FrameSize + frameHeader.FrameSize) > target.Length)
-                            {
-                                if (target.Length > frameHeader.FrameSize)
-                                {
-                                    Array.Copy(frameBuffer, 0, target, frameCounter * frameHeader.FrameSize, target.Length - frameCounter * frameHeader.FrameSize);
-                                }
-                                else
-                                {
-                                    Array.Copy(frameBuffer, 0, target, frameCounter * frameHeader.FrameSize, target.Length);
-                                }
-                            }
-                            else
-                            {
-                                Array.Copy(frameBuffer, 0, target, frameCounter * frameHeader.FrameSize, frameHeader.FrameSize);
-                            }
-
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-
-                    // Check data integrity.
-                    if (frameCounter == frameNumber &&
-                        frameHeader.DataCrc == Crc.GetCrc32(target))
+                    if (Uart.Send(responseHeader.GetHeaderBytes(), GcpHeaderFrame.ExpectedSize))
                     {
                         return true;
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
                 else
                 {
-                    _ = 2;
+                    /*if (ack != 2)
+                    {
+                        // If not CRC error, exit loop.
+                        //return false;
+                    }
+                    else
+                    {
+                        // In case of CRC error, we will try to receive again.
+                        // TODO: temporary
+                        //return false;
+                    }*/
+
+                    responseHeader.AckType = ack;
+                    responseHeader.HeaderCrc = Crc.GetCrc32(responseHeader.GetHeaderBytes().Take(GcpHeaderFrame.ExpectedSize - 4).ToArray());
+
+                    if (Uart.Send(responseHeader.GetHeaderBytes(), GcpHeaderFrame.ExpectedSize))
+                    { return false; }
                 }
             }
-            else
-            {
-                _ = 2;
-            }
 
-            target = null;
             return false;
         }
     }

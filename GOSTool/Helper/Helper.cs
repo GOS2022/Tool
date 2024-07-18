@@ -70,6 +70,14 @@ namespace GOSTool
                     (byte)(var),
                 };
             }
+            else if (typeof(T) == typeof(bool))
+            {
+                bool var = (bool)Convert.ChangeType(variable, typeof(bool));
+                return new byte[]
+                {
+                    (byte) (var == true ? 54 : 73)
+                };
+            }
 
             return null;
         }
@@ -340,9 +348,14 @@ namespace GOSTool
         /// <param name="listView"></param>
         private static void ResizeListView(ListView listView)
         {
-            for (int i = 0; i < listView.Columns.Count; i++)
+            int width = listView.Width;
+            
+            listView.AutoResizeColumn(0, ColumnHeaderAutoResizeStyle.ColumnContent);      
+            
+            for (int i = 1; i < listView.Columns.Count; i++)
             {
-                listView.AutoResizeColumn(i, ColumnHeaderAutoResizeStyle.ColumnContent);
+                //listView.AutoResizeColumn(i, ColumnHeaderAutoResizeStyle.ColumnContent);
+                listView.Columns[i].Width = (width - listView.Columns[0].Width) / (listView.Columns.Count - 1);
             }
         }
     }

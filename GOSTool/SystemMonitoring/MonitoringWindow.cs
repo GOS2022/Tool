@@ -35,9 +35,13 @@ namespace GOSTool
             Text = ProgramData.Name + " " + ProgramData.Version + " - System monitoring";
 
             taskCm.MenuItems.Add("Show details", new EventHandler(ShowTaskDetails));
-            //taskCm.MenuItems.Add("Suspend", new EventHandler(SuspendTask));
-            //taskCm.MenuItems.Add("Resume", new EventHandler(ResumeTask));
-            //taskCm.MenuItems.Add("Delete", new EventHandler(DeleteTask));
+            taskCm.MenuItems.Add("Suspend", new EventHandler(SuspendTask));
+            taskCm.MenuItems.Add("Resume", new EventHandler(ResumeTask));
+            taskCm.MenuItems.Add("Delete", new EventHandler(DeleteTask));
+            taskCm.MenuItems.Add("Block", new EventHandler(BlockTask));
+            taskCm.MenuItems.Add("Unblock", new EventHandler(UnblockTask));
+            taskCm.MenuItems.Add("Wake up", new EventHandler(WakeupTask));
+
             int prevSelectedTabIndex = 0;
 
             tabControl1.SelectedIndexChanged += (tsender, te) =>
@@ -89,13 +93,13 @@ namespace GOSTool
                                     taskData.TaskName,
                                     string.Format("0x{0:X4}", taskData.TaskStackSize),
                                     taskData.TaskPriority.ToString(),
-                                    taskData.TaskCsCounter.ToString(),
-                                    string.Format("0x{0:X4}", taskData.TaskStackMaxUsage),
-                                    ((float)taskData.TaskCpuUsage / 100f).ToString() + "%",
+                                    //taskData.TaskCsCounter.ToString(),
+                                    //string.Format("0x{0:X4}", taskData.TaskStackMaxUsage),
+                                    //((float)taskData.TaskCpuUsage / 100f).ToString() + "%",
                                     ((float)taskData.TaskCpuUsageLimit / 100f).ToString() + "%",
                                     Convert.ToString(taskData.TaskPrivileges, 2).PadLeft(16, '0'),
-                                    Helper.ConvertTaskState(taskData.TaskState),
-                                    Helper.ConvertTaskRuntime(taskData.TaskRuntime)
+                                    //Helper.ConvertTaskState(taskData.TaskState),
+                                    //Helper.ConvertTaskRuntime(taskData.TaskRuntime)
                                 };
 
                                 var listViewItem = new ListViewItem(row);
@@ -263,6 +267,108 @@ namespace GOSTool
             if (tabControl1.TabPages.IndexOf(taskDataTabPage) == -1)
             {
                 tabControl1.TabPages.Add(taskDataTabPage);
+            }
+        }
+
+        private async void SuspendTask(object sender, EventArgs e)
+        {
+            try
+            {
+                var itemIndex = focusedIdx;
+
+                await Task.Run(() =>
+                {
+                    SysmonFunctions.ModifyTask(itemIndex, SysmonTaskModifyType.GOS_SYSMON_TASK_MOD_TYPE_SUSPEND);
+                });
+            }
+            catch
+            {
+
+            }
+        }
+
+        private async void ResumeTask(object sender, EventArgs e)
+        {
+            try
+            {
+                var itemIndex = focusedIdx;
+
+                await Task.Run(() =>
+                {
+                    SysmonFunctions.ModifyTask(itemIndex, SysmonTaskModifyType.GOS_SYSMON_TASK_MOD_TYPE_RESUME);
+                });
+            }
+            catch
+            {
+
+            }
+        }
+
+        private async void DeleteTask(object sender, EventArgs e)
+        {
+            try
+            {
+                var itemIndex = focusedIdx;
+
+                await Task.Run(() =>
+                {
+                    SysmonFunctions.ModifyTask(itemIndex, SysmonTaskModifyType.GOS_SYSMON_TASK_MOD_TYPE_DELETE);
+                });
+            }
+            catch
+            {
+
+            }
+        }
+
+        private async void BlockTask(object sender, EventArgs e)
+        {
+            try
+            {
+                var itemIndex = focusedIdx;
+
+                await Task.Run(() =>
+                {
+                    SysmonFunctions.ModifyTask(itemIndex, SysmonTaskModifyType.GOS_SYSMON_TASK_MOD_TYPE_BLOCK);
+                });
+            }
+            catch
+            {
+
+            }
+        }
+
+        private async void UnblockTask(object sender, EventArgs e)
+        {
+            try
+            {
+                var itemIndex = focusedIdx;
+
+                await Task.Run(() =>
+                {
+                    SysmonFunctions.ModifyTask(itemIndex, SysmonTaskModifyType.GOS_SYSMON_TASK_MOD_TYPE_UNBLOCK);
+                });
+            }
+            catch
+            {
+
+            }
+        }
+
+        private async void WakeupTask(object sender, EventArgs e)
+        {
+            try
+            {
+                var itemIndex = focusedIdx;
+
+                await Task.Run(() =>
+                {
+                    SysmonFunctions.ModifyTask(itemIndex, SysmonTaskModifyType.GOS_SYSMON_TASK_MOD_TYPE_WAKEUP);
+                });
+            }
+            catch
+            {
+
             }
         }
     }
