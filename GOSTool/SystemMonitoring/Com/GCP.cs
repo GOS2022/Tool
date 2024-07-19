@@ -173,7 +173,7 @@ namespace GOSTool
         /// <param name="messageHeader"></param>
         /// <param name="payload"></param>
         /// <returns></returns>
-        public static bool TransmitMessage(int channelNumber, GcpMessageHeader messageHeader, byte[] payload)
+        public static bool TransmitMessage(int channelNumber, GcpMessageHeader messageHeader, byte[] payload, UInt16 maxChunkSize)
         {
             // TODO
             Uart.ClearRxBuffer();
@@ -192,7 +192,7 @@ namespace GOSTool
 
             if (messageHeader != null && ((payload != null) || (payload == null && messageHeader.PayloadSize == 0u)))
             {
-                if (Uart.Send(frameHeader.GetHeaderBytes(), GcpHeaderFrame.ExpectedSize) &&
+                /*if (Uart.Send(frameHeader.GetHeaderBytes(), GcpHeaderFrame.ExpectedSize) &&
                     Uart.Send(payload, frameHeader.DataSize) &&
                     Uart.Receive(out byte[] rxBuffer, GcpHeaderFrame.ExpectedSize))
                 {
@@ -207,6 +207,87 @@ namespace GOSTool
                     {
                         return false;
                     }
+                }*/
+
+                if (Uart.Send(frameHeader.GetHeaderBytes(), GcpHeaderFrame.ExpectedSize))
+                {
+                    if (frameHeader.DataSize == 0)
+                    {
+                        if (Uart.Receive(out byte[] rxBuffer, GcpHeaderFrame.ExpectedSize))
+                        {
+                            responseHeader.GetFromBytes(rxBuffer);
+
+                            if (ValidateHeader(responseHeader, out byte ack) &&
+                                 responseHeader.AckType == 1)
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        var dataChunks = frameHeader.DataSize / maxChunkSize;
+
+                        if (frameHeader.DataSize % maxChunkSize != 0)
+                        {
+                            dataChunks++;
+                        }
+                        else
+                        {
+                            // Chunk number is exact.
+                        }
+
+                        for (var chunkIndex = 0u; chunkIndex < dataChunks; chunkIndex++)
+                        {
+                            ushort tempSize;
+
+                            if ((chunkIndex + 1) * maxChunkSize > frameHeader.DataSize)
+                            {
+                                tempSize = (ushort)(frameHeader.DataSize - chunkIndex * maxChunkSize);
+                            }
+                            else
+                            {
+                                tempSize = maxChunkSize;
+                            }
+
+                            byte[] payloadTemp = new byte[tempSize];
+                            Array.Copy(payload, chunkIndex * maxChunkSize, payloadTemp, 0, tempSize);
+
+                            if (Uart.Send(payloadTemp, tempSize) &&
+                                Uart.Receive(out byte[] rxBuffer, GcpHeaderFrame.ExpectedSize))
+                            {
+                                responseHeader.GetFromBytes(rxBuffer);
+
+                                if (ValidateHeader(responseHeader, out byte ack) &&
+                                     responseHeader.AckType == 1)
+                                {
+                                    //return true;
+                                }
+                                else
+                                {
+                                    return false;
+                                }
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
+
+                        return true;
+                    }
+                }
+                else
+                {
+                    // Header frame transmit error.
                 }
             }
 
@@ -257,7 +338,7 @@ namespace GOSTool
         /// <param name="messageHeader"></param>
         /// <param name="payload"></param>
         /// <returns></returns>
-        public static bool ReceiveMessage(int channelNumber, out GcpMessageHeader messageHeader, out byte[] payload, int timeout = 250)
+        public static bool ReceiveMessage(int channelNumber, out GcpMessageHeader messageHeader, out byte[] payload, UInt16 maxChunkSize, int timeout = 250)
         {
             GcpHeaderFrame rxHeader = new GcpHeaderFrame();
             messageHeader = new GcpMessageHeader();
@@ -268,7 +349,7 @@ namespace GOSTool
             responseHeader.ProtocolMajor = GcpHeaderFrame.ExpectedProtocolVersionMajor;
             responseHeader.ProtocolMinor = GcpHeaderFrame.ExpectedProtocolVersionMinor;
 
-            if (Uart.Receive(out byte[] receivedBytes, GcpHeaderFrame.ExpectedSize))
+            /*if (Uart.Receive(out byte[] receivedBytes, GcpHeaderFrame.ExpectedSize, timeout))
             {
                 rxHeader.GetFromBytes(receivedBytes);
                 if (ValidateHeader(rxHeader, out byte ack) &&
@@ -293,24 +374,113 @@ namespace GOSTool
                 }
                 else
                 {
-                    /*if (ack != 2)
-                    {
-                        // If not CRC error, exit loop.
-                        //return false;
-                    }
-                    else
-                    {
-                        // In case of CRC error, we will try to receive again.
-                        // TODO: temporary
-                        //return false;
-                    }*/
-
                     responseHeader.AckType = ack;
                     responseHeader.HeaderCrc = Crc.GetCrc32(responseHeader.GetHeaderBytes().Take(GcpHeaderFrame.ExpectedSize - 4).ToArray());
 
                     if (Uart.Send(responseHeader.GetHeaderBytes(), GcpHeaderFrame.ExpectedSize))
                     { return false; }
                 }
+            }*/
+
+            if (Uart.Receive(out byte[] receivedBytes, GcpHeaderFrame.ExpectedSize, timeout))
+            {
+                rxHeader.GetFromBytes(receivedBytes);
+
+                if (ValidateHeader(rxHeader, out byte ack))
+                {
+                    if (rxHeader.DataSize == 0)
+                    {
+                        messageHeader.MessageId = rxHeader.MessageId;
+                        messageHeader.PayloadSize = rxHeader.DataSize;
+                        messageHeader.PayloadCrc = rxHeader.DataCrc;
+
+                        responseHeader.AckType = 1;
+                        responseHeader.HeaderCrc = Crc.GetCrc32(responseHeader.GetHeaderBytes().Take(GcpHeaderFrame.ExpectedSize - 4).ToArray());
+
+                        if (Uart.Send(responseHeader.GetHeaderBytes(), GcpHeaderFrame.ExpectedSize))
+                        {
+
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        var dataChunks = rxHeader.DataSize / maxChunkSize;
+                        payload = new byte[rxHeader.DataSize];
+
+                        if (rxHeader.DataSize % maxChunkSize != 0)
+                        {
+                            dataChunks++;
+                        }
+                        else
+                        {
+                            // Chunk number is exact.
+                        }
+
+                        for (var chunkIndex = 0u; chunkIndex < dataChunks; chunkIndex++)
+                        {
+                            ushort tempSize;
+
+                            if ((chunkIndex + 1) * maxChunkSize > rxHeader.DataSize)
+                            {
+                                tempSize = (ushort)(rxHeader.DataSize - chunkIndex * maxChunkSize);
+                            }
+                            else
+                            {
+                                tempSize = maxChunkSize;
+                            }
+
+                            if (Uart.Receive(out byte[] rx, tempSize, timeout))
+                            {
+                                Array.Copy(rx, 0, payload, chunkIndex * maxChunkSize, tempSize);
+
+                                messageHeader.MessageId = rxHeader.MessageId;
+                                messageHeader.PayloadSize = rxHeader.DataSize;
+                                messageHeader.PayloadCrc = rxHeader.DataCrc;
+
+                                responseHeader.AckType = 1;
+                                responseHeader.HeaderCrc = Crc.GetCrc32(responseHeader.GetHeaderBytes().Take(GcpHeaderFrame.ExpectedSize - 4).ToArray());
+
+                                if (Uart.Send(responseHeader.GetHeaderBytes(), GcpHeaderFrame.ExpectedSize))
+                                {
+                                    //return true;
+                                    // OK, continue.
+                                }
+                                else
+                                {
+                                    return false;
+                                }
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+
+                        if (ValidateData(rxHeader, payload, out ack))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                }
+                else
+                {
+                    if (Uart.Send(responseHeader.GetHeaderBytes(), GcpHeaderFrame.ExpectedSize))
+                    { return false; }
+                }
+            }
+            else
+            {
+                if (Uart.Send(responseHeader.GetHeaderBytes(), GcpHeaderFrame.ExpectedSize))
+                { return false; }
             }
 
             return false;

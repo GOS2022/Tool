@@ -24,7 +24,7 @@ namespace GOSTool
             _taskData = taskData;
         }
 
-        public async void Activate()
+        public async void Activate(MonitoringWindow window)
         {
             isMonitoringOn = true;
 
@@ -32,7 +32,16 @@ namespace GOSTool
             {
                 while (isMonitoringOn)
                 {
-                    var taskData = SysmonFunctions.GetTaskVariableData(TaskIndex);
+                    TaskVariableData taskData = null;
+
+                    if (window.wireless)
+                    {
+                        taskData = Wireless.GetTaskVariableData(TaskIndex);
+                    }
+                    else
+                    {
+                        taskData = SysmonFunctions.GetTaskVariableData(TaskIndex);
+                    }
 
                     if (!(taskData is null))
                     {
@@ -47,15 +56,12 @@ namespace GOSTool
 
                         List<ListViewItem> listViewItems = new List<ListViewItem>();
 
-                        //listViewItems.Add(new ListViewItem(new string[] { "Task ID", string.Format("0x{0:X4}", taskDatas[taskIndex].TaskId) }));
-                        //listViewItems.Add(new ListViewItem(new string[] { "Task name", taskDatas[taskIndex].TaskName }));
                         listViewItems.Add(new ListViewItem(new string[] { "Task priority", taskData.TaskPriority.ToString() }));
                         //listViewItems.Add(new ListViewItem(new string[] { "Task original priority", taskDatas[taskIndex].TaskOriginalPriority.ToString() }));
                         listViewItems.Add(new ListViewItem(new string[] { "Task state", Helper.ConvertTaskState(taskData.TaskState) }));
                         listViewItems.Add(new ListViewItem(new string[] { "Task runtime", Helper.ConvertTaskRuntime(taskData.TaskRuntime) }));
                         listViewItems.Add(new ListViewItem(new string[] { "Task CS counter", taskData.TaskCsCounter.ToString() }));
                         listViewItems.Add(new ListViewItem(new string[] { "Task CPU usage", (taskData.TaskCpuUsage / 100f).ToString() + "%" }));
-                        //listViewItems.Add(new ListViewItem(new string[] { "Task CPU limit", (taskData.TaskCpuUsageLimit / 100f).ToString() + "%" }));
                         listViewItems.Add(new ListViewItem(new string[] { "Task max CPU usage", (taskData.TaskCpuUsageMax / 100f).ToString() + "%" }));
                         listViewItems.Add(new ListViewItem(new string[] { "Task max stack usage", string.Format("0x{0:X4}", taskData.TaskStackMaxUsage) }));
 

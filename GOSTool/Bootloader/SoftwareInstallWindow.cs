@@ -106,7 +106,7 @@ namespace GOSTool
                 messageHeader.ProtocolVersion = 1;
                 messageHeader.PayloadSize = 0;
 
-                if (GCP.TransmitMessage(0, messageHeader, new byte[] { }) != true)
+                if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) != true)
                 {
                     TraceProgressNew_ThreadSafe("Communication error.");
                 }
@@ -126,13 +126,13 @@ namespace GOSTool
                     messageHeader.ProtocolVersion = 0;
                     messageHeader.PayloadSize = (ushort)reqMsg.GetBytes().Length;
 
-                    if (GCP.TransmitMessage(0, messageHeader, reqMsg.GetBytes()) != true)
+                    if (GCP.TransmitMessage(0, messageHeader, reqMsg.GetBytes(), 0xffff) != true)
                     {
                         TraceProgressNew_ThreadSafe("Communication error.");
                     }
                     else
                     {
-                        if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf) != true)
+                        if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff) != true)
                         {
                             TraceProgressNew_ThreadSafe("Communication error.");
                         }
@@ -162,13 +162,13 @@ namespace GOSTool
                 messageHeader.ProtocolVersion = 0;
                 messageHeader.PayloadSize = (ushort)reqMsg.GetBytes().Length;
 
-                if (GCP.TransmitMessage(0, messageHeader, reqMsg.GetBytes()) != true)
+                if (GCP.TransmitMessage(0, messageHeader, reqMsg.GetBytes(), 0xffff) != true)
                 {
                     TraceProgressNew_ThreadSafe("Communication error.");
                 }
                 else
                 {
-                    if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf) != true)
+                    if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff) != true)
                     {
                         TraceProgressNew_ThreadSafe("Communication error.");
                     }
@@ -332,7 +332,7 @@ namespace GOSTool
                     messageHeader.ProtocolVersion = 0;
                     messageHeader.PayloadSize = (ushort)installDataReq.GetBytes().Length;
 
-                    if (GCP.TransmitMessage(0, messageHeader, installDataReq.GetBytes()) != true)
+                    if (GCP.TransmitMessage(0, messageHeader, installDataReq.GetBytes(), 0xffff) != true)
                     {
                         TraceProgressNew_ThreadSafe("Communication error.");
                     }
@@ -340,7 +340,7 @@ namespace GOSTool
                     {
                         TraceProgressNew_ThreadSafe("Install request sent.");
 
-                        if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 10000) != true)
+                        if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 10000) != true)
                         {
                             TraceProgressNew_ThreadSafe("Communication error.");
                         }
@@ -385,8 +385,8 @@ namespace GOSTool
                                 messageHeader.ProtocolVersion = 0;
                                 messageHeader.PayloadSize = (ushort)installPacketRequest.GetBytes().Length;
 
-                                if (GCP.TransmitMessage(0, messageHeader, installPacketRequest.GetBytes()) != true ||
-                                    GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 10000) != true)
+                                if (GCP.TransmitMessage(0, messageHeader, installPacketRequest.GetBytes(), 0xffff) != true ||
+                                    GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 10000) != true)
                                 {
                                     TraceProgressNew_ThreadSafe("Communication error.");
                                     installSuccess = false;
@@ -458,13 +458,13 @@ namespace GOSTool
 
                 Uart.Init(usbConfigUserControl1.Port, usbConfigUserControl1.Baud);
 
-                if (GCP.TransmitMessage(0, messageHeader, reqMsg.GetBytes()) != true)
+                if (GCP.TransmitMessage(0, messageHeader, reqMsg.GetBytes(), 0xffff) != true)
                 {
                     TraceProgressNew_ThreadSafe("Communication error.");
                 }
                 else
                 {
-                    if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf) != true)
+                    if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff) != true)
                     {
                         TraceProgressNew_ThreadSafe("Communication error.");
                     }

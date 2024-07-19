@@ -219,6 +219,33 @@ namespace GOSTool
             label.Text = text;
         }
 
+        private delegate void SetProgressBarValueDelegate(ProgressBar progressBar, int value);
+
+        public static void SetProgressBar_ThreadSafe(Control control, ProgressBar progressBar, int value)
+        {
+            try
+            {
+                if (progressBar.InvokeRequired)
+                {
+                    SetProgressBarValueDelegate d = new SetProgressBarValueDelegate(SetProgressBar);
+                    control.Invoke(d, progressBar, value);
+                }
+                else
+                {
+                    SetProgressBar(progressBar, value);
+                }
+            }
+            catch
+            {
+
+            }
+        }
+
+        private static void SetProgressBar(ProgressBar progressBar, int value)
+        {
+            progressBar.Value = value;
+        }
+
         private delegate void SetCheckBoxParametersDelegate(CheckBox checkBox, string text, Color backgroundColor, bool check);
 
         public static void SetCheckBoxParameters_ThreadSafe(Control control, CheckBox checkBox, string text, Color backgroundColor, bool check)

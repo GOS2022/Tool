@@ -28,7 +28,7 @@ namespace GOSTool
             messageHeader.PayloadSize = 0;
 
             sysmonSemaphore.Wait();
-            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }) != true)
+            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) != true)
             {
                 result = PingResult.NOK;
             }
@@ -70,7 +70,7 @@ namespace GOSTool
 
             sysmonSemaphore.Wait();
 
-            GCP.TransmitMessage(0, messageHeader, taskDataGetMessage.GetBytes());        
+            GCP.TransmitMessage(0, messageHeader, taskDataGetMessage.GetBytes(), 0xffff);        
 
             while (true)
             {
@@ -110,7 +110,7 @@ namespace GOSTool
             messageHeader.PayloadSize = 0;
 
             sysmonSemaphore.Wait();
-            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }) == true)
+            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
             {
                 if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 1000) == true)
                 {
@@ -225,7 +225,7 @@ namespace GOSTool
             messageHeader.PayloadSize = TaskModifyMessage.ExpectedSize;
 
             sysmonSemaphore.Wait();
-            GCP.TransmitMessage(0, messageHeader, taskModifyMessage.GetBytes());
+            GCP.TransmitMessage(0, messageHeader, taskModifyMessage.GetBytes(), 0xffff);
             GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 50);
             sysmonSemaphore.Release();
 
@@ -242,7 +242,7 @@ namespace GOSTool
             messageHeader.PayloadSize = 0;
 
             sysmonSemaphore.Wait();
-            GCP.TransmitMessage(0, messageHeader, new byte[] { });
+            GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff);
             Thread.Sleep(10);
             sysmonSemaphore.Release();
         }
@@ -259,7 +259,7 @@ namespace GOSTool
             messageHeader.PayloadSize = 0;
 
             sysmonSemaphore.Wait();
-            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }) == true)
+            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
             {
                 if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 1000) == true)
                 {
@@ -289,7 +289,7 @@ namespace GOSTool
             messageHeader.PayloadSize = 0;
 
             sysmonSemaphore.Wait();
-            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }) == true)
+            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
             {
                 if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 1000) == true)
                 {
@@ -326,7 +326,7 @@ namespace GOSTool
 
             sysmonSemaphore.Wait();
             
-            if (GCP.TransmitMessage(0, messageHeader, taskDataGetMessage.GetBytes()) == true)
+            if (GCP.TransmitMessage(0, messageHeader, taskDataGetMessage.GetBytes(), 0xffff) == true)
             {
                 if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 1000) == true)
                 {

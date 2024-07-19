@@ -25,6 +25,8 @@ namespace GOSTool
 
         private List<TaskData> taskData = new List<TaskData>();
 
+        public bool wireless = false;
+
         public MonitoringWindow()
         {
             InitializeComponent();
@@ -33,6 +35,8 @@ namespace GOSTool
         private void MonitoringWindow_Load(object sender, EventArgs e)
         {
             Text = ProgramData.Name + " " + ProgramData.Version + " - System monitoring";
+
+            wirelessConfigUserControl1.Hide();
 
             taskCm.MenuItems.Add("Show details", new EventHandler(ShowTaskDetails));
             taskCm.MenuItems.Add("Suspend", new EventHandler(SuspendTask));
@@ -55,7 +59,7 @@ namespace GOSTool
                 if (tabControl1.SelectedIndex > 0)
                 {
                     // Activate new tab.
-                    (tabControl1.TabPages[tabControl1.SelectedIndex].Controls[0] as TaskDetailViewUserControl).Activate();
+                    (tabControl1.TabPages[tabControl1.SelectedIndex].Controls[0] as TaskDetailViewUserControl).Activate(this);
                     prevSelectedTabIndex = tabControl1.SelectedIndex;
                 }
             };
@@ -63,12 +67,16 @@ namespace GOSTool
 
         private async void connectButton_Click(object sender, EventArgs e)
         {
-            if (usbComRadioButton.Checked)
+            if (/*usbComRadioButton.Checked*/true)
             {
                 // Check for invalid configuration.
-                if (usbConfigUserControl1.Port == null || usbConfigUserControl1.Baud < 0)
+                if (usbComRadioButton.Checked && (usbConfigUserControl1.Port == null || usbConfigUserControl1.Baud < 0))
                 {
                     MessageBox.Show("Please select a port and a baud rate first!", "USB not configured", MessageBoxButtons.OK);
+                }
+                else if (wirelessComRadioButton.Checked && (wirelessConfigUserControl1.Ip == "" || wirelessConfigUserControl1.Port < 0))
+                {
+                    MessageBox.Show("Please provide an IP address and a port first!", "Wireless not configured", MessageBoxButtons.OK);
                 }
                 else
                 {
@@ -77,13 +85,23 @@ namespace GOSTool
                         // Try to connect on the given port configuration.
                         Uart.Init(usbConfigUserControl1.Port, usbConfigUserControl1.Baud);
 
-                        if (SysmonFunctions.PingDevice() == SysmonFunctions.PingResult.OK)
+                        if ((!wireless && SysmonFunctions.PingDevice() == SysmonFunctions.PingResult.OK) ||
+                            (wireless && Wireless.PingDevice() == SysmonFunctions.PingResult.OK))
                         {
                             Helper.SetCheckBoxParameters_ThreadSafe(this, linkActiveCheckBox, "Link active", Color.Green, true);
+                            List<TaskData> taskDatas = new List<TaskData>();
 
                             // Get all task data.
-                            List<TaskData> taskDatas = SysmonFunctions.GetAllTaskData();
-                            List<ListViewItem> listViewItems = new List<ListViewItem>();
+                            if (wireless)
+                            {
+                                taskDatas = Wireless.GetAllTaskData();
+                            }
+                            else
+                            {
+                                taskDatas = SysmonFunctions.GetAllTaskData();
+                            }
+
+                            List <ListViewItem> listViewItems = new List<ListViewItem>();
                             taskData = taskDatas;
 
                             foreach (var taskData in taskDatas)
@@ -93,13 +111,8 @@ namespace GOSTool
                                     taskData.TaskName,
                                     string.Format("0x{0:X4}", taskData.TaskStackSize),
                                     taskData.TaskPriority.ToString(),
-                                    //taskData.TaskCsCounter.ToString(),
-                                    //string.Format("0x{0:X4}", taskData.TaskStackMaxUsage),
-                                    //((float)taskData.TaskCpuUsage / 100f).ToString() + "%",
                                     ((float)taskData.TaskCpuUsageLimit / 100f).ToString() + "%",
                                     Convert.ToString(taskData.TaskPrivileges, 2).PadLeft(16, '0'),
-                                    //Helper.ConvertTaskState(taskData.TaskState),
-                                    //Helper.ConvertTaskRuntime(taskData.TaskRuntime)
                                 };
 
                                 var listViewItem = new ListViewItem(row);
@@ -110,7 +123,16 @@ namespace GOSTool
                             Helper.ResizeListView_ThreadSafe(this, taskListView);
 
                             // Get software info.
-                            BootloaderData softwareInfo = SysmonFunctions.GetSoftwareInfo();
+                            BootloaderData softwareInfo = new BootloaderData();
+                            if (wireless)
+                            {
+                                softwareInfo = Wireless.GetSoftwareInfo();
+                            }
+                            else
+                            {
+                                softwareInfo = SysmonFunctions.GetSoftwareInfo();
+                            }
+                             
                             List<ListViewItem> swInfoItems = new List<ListViewItem>();
 
                             swInfoItems.Add(new ListViewItem(new string[] { "Bootloader driver lib name", softwareInfo.BootloaderDriverInfo.Name }));
@@ -165,7 +187,14 @@ namespace GOSTool
         {
             await Task.Run(() =>
             {
-                SysmonFunctions.SendResetRequest();
+                if (wireless)
+                {
+                    Wireless.SendResetRequest();
+                }
+                else
+                {
+                    SysmonFunctions.SendResetRequest();
+                }
             });
         }
 
@@ -198,7 +227,17 @@ namespace GOSTool
                 {
                     while (isMonitoringOn)
                     {
-                        var percentage = SysmonFunctions.GetCpuLoad();
+                        float percentage = -1;
+
+                        if (wireless)
+                        {
+                            percentage = Wireless.GetCpuLoad();
+                        }
+                        else
+                        {
+                            percentage = SysmonFunctions.GetCpuLoad();
+                        }
+
                         cpuLoadGraph.AddNewMeasurement(percentage);
 
                         Helper.SetLabelText_ThreadSafe(this, currentCpuUtil, String.Format("{0:0.##}", percentage) + "%");
@@ -207,9 +246,14 @@ namespace GOSTool
                         Thread.Sleep(250);
 
                         // Refresh system runtime.
-                        Helper.SetLabelText_ThreadSafe(this, sysRuntimeLabel, SysmonFunctions.GetSystemRuntime());
-
-                        Thread.Sleep(10);
+                        if (wireless)
+                        {
+                            Helper.SetLabelText_ThreadSafe(this, sysRuntimeLabel, Wireless.GetSystemRuntime());
+                        }
+                        else
+                        {
+                            Helper.SetLabelText_ThreadSafe(this, sysRuntimeLabel, SysmonFunctions.GetSystemRuntime());
+                        }
 
                         Thread.Sleep(250);
                     }
@@ -369,6 +413,38 @@ namespace GOSTool
             catch
             {
 
+            }
+        }
+
+        private void wirelessComRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            wireless = wirelessComRadioButton.Checked;
+
+            if (wireless)
+            {
+                wirelessConfigUserControl1.Show();
+                usbConfigUserControl1.Hide();
+            }
+            else
+            {
+                wirelessConfigUserControl1.Hide();
+                usbConfigUserControl1.Show();
+            }
+        }
+
+        private void usbComRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            wireless = !usbComRadioButton.Checked;
+
+            if (wireless)
+            {
+                wirelessConfigUserControl1.Show();
+                usbConfigUserControl1.Hide();
+            }
+            else
+            {
+                wirelessConfigUserControl1.Hide();
+                usbConfigUserControl1.Show();
             }
         }
     }

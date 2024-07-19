@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GOSTool
@@ -26,6 +20,8 @@ namespace GOSTool
 
         private void GOSConfigWindow_Load(object sender, EventArgs e)
         {
+            GitHubHelper.UpdateOsList();
+
             GetOsVersions();
             osVersionComboBox.SelectedItem = _projectData.OsConfig.Version;
             configParameters.AddRange(_projectData.OsConfig.Configuration);

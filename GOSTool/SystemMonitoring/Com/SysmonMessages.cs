@@ -415,7 +415,7 @@ namespace GOSTool
         /// <param name="bytes"></param>
         public void GetFromBytes(byte[] bytes)
         {
-            if (bytes.Length == 21)
+            if (bytes.Length >= 21)
             {
                 TaskState = (bytes[0]);
                 TaskPriority = (bytes[1]);
