@@ -8,7 +8,7 @@ using static GOSTool.SysmonFunctions;
 
 namespace GOSTool
 {
-    public enum IpcMsgId
+    public enum IplMsgId
     {
         SVL_IPC_MSG_ID_SYS_RES = 0x100A,
         SVL_IPC_MSG_ID_CPU_LOAD_REQ = 0x100B,
@@ -25,6 +25,18 @@ namespace GOSTool
         SVL_IPC_MSG_ID_SWINFO_RESP = 0x6010,
         SVL_IPC_MSG_ID_TASK_VAR_DATA_REQ = 0x1011,
         SVL_IPC_MSG_ID_TASK_VAR_DATA_RESP = 0x6011,
+        SVL_IPC_MSG_ID_TASK_MODIFY_REQ = 0x1012,
+        SVL_IPC_MSG_ID_TASK_MODIFY_RESP = 0x6012
+    }
+
+    public enum IplTaskModificationType
+    {
+        IPL_TASK_MODIFY_SUSPEND = 0, //!< Suspend.
+        IPL_TASK_MODIFY_RESUME = 1, //!< Resume.
+        IPL_TASK_MODIFY_DELETE = 2, //!< Delete.
+        IPL_TASK_MODIFY_BLOCK = 3, //!< Block.
+        IPL_TASK_MODIFY_UNBLOCK = 4, //!< Unblock.
+        IPL_TASK_MODIFY_WAKEUP = 5  //!< Wake up.
     }
 
     public class Wireless
@@ -34,7 +46,7 @@ namespace GOSTool
         public static EventHandler<int> ProgressUpdateEvent;
 
         private static SemaphoreSlim wirelessSemaphore = new SemaphoreSlim(1, 1);
-        public static string Ip { get; set; } = "192.168.8.184";
+        public static string Ip { get; set; } = "192.168.100.184";
         public static int Port { get; set; } = 3000;
 
         public static PingResult PingDevice()
@@ -58,8 +70,8 @@ namespace GOSTool
 
                 NetworkStream stream = client.GetStream();
 
-                pingMsg[0] = (byte)((int)(IpcMsgId.SVL_IPC_MSG_ID_PING_REQ) >> 8);
-                pingMsg[1] = (byte)((int)(IpcMsgId.SVL_IPC_MSG_ID_PING_REQ) & 0x00ff);
+                pingMsg[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_PING_REQ) >> 8);
+                pingMsg[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_PING_REQ) & 0x00ff);
 
                 StatusUpdateEvent?.Invoke(null, "Pinging device...");
 
@@ -111,8 +123,8 @@ namespace GOSTool
 
                 NetworkStream stream = client.GetStream();
 
-                runTimeMsg[0] = (byte)((int)(IpcMsgId.SVL_IPC_MSG_ID_SYS_RUNTIME_REQ) >> 8);
-                runTimeMsg[1] = (byte)((int)(IpcMsgId.SVL_IPC_MSG_ID_SYS_RUNTIME_REQ) & 0x00ff);
+                runTimeMsg[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_SYS_RUNTIME_REQ) >> 8);
+                runTimeMsg[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_SYS_RUNTIME_REQ) & 0x00ff);
 
                 StatusUpdateEvent?.Invoke(null, "Getting runtime...");
 
@@ -165,8 +177,8 @@ namespace GOSTool
 
                 StatusUpdateEvent?.Invoke(null, "Getting CPU load...");
 
-                cpuLoadMsg[0] = (byte)((int)(IpcMsgId.SVL_IPC_MSG_ID_CPU_LOAD_REQ) >> 8);
-                cpuLoadMsg[1] = (byte)((int)(IpcMsgId.SVL_IPC_MSG_ID_CPU_LOAD_REQ) & 0x00ff);
+                cpuLoadMsg[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_CPU_LOAD_REQ) >> 8);
+                cpuLoadMsg[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_CPU_LOAD_REQ) & 0x00ff);
 
                 stream.Write(cpuLoadMsg, 0, 2);
                 stream.Read(cpuLoadResp, 0, 2);
@@ -193,8 +205,8 @@ namespace GOSTool
             byte[] taskVarDataMsg = new byte[4];
             byte[] taskVarDataResp = new byte[256];
 
-            taskVarDataMsg[0] = (byte)((int)(IpcMsgId.SVL_IPC_MSG_ID_TASK_VAR_DATA_REQ) >> 8);
-            taskVarDataMsg[1] = (byte)((int)(IpcMsgId.SVL_IPC_MSG_ID_TASK_VAR_DATA_REQ) & 0x00ff);
+            taskVarDataMsg[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_TASK_VAR_DATA_REQ) >> 8);
+            taskVarDataMsg[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_TASK_VAR_DATA_REQ) & 0x00ff);
             taskVarDataMsg[2] = (byte)taskIndex;
             taskVarDataMsg[3] = (byte)(taskIndex >> 8);
 
@@ -241,12 +253,12 @@ namespace GOSTool
             byte[] taskDataResp = new byte[256];
 
             byte[] taskNumMsg = new byte[2];
-            taskNumMsg[0] = (byte)((int)(IpcMsgId.SVL_IPC_MSG_ID_TASK_NUM_REQ) >> 8);
-            taskNumMsg[1] = (byte)((int)(IpcMsgId.SVL_IPC_MSG_ID_TASK_NUM_REQ) & 0x00ff);
+            taskNumMsg[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_TASK_NUM_REQ) >> 8);
+            taskNumMsg[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_TASK_NUM_REQ) & 0x00ff);
 
             byte[] taskDataMsg = new byte[4];
-            taskDataMsg[0] = (byte)((int)(IpcMsgId.SVL_IPC_MSG_ID_TASK_DATA_REQ) >> 8);
-            taskDataMsg[1] = (byte)((int)(IpcMsgId.SVL_IPC_MSG_ID_TASK_DATA_REQ) & 0x00ff);
+            taskDataMsg[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_TASK_DATA_REQ) >> 8);
+            taskDataMsg[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_TASK_DATA_REQ) & 0x00ff);
 
             TcpClient client = new TcpClient();
             client.ReceiveTimeout = 3000;
@@ -304,8 +316,8 @@ namespace GOSTool
         public static void SendResetRequest()
         {
             byte[] sysresMessage = new byte[2];
-            sysresMessage[0] = (byte)((int)(IpcMsgId.SVL_IPC_MSG_ID_SYS_RES) >> 8);
-            sysresMessage[1] = (byte)((int)(IpcMsgId.SVL_IPC_MSG_ID_SYS_RES) & 0x00ff);
+            sysresMessage[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_SYS_RES) >> 8);
+            sysresMessage[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_SYS_RES) & 0x00ff);
 
             byte[] dummyBuff = new byte[16];
 
@@ -346,8 +358,8 @@ namespace GOSTool
             byte[] swInfoMsg = new byte[2];
             byte[] swInfoResp = new byte[1024];
 
-            swInfoMsg[0] = (byte)((int)(IpcMsgId.SVL_IPC_MSG_ID_SWINFO_REQ) >> 8);
-            swInfoMsg[1] = (byte)((int)(IpcMsgId.SVL_IPC_MSG_ID_SWINFO_REQ) & 0x00ff);
+            swInfoMsg[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_SWINFO_REQ) >> 8);
+            swInfoMsg[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_SWINFO_REQ) & 0x00ff);
 
             TcpClient client = new TcpClient();
             client.ReceiveTimeout = 3000;
@@ -461,6 +473,55 @@ namespace GOSTool
             wirelessSemaphore.Release();
 
             return bootloaderData;
+        }
+
+        public static bool ModifyTask (int taskIndex, IplTaskModificationType modificationType)
+        {
+            byte[] modifyMsg = new byte[6];
+            byte[] modifyResp = new byte[1024];
+            bool result = false;
+
+            modifyMsg[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_TASK_MODIFY_REQ) >> 8);
+            modifyMsg[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_TASK_MODIFY_REQ) & 0x00ff);
+            modifyMsg[2] = (byte)taskIndex;
+            modifyMsg[3] = (byte)(taskIndex >> 8);
+            modifyMsg[4] = (byte)modificationType;
+            modifyMsg[5] = 10;
+
+            TcpClient client = new TcpClient();
+            client.ReceiveTimeout = 3000;
+            client.SendTimeout = 3000;
+
+            wirelessSemaphore.Wait();
+
+            Thread.Sleep(50);
+            try
+            {
+                client.Connect(Ip, Port);
+
+                NetworkStream stream = client.GetStream();
+
+                StatusUpdateEvent?.Invoke(null, "Modifying task {" + taskIndex + "} with command " + modificationType.ToString() + "...");
+
+                stream.Write(modifyMsg, 0, 6);
+                stream.Read(modifyResp, 0, 256);
+
+                if (modifyResp[5] == 0)
+                    result = true;
+
+                StatusUpdateEvent?.Invoke(null, "Idle.");
+            }
+            catch
+            {
+                // Nothing.
+                StatusUpdateEvent?.Invoke(null, "Communication error.");
+            }
+
+            client.Close();
+
+            wirelessSemaphore.Release();
+
+            return result;
         }
     }
 }

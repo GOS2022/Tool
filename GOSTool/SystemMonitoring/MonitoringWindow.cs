@@ -122,6 +122,8 @@ namespace GOSTool
                             Helper.UpdateListViewWithItems_ThreadSafe(this, taskListView, listViewItems);
                             Helper.ResizeListView_ThreadSafe(this, taskListView);
 
+                            Thread.Sleep(100);
+
                             // Get software info.
                             BootloaderData softwareInfo = new BootloaderData();
                             if (wireless)
@@ -168,6 +170,8 @@ namespace GOSTool
 
                             Helper.UpdateListViewWithItems_ThreadSafe(this, swInfoListView, swInfoItems);
                             Helper.ResizeListView_ThreadSafe(this, swInfoListView);
+
+                            Thread.Sleep(100);
                         }
                         else
                         {
@@ -322,7 +326,14 @@ namespace GOSTool
 
                 await Task.Run(() =>
                 {
-                    SysmonFunctions.ModifyTask(itemIndex, SysmonTaskModifyType.GOS_SYSMON_TASK_MOD_TYPE_SUSPEND);
+                    if (wireless)
+                    {
+                        Wireless.ModifyTask(itemIndex, IplTaskModificationType.IPL_TASK_MODIFY_SUSPEND);
+                    }
+                    else
+                    {
+                        SysmonFunctions.ModifyTask(itemIndex, SysmonTaskModifyType.GOS_SYSMON_TASK_MOD_TYPE_SUSPEND);
+                    }
                 });
             }
             catch
@@ -339,7 +350,14 @@ namespace GOSTool
 
                 await Task.Run(() =>
                 {
-                    SysmonFunctions.ModifyTask(itemIndex, SysmonTaskModifyType.GOS_SYSMON_TASK_MOD_TYPE_RESUME);
+                    if (wireless)
+                    {
+                        Wireless.ModifyTask(itemIndex, IplTaskModificationType.IPL_TASK_MODIFY_RESUME);
+                    }
+                    else
+                    {
+                        SysmonFunctions.ModifyTask(itemIndex, SysmonTaskModifyType.GOS_SYSMON_TASK_MOD_TYPE_RESUME);
+                    }
                 });
             }
             catch
@@ -356,7 +374,14 @@ namespace GOSTool
 
                 await Task.Run(() =>
                 {
-                    SysmonFunctions.ModifyTask(itemIndex, SysmonTaskModifyType.GOS_SYSMON_TASK_MOD_TYPE_DELETE);
+                    if (wireless)
+                    {
+                        Wireless.ModifyTask(itemIndex, IplTaskModificationType.IPL_TASK_MODIFY_DELETE);
+                    }
+                    else
+                    {
+                        SysmonFunctions.ModifyTask(itemIndex, SysmonTaskModifyType.GOS_SYSMON_TASK_MOD_TYPE_DELETE);
+                    }
                 });
             }
             catch
@@ -373,7 +398,14 @@ namespace GOSTool
 
                 await Task.Run(() =>
                 {
-                    SysmonFunctions.ModifyTask(itemIndex, SysmonTaskModifyType.GOS_SYSMON_TASK_MOD_TYPE_BLOCK);
+                    if (wireless)
+                    {
+                        Wireless.ModifyTask(itemIndex, IplTaskModificationType.IPL_TASK_MODIFY_BLOCK);
+                    }
+                    else
+                    {
+                        SysmonFunctions.ModifyTask(itemIndex, SysmonTaskModifyType.GOS_SYSMON_TASK_MOD_TYPE_BLOCK);
+                    }
                 });
             }
             catch
@@ -390,7 +422,14 @@ namespace GOSTool
 
                 await Task.Run(() =>
                 {
-                    SysmonFunctions.ModifyTask(itemIndex, SysmonTaskModifyType.GOS_SYSMON_TASK_MOD_TYPE_UNBLOCK);
+                    if (wireless)
+                    {
+                        Wireless.ModifyTask(itemIndex, IplTaskModificationType.IPL_TASK_MODIFY_UNBLOCK);
+                    }
+                    else
+                    {
+                        SysmonFunctions.ModifyTask(itemIndex, SysmonTaskModifyType.GOS_SYSMON_TASK_MOD_TYPE_UNBLOCK);
+                    }
                 });
             }
             catch
@@ -407,7 +446,14 @@ namespace GOSTool
 
                 await Task.Run(() =>
                 {
-                    SysmonFunctions.ModifyTask(itemIndex, SysmonTaskModifyType.GOS_SYSMON_TASK_MOD_TYPE_WAKEUP);
+                    if (wireless)
+                    {
+                        Wireless.ModifyTask(itemIndex, IplTaskModificationType.IPL_TASK_MODIFY_WAKEUP);
+                    }
+                    else
+                    {
+                        SysmonFunctions.ModifyTask(itemIndex, SysmonTaskModifyType.GOS_SYSMON_TASK_MOD_TYPE_WAKEUP);
+                    }
                 });
             }
             catch
