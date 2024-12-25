@@ -400,6 +400,145 @@ namespace GOSTool
         public bool BootUpdateMode { get; set; }
     }
 
+    public class SoftwareVersionInfo
+    {
+        public const int ExpectedSize = 160;
+        public UInt16 Major { get; set; }
+        public UInt16 Minor { get; set; }
+        public UInt16 Build { get; set; }
+        public DateTime Date { get; set; } = new DateTime();
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Author { get; set; }
+
+        public void GetFromBytes(byte[] bytes)
+        {
+            int idx = 0;
+            Major = Helper<UInt16>.GetVariable(bytes, ref idx);
+            Minor = Helper<UInt16>.GetVariable(bytes, ref idx);
+            Build = Helper<UInt16>.GetVariable(bytes, ref idx);
+            Time time = new Time();
+            time.GetFromBytes(bytes.Skip(idx).Take(Time.ExpectedSize).ToArray());
+            try
+            {
+                Date = DateTime.Parse(time.Years.ToString("D4") + "-" + time.Months.ToString("D2") + "-" + time.Days.ToString("D2"));
+            }
+            catch
+            {
+                Date = new DateTime();
+            }
+            
+            //Date.GetFromBytes(bytes.Skip(idx).Take(Time.ExpectedSize).ToArray());
+            idx += Time.ExpectedSize;
+            Name = Encoding.ASCII.GetString(bytes.Skip(idx).Take(48).ToArray()).Trim('\0');
+            idx += 48;
+            Description = Encoding.ASCII.GetString(bytes.Skip(idx).Take(48).ToArray()).Trim('\0');
+            idx += 48;
+            Author = Encoding.ASCII.GetString(bytes.Skip(idx).Take(48).ToArray()).Trim('\0');
+            idx += 48;
+        }
+    }
+
+    public class OsInfo
+    {
+        public const int ExpectedSize = 4;
+        public UInt16 Major { get; set; }
+        public UInt16 Minor { get; set; }
+
+        public void GetFromBytes(byte[] bytes)
+        {
+            int idx = 0;
+            Major = Helper<UInt16>.GetVariable(bytes, ref idx);
+            Minor = Helper<UInt16>.GetVariable(bytes, ref idx);
+        }
+    }
+
+    public class BinaryInfo
+    {
+        public const int ExpectedSize = 12;
+        public UInt32 StartAddress { get; set; }
+        public UInt32 Size { get; set; }
+        public UInt32 Crc { get; set; }
+
+        public void GetFromBytes(byte[] bytes)
+        {
+            int idx = 0;
+            StartAddress = Helper<UInt32>.GetVariable(bytes, ref idx);
+            Size = Helper<UInt32>.GetVariable(bytes, ref idx);
+            Crc = Helper<UInt32>.GetVariable(bytes, ref idx);
+        }
+    }
+
+    public class HardwareInfo
+    {
+        public string BoardName { get; set; }
+        public string Revision { get; set; }
+        public string Author { get; set; }
+        public string Description { get; set; }
+        public DateTime Date { get; set; } = new DateTime();
+        public string SerialNumber { get; set; }
+
+        public void GetFromBytes(byte[] bytes)
+        {
+            int idx = 0;
+            BoardName = Encoding.ASCII.GetString(bytes.Skip(idx).Take(48).ToArray()).Trim('\0');
+            idx += 48;
+            Revision = Encoding.ASCII.GetString(bytes.Skip(idx).Take(48).ToArray()).Trim('\0');
+            idx += 48;
+            Author = Encoding.ASCII.GetString(bytes.Skip(idx).Take(48).ToArray()).Trim('\0');
+            idx += 48;
+            Description = Encoding.ASCII.GetString(bytes.Skip(idx).Take(48).ToArray()).Trim('\0');
+            idx += 48;
+            Time time = new Time();
+            time.GetFromBytes(bytes.Skip(idx).Take(Time.ExpectedSize).ToArray());
+            try
+            {
+                Date = DateTime.Parse(time.Years.ToString("D4") + "-" + time.Months.ToString("D2") + "-" + time.Days.ToString("D2"));
+            }
+            catch
+            {
+                Date = new DateTime();
+            }
+            idx += Time.ExpectedSize;
+            SerialNumber = Encoding.ASCII.GetString(bytes.Skip(idx).Take(48).ToArray()).Trim('\0');
+            idx += 48;
+        }
+    }
+
+    public class SoftwareInfo
+    {
+        public SoftwareVersionInfo BldLibVerInfo { get; set; } = new SoftwareVersionInfo();
+        public SoftwareVersionInfo BldSwVerInfo { get; set; } = new SoftwareVersionInfo();
+        public OsInfo BldOsInfo { get; set; } = new OsInfo();
+        public BinaryInfo BldBinaryInfo { get; set; } = new BinaryInfo();
+        public SoftwareVersionInfo AppLibVerInfo { get; set; } = new SoftwareVersionInfo();
+        public SoftwareVersionInfo AppSwVerInfo { get; set; } = new SoftwareVersionInfo();
+        public OsInfo AppOsInfo { get; set; } = new OsInfo();
+        public BinaryInfo AppBinaryInfo { get; set; } = new BinaryInfo();
+
+        public void GetFromBytes(byte[] bytes)
+        {
+            int idx = 0;
+            BldLibVerInfo.GetFromBytes(bytes.Skip(idx).Take(SoftwareVersionInfo.ExpectedSize).ToArray());
+            idx += SoftwareVersionInfo.ExpectedSize;
+            BldSwVerInfo.GetFromBytes(bytes.Skip(idx).Take(SoftwareVersionInfo.ExpectedSize).ToArray());
+            idx += SoftwareVersionInfo.ExpectedSize;
+            BldOsInfo.GetFromBytes(bytes.Skip(idx).Take(OsInfo.ExpectedSize).ToArray());
+            idx += OsInfo.ExpectedSize;
+            BldBinaryInfo.GetFromBytes(bytes.Skip(idx).Take(BinaryInfo.ExpectedSize).ToArray());
+            idx += BinaryInfo.ExpectedSize;
+
+            AppLibVerInfo.GetFromBytes(bytes.Skip(idx).Take(SoftwareVersionInfo.ExpectedSize).ToArray());
+            idx += SoftwareVersionInfo.ExpectedSize;
+            AppSwVerInfo.GetFromBytes(bytes.Skip(idx).Take(SoftwareVersionInfo.ExpectedSize).ToArray());
+            idx += SoftwareVersionInfo.ExpectedSize;
+            AppOsInfo.GetFromBytes(bytes.Skip(idx).Take(OsInfo.ExpectedSize).ToArray());
+            idx += OsInfo.ExpectedSize;
+            AppBinaryInfo.GetFromBytes(bytes.Skip(idx).Take(BinaryInfo.ExpectedSize).ToArray());
+            idx += BinaryInfo.ExpectedSize;
+        }
+    }
+
 #if false
     public enum BootloaderUpdateType
     {

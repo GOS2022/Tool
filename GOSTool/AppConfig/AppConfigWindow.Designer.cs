@@ -29,10 +29,13 @@ namespace GOSTool
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AppConfigWindow));
             this.appTreeView = new System.Windows.Forms.TreeView();
             this.okButton = new System.Windows.Forms.Button();
             this.newModuleButton = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.moduleConfigUserControl1 = new GOSTool.AppConfig.ModuleConfigUserControl();
+            this.taskConfigUserControl1 = new GOSTool.AppConfig.TaskConfigUserControl();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.appMinorNUD = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
@@ -41,8 +44,6 @@ namespace GOSTool
             this.appNameTB = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.useConfigPatternCb = new System.Windows.Forms.CheckBox();
-            this.taskConfigUserControl1 = new GOSTool.AppConfig.TaskConfigUserControl();
-            this.moduleConfigUserControl1 = new GOSTool.AppConfig.ModuleConfigUserControl();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.appMinorNUD)).BeginInit();
@@ -86,6 +87,20 @@ namespace GOSTool
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Task configuration";
+            // 
+            // moduleConfigUserControl1
+            // 
+            this.moduleConfigUserControl1.Location = new System.Drawing.Point(6, 24);
+            this.moduleConfigUserControl1.Name = "moduleConfigUserControl1";
+            this.moduleConfigUserControl1.Size = new System.Drawing.Size(508, 136);
+            this.moduleConfigUserControl1.TabIndex = 5;
+            // 
+            // taskConfigUserControl1
+            // 
+            this.taskConfigUserControl1.Location = new System.Drawing.Point(6, 24);
+            this.taskConfigUserControl1.Name = "taskConfigUserControl1";
+            this.taskConfigUserControl1.Size = new System.Drawing.Size(486, 463);
+            this.taskConfigUserControl1.TabIndex = 4;
             // 
             // groupBox2
             // 
@@ -174,20 +189,6 @@ namespace GOSTool
             this.useConfigPatternCb.Text = "Use config pattern";
             this.useConfigPatternCb.UseVisualStyleBackColor = true;
             // 
-            // taskConfigUserControl1
-            // 
-            this.taskConfigUserControl1.Location = new System.Drawing.Point(6, 24);
-            this.taskConfigUserControl1.Name = "taskConfigUserControl1";
-            this.taskConfigUserControl1.Size = new System.Drawing.Size(486, 463);
-            this.taskConfigUserControl1.TabIndex = 4;
-            // 
-            // moduleConfigUserControl1
-            // 
-            this.moduleConfigUserControl1.Location = new System.Drawing.Point(6, 24);
-            this.moduleConfigUserControl1.Name = "moduleConfigUserControl1";
-            this.moduleConfigUserControl1.Size = new System.Drawing.Size(508, 136);
-            this.moduleConfigUserControl1.TabIndex = 5;
-            // 
             // AppConfigWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -199,6 +200,7 @@ namespace GOSTool
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.appTreeView);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "AppConfigWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;

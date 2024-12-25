@@ -38,7 +38,7 @@ namespace GOSTool
                         if (SysmonFunctions.PingDevice() == SysmonFunctions.PingResult.OK)
                         {
                             // Get software info.
-                            BootloaderData softwareInfo = SysmonFunctions.GetSoftwareInfo();
+                            BootloaderData softwareInfo = new BootloaderData(); // SysmonFunctions.GetSoftwareInfo(); TODO
                             List<ListViewItem> swInfoItems = new List<ListViewItem>();
 
                             swInfoItems.Add(new ListViewItem(new string[] { "Bootloader driver lib name", softwareInfo.BootloaderDriverInfo.Name }));

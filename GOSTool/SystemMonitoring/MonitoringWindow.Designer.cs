@@ -29,6 +29,7 @@ namespace GOSTool
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MonitoringWindow));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label6 = new System.Windows.Forms.Label();
             this.sampleNUD = new System.Windows.Forms.NumericUpDown();
@@ -43,8 +44,11 @@ namespace GOSTool
             this.label3 = new System.Windows.Forms.Label();
             this.currentCpuUtil = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.timeSyncButton = new System.Windows.Forms.Button();
+            this.wirelessConfigUserControl1 = new GOSTool.SystemMonitoring.WirelessConfigUserControl();
             this.resetRequestButton = new System.Windows.Forms.Button();
             this.connectButton = new System.Windows.Forms.Button();
+            this.usbConfigUserControl1 = new GOSTool.UsbConfigUserControl();
             this.label1 = new System.Windows.Forms.Label();
             this.wirelessComRadioButton = new System.Windows.Forms.RadioButton();
             this.usbComRadioButton = new System.Windows.Forms.RadioButton();
@@ -54,6 +58,10 @@ namespace GOSTool
             this.swInfoListView = new System.Windows.Forms.ListView();
             this.paramCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.valCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.hardwareInfoPage = new System.Windows.Forms.TabPage();
+            this.hwInfoListView = new System.Windows.Forms.ListView();
+            this.parCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.valueCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.taskListView = new System.Windows.Forms.ListView();
             this.taskIdCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.taskNameCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -61,8 +69,6 @@ namespace GOSTool
             this.taskPrioCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.taskCpuLimitCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.taskPrivCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.wirelessConfigUserControl1 = new GOSTool.SystemMonitoring.WirelessConfigUserControl();
-            this.usbConfigUserControl1 = new GOSTool.UsbConfigUserControl();
             this.cpuLoadGraph = new GOSTool.LoadGraphUserControl();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.sampleNUD)).BeginInit();
@@ -73,6 +79,7 @@ namespace GOSTool
             this.splitContainer1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.softwareInfoPage.SuspendLayout();
+            this.hardwareInfoPage.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -229,6 +236,7 @@ namespace GOSTool
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.timeSyncButton);
             this.groupBox2.Controls.Add(this.wirelessConfigUserControl1);
             this.groupBox2.Controls.Add(this.resetRequestButton);
             this.groupBox2.Controls.Add(this.connectButton);
@@ -242,6 +250,27 @@ namespace GOSTool
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Communication configuration";
+            // 
+            // timeSyncButton
+            // 
+            this.timeSyncButton.Location = new System.Drawing.Point(350, 129);
+            this.timeSyncButton.Name = "timeSyncButton";
+            this.timeSyncButton.Size = new System.Drawing.Size(141, 32);
+            this.timeSyncButton.TabIndex = 7;
+            this.timeSyncButton.Text = "Synchronize time";
+            this.timeSyncButton.UseVisualStyleBackColor = true;
+            this.timeSyncButton.Click += new System.EventHandler(this.timeSyncButton_Click);
+            // 
+            // wirelessConfigUserControl1
+            // 
+            this.wirelessConfigUserControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.wirelessConfigUserControl1.Ip = "192.168.1.184";
+            this.wirelessConfigUserControl1.Location = new System.Drawing.Point(6, 63);
+            this.wirelessConfigUserControl1.Name = "wirelessConfigUserControl1";
+            this.wirelessConfigUserControl1.Port = 3000;
+            this.wirelessConfigUserControl1.Size = new System.Drawing.Size(778, 60);
+            this.wirelessConfigUserControl1.TabIndex = 6;
             // 
             // resetRequestButton
             // 
@@ -262,6 +291,17 @@ namespace GOSTool
             this.connectButton.Text = "Connect";
             this.connectButton.UseVisualStyleBackColor = true;
             this.connectButton.Click += new System.EventHandler(this.connectButton_Click);
+            // 
+            // usbConfigUserControl1
+            // 
+            this.usbConfigUserControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.usbConfigUserControl1.Baud = -2147483648;
+            this.usbConfigUserControl1.Location = new System.Drawing.Point(6, 64);
+            this.usbConfigUserControl1.Name = "usbConfigUserControl1";
+            this.usbConfigUserControl1.Port = null;
+            this.usbConfigUserControl1.Size = new System.Drawing.Size(470, 56);
+            this.usbConfigUserControl1.TabIndex = 3;
             // 
             // label1
             // 
@@ -318,6 +358,7 @@ namespace GOSTool
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.softwareInfoPage);
+            this.tabControl1.Controls.Add(this.hardwareInfoPage);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
@@ -357,6 +398,38 @@ namespace GOSTool
             // valCol
             // 
             this.valCol.Text = "Value";
+            // 
+            // hardwareInfoPage
+            // 
+            this.hardwareInfoPage.Controls.Add(this.hwInfoListView);
+            this.hardwareInfoPage.Location = new System.Drawing.Point(4, 25);
+            this.hardwareInfoPage.Name = "hardwareInfoPage";
+            this.hardwareInfoPage.Size = new System.Drawing.Size(402, 351);
+            this.hardwareInfoPage.TabIndex = 1;
+            this.hardwareInfoPage.Text = "Hardware Info";
+            this.hardwareInfoPage.UseVisualStyleBackColor = true;
+            // 
+            // hwInfoListView
+            // 
+            this.hwInfoListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.parCol,
+            this.valueCol});
+            this.hwInfoListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.hwInfoListView.HideSelection = false;
+            this.hwInfoListView.Location = new System.Drawing.Point(0, 0);
+            this.hwInfoListView.Name = "hwInfoListView";
+            this.hwInfoListView.Size = new System.Drawing.Size(402, 351);
+            this.hwInfoListView.TabIndex = 0;
+            this.hwInfoListView.UseCompatibleStateImageBehavior = false;
+            this.hwInfoListView.View = System.Windows.Forms.View.Details;
+            // 
+            // parCol
+            // 
+            this.parCol.Text = "Parameter";
+            // 
+            // valueCol
+            // 
+            this.valueCol.Text = "Value";
             // 
             // taskListView
             // 
@@ -407,28 +480,6 @@ namespace GOSTool
             this.taskPrivCol.Text = "Privileges";
             this.taskPrivCol.Width = 73;
             // 
-            // wirelessConfigUserControl1
-            // 
-            this.wirelessConfigUserControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.wirelessConfigUserControl1.Ip = "192.168.1.184";
-            this.wirelessConfigUserControl1.Location = new System.Drawing.Point(6, 63);
-            this.wirelessConfigUserControl1.Name = "wirelessConfigUserControl1";
-            this.wirelessConfigUserControl1.Port = 3000;
-            this.wirelessConfigUserControl1.Size = new System.Drawing.Size(778, 60);
-            this.wirelessConfigUserControl1.TabIndex = 6;
-            // 
-            // usbConfigUserControl1
-            // 
-            this.usbConfigUserControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.usbConfigUserControl1.Baud = -2147483648;
-            this.usbConfigUserControl1.Location = new System.Drawing.Point(6, 64);
-            this.usbConfigUserControl1.Name = "usbConfigUserControl1";
-            this.usbConfigUserControl1.Port = null;
-            this.usbConfigUserControl1.Size = new System.Drawing.Size(470, 56);
-            this.usbConfigUserControl1.TabIndex = 3;
-            // 
             // cpuLoadGraph
             // 
             this.cpuLoadGraph.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -449,8 +500,9 @@ namespace GOSTool
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.cpuLoadGraph);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MonitoringWindow";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MonitoringWindow";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MonitoringWindow_FormClosing);
             this.Load += new System.EventHandler(this.MonitoringWindow_Load);
@@ -465,6 +517,7 @@ namespace GOSTool
             this.splitContainer1.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.softwareInfoPage.ResumeLayout(false);
+            this.hardwareInfoPage.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -506,5 +559,10 @@ namespace GOSTool
         private System.Windows.Forms.ColumnHeader taskCpuLimitCol;
         private System.Windows.Forms.ColumnHeader taskPrivCol;
         private SystemMonitoring.WirelessConfigUserControl wirelessConfigUserControl1;
+        private System.Windows.Forms.TabPage hardwareInfoPage;
+        private System.Windows.Forms.ListView hwInfoListView;
+        private System.Windows.Forms.ColumnHeader parCol;
+        private System.Windows.Forms.ColumnHeader valueCol;
+        private System.Windows.Forms.Button timeSyncButton;
     }
 }

@@ -30,6 +30,7 @@ namespace GOSTool
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -41,7 +42,7 @@ namespace GOSTool
             this.configureBootloaderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configureApplicationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.monitoringToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.softwareInstallToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.softwareDownloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.systemMonitoringToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.graphicsDesignerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -161,23 +162,23 @@ namespace GOSTool
             // monitoringToolToolStripMenuItem
             // 
             this.monitoringToolToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.softwareInstallToolStripMenuItem,
+            this.softwareDownloadToolStripMenuItem,
             this.systemMonitoringToolStripMenuItem});
             this.monitoringToolToolStripMenuItem.Name = "monitoringToolToolStripMenuItem";
             this.monitoringToolToolStripMenuItem.Size = new System.Drawing.Size(128, 24);
             this.monitoringToolToolStripMenuItem.Text = "Monitoring tool";
             // 
-            // softwareInstallToolStripMenuItem
+            // softwareDownloadToolStripMenuItem
             // 
-            this.softwareInstallToolStripMenuItem.Name = "softwareInstallToolStripMenuItem";
-            this.softwareInstallToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.softwareInstallToolStripMenuItem.Text = "Software install";
-            this.softwareInstallToolStripMenuItem.Click += new System.EventHandler(this.softwareInstallToolStripMenuItem_Click);
+            this.softwareDownloadToolStripMenuItem.Name = "softwareDownloadToolStripMenuItem";
+            this.softwareDownloadToolStripMenuItem.Size = new System.Drawing.Size(222, 26);
+            this.softwareDownloadToolStripMenuItem.Text = "Software download";
+            this.softwareDownloadToolStripMenuItem.Click += new System.EventHandler(this.softwareDownloadToolStripMenuItem_Click);
             // 
             // systemMonitoringToolStripMenuItem
             // 
             this.systemMonitoringToolStripMenuItem.Name = "systemMonitoringToolStripMenuItem";
-            this.systemMonitoringToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.systemMonitoringToolStripMenuItem.Size = new System.Drawing.Size(222, 26);
             this.systemMonitoringToolStripMenuItem.Text = "System monitoring";
             this.systemMonitoringToolStripMenuItem.Click += new System.EventHandler(this.systemMonitoringToolStripMenuItem_Click);
             // 
@@ -408,6 +409,7 @@ namespace GOSTool
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainWindow";
             this.Load += new System.EventHandler(this.MainWindow_Load);
@@ -446,7 +448,6 @@ namespace GOSTool
         private System.Windows.Forms.CheckBox useOsCheckBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ToolStripMenuItem softwareInstallToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem systemMonitoringToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem imageToolToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createFLASHImageToolStripMenuItem;
@@ -460,5 +461,6 @@ namespace GOSTool
         private System.Windows.Forms.Label libVersionLabel;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ToolStripMenuItem softwareDownloadToolStripMenuItem;
     }
 }

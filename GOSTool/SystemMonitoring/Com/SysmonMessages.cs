@@ -46,6 +46,7 @@
 //
 //*************************************************************************************************
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace GOSTool
@@ -191,6 +192,103 @@ namespace GOSTool
                 (byte)(CpuUsage),
             };
         }*/
+    }
+
+    public enum BinaryDownloadRequestResult
+    {
+        COMM_ERR = 0,
+        OK = 1,
+        DESCRIPTOR_SIZE_ERR = 2,
+        FILE_SIZE_ERR = 4
+    }
+
+    public class ChunkDescriptor
+    {
+        public UInt16 ChunkIndex { get; set; }
+        public byte Result { get; set; }
+
+        public const UInt16 ExpectedSize = 3;
+
+        /// <summary>
+        /// Gets the class member values from the byte array.
+        /// </summary>
+        /// <param name="bytes"></param>
+        public void GetFromBytes(byte[] bytes)
+        {
+            if (bytes.Length >= ExpectedSize)
+            {
+                int idx = 0;
+                ChunkIndex = Helper<UInt16>.GetVariable(bytes, ref idx);
+                Result = Helper<byte>.GetVariable(bytes, ref idx);
+            }
+        }
+
+        /// <summary>
+        /// Returns the message as a byte array.
+        /// </summary>
+        /// <returns></returns>
+        public byte[] GetBytes()
+        {
+            List<byte> bytes = new List<byte>();
+
+            bytes.AddRange(Helper<UInt16>.GetBytes(ChunkIndex));
+            bytes.AddRange(Helper<byte>.GetBytes(Result));
+
+            return bytes.ToArray();
+        }
+    }
+
+    public class BinaryDescriptorMessage
+    {
+        public string Name { get; set; }
+        public UInt32 Location { get; set; }
+        public UInt32 StartAddress { get; set; }
+        public UInt32 Size { get; set; }
+        public UInt32 Crc { get; set; }
+
+        public const UInt16 ExpectedSize = 16;
+
+        /// <summary>
+        /// Gets the class member values from the byte array.
+        /// </summary>
+        /// <param name="bytes"></param>
+        public void GetFromBytes(byte[] bytes)
+        {
+            if (bytes.Length >= ExpectedSize)
+            {
+                int idx = 32;
+
+                byte[] nameBytes = new byte[32];
+                Array.Copy(bytes, 0, nameBytes, 0, 32);
+
+                Name = Encoding.ASCII.GetString(nameBytes).Substring(0, Encoding.ASCII.GetString(nameBytes).IndexOf("\0"));
+                Location = Helper<UInt32>.GetVariable(bytes, ref idx);
+                StartAddress = Helper<UInt32>.GetVariable(bytes, ref idx);
+                Size = Helper<UInt32>.GetVariable(bytes, ref idx);
+                Crc = Helper<UInt32>.GetVariable(bytes, ref idx);
+            }
+        }
+
+        /// <summary>
+        /// Returns the message as a byte array.
+        /// </summary>
+        /// <returns></returns>
+        public byte[] GetBytes()
+        {
+            List<byte> bytes = new List<byte>();
+
+            List<byte> nameBytes = new List<byte>(Encoding.ASCII.GetBytes(Name));
+            while (nameBytes.Count < 32)
+                nameBytes.Add(0);
+            
+            bytes.AddRange(nameBytes);
+            bytes.AddRange(Helper<UInt32>.GetBytes(Location));
+            bytes.AddRange(Helper<UInt32>.GetBytes(StartAddress));
+            bytes.AddRange(Helper<UInt32>.GetBytes(Size));
+            bytes.AddRange(Helper<UInt32>.GetBytes(Crc));
+
+            return bytes.ToArray();
+        }
     }
 
     /// <summary>

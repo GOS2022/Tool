@@ -29,6 +29,7 @@ namespace GOSTool
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FileViewerWindow));
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
             // 
@@ -51,6 +52,7 @@ namespace GOSTool
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1079, 685);
             this.Controls.Add(this.richTextBox1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FileViewerWindow";
             this.Text = "File viewer";
             this.Load += new System.EventHandler(this.FileViewerWindow_Load);

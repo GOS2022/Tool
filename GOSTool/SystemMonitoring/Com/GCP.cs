@@ -259,9 +259,10 @@ namespace GOSTool
                             }
 
                             byte[] payloadTemp = new byte[tempSize];
-                            Array.Copy(payload, chunkIndex * maxChunkSize, payloadTemp, 0, tempSize);
 
-                            if (Uart.Send(payloadTemp, tempSize) &&
+                            Array.Copy(payload, chunkIndex * maxChunkSize, payloadTemp, 0, tempSize > payload.Length ? payload.Length : tempSize);
+
+                            if (Uart.Send(payloadTemp, (UInt16)payloadTemp.Length) &&
                                 Uart.Receive(out byte[] rxBuffer, GcpHeaderFrame.ExpectedSize))
                             {
                                 responseHeader.GetFromBytes(rxBuffer);

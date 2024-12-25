@@ -56,7 +56,7 @@ namespace GOSTool
 
         public void AddNewMeasurement(float value)
         {
-            if (value >= 0)
+            if (value >= 0 && value <= 100)
             {
                 measurementSemaphore.Wait();
 

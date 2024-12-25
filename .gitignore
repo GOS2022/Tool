@@ -196,3 +196,5 @@ GOSTool/obj/Debug/GOSTool.AppConfig.ModuleConfigUserControl.resources
 GOSTool/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
 GOSTool/obj/Debug/DesignTimeResolveAssemblyReferences.cache
 GOSTool/obj/Debug/.NETFramework,Version=v4.7.2.AssemblyAttributes.cs
+/GOSTool/bin/Debug
+/GOSTool/bin/Debug

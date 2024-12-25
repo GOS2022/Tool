@@ -45,7 +45,7 @@ namespace GOSTool
         private void configureOSToolStripMenuItem_Click(object sender, EventArgs e)
         {
             GOSConfigWindow configWindow = new GOSConfigWindow();
-            configWindow.ShowDialog();
+            configWindow.Show();//Dialog();
             ProjectData = ProjectHandler.GetProjectData();
             projectDataUserControl1.SetProjectData(ProjectData);
             UpdateProjectTree();
@@ -105,6 +105,12 @@ namespace GOSTool
         {
             SoftwareInstallWindow softwareInstallWindow = new SoftwareInstallWindow();
             softwareInstallWindow.Show();
+        }
+
+        private void softwareDownloadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SoftwareDownloadWindow softwareDownloadWindow = new SoftwareDownloadWindow();
+            softwareDownloadWindow.Show();
         }
     }
 }

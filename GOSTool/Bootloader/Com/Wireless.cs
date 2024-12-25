@@ -26,7 +26,11 @@ namespace GOSTool
         SVL_IPC_MSG_ID_TASK_VAR_DATA_REQ = 0x1011,
         SVL_IPC_MSG_ID_TASK_VAR_DATA_RESP = 0x6011,
         SVL_IPC_MSG_ID_TASK_MODIFY_REQ = 0x1012,
-        SVL_IPC_MSG_ID_TASK_MODIFY_RESP = 0x6012
+        SVL_IPC_MSG_ID_TASK_MODIFY_RESP = 0x6012,
+        SVL_IPC_MSG_ID_HWINFO_REQ = 0x1013,
+        SVL_IPC_MSG_ID_HWINFO_RESP = 0x6013,
+        SVL_IPC_MSG_ID_SYNC_TIME_REQ = 0x1014,
+        SVL_IPC_MSG_ID_SYNC_TIME_RESP = 0x6014
     }
 
     public enum IplTaskModificationType
@@ -351,19 +355,18 @@ namespace GOSTool
             wirelessSemaphore.Release();
         }
 
-        public static BootloaderData GetSoftwareInfo()
+        public static HardwareInfo GetHardwareInfo()
         {
-            BootloaderData bootloaderData = new BootloaderData();
-            bld_com_data_resp_msg_t respMsg = new bld_com_data_resp_msg_t();
-            byte[] swInfoMsg = new byte[2];
-            byte[] swInfoResp = new byte[1024];
+            HardwareInfo hardwareInfo = new HardwareInfo();
+            byte[] hwInfoMsg = new byte[2];
+            byte[] hwInfoResp = new byte[1024];
 
-            swInfoMsg[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_SWINFO_REQ) >> 8);
-            swInfoMsg[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_SWINFO_REQ) & 0x00ff);
+            hwInfoMsg[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_HWINFO_REQ) >> 8);
+            hwInfoMsg[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_HWINFO_REQ) & 0x00ff);
 
             TcpClient client = new TcpClient();
-            client.ReceiveTimeout = 3000;
-            client.SendTimeout = 3000;
+            client.ReceiveTimeout = 5000;
+            client.SendTimeout = 5000;
 
             wirelessSemaphore.Wait();
 
@@ -373,92 +376,12 @@ namespace GOSTool
 
                 NetworkStream stream = client.GetStream();
 
-                StatusUpdateEvent?.Invoke(null, "Reading software info...");
+                StatusUpdateEvent?.Invoke(null, "Reading hardware info...");
 
-                stream.Write(swInfoMsg, 0, 2);
-                //while (!stream.DataAvailable) ;
-                stream.Read(swInfoResp, 0, 1024);
+                stream.Write(hwInfoMsg, 0, 2);
+                stream.Read(hwInfoResp, 0, 1024);
 
-                respMsg.GetFromBytes(swInfoResp);
-
-                // Driver info.
-                bootloaderData.BootloaderDriverInfo = new VersionInfo();
-                bootloaderData.BootloaderDriverInfo.Author = respMsg.bldData.bldDriverVersion.author;
-                bootloaderData.BootloaderDriverInfo.Major = respMsg.bldData.bldDriverVersion.major;
-                bootloaderData.BootloaderDriverInfo.Minor = respMsg.bldData.bldDriverVersion.minor;
-                bootloaderData.BootloaderDriverInfo.Build = respMsg.bldData.bldDriverVersion.build;
-                try
-                {
-                    bootloaderData.BootloaderDriverInfo.Date = DateTime.Parse(respMsg.bldData.bldDriverVersion.date.Years.ToString("D4") + "-" + respMsg.bldData.bldDriverVersion.date.Months.ToString("D2") + "-" + respMsg.bldData.bldDriverVersion.date.Days.ToString("D2"));
-                }
-                catch
-                {
-                    bootloaderData.BootloaderDriverInfo.Date = new DateTime();
-                }
-                bootloaderData.BootloaderDriverInfo.Description = respMsg.bldData.bldDriverVersion.description;
-                bootloaderData.BootloaderDriverInfo.Name = respMsg.bldData.bldDriverVersion.name;
-
-                // Bootloader info.
-                bootloaderData.BootloaderInfo = new VersionInfo();
-                bootloaderData.BootloaderInfo.Author = respMsg.bldData.bldVersion.author;
-                bootloaderData.BootloaderInfo.Major = respMsg.bldData.bldVersion.major;
-                bootloaderData.BootloaderInfo.Minor = respMsg.bldData.bldVersion.minor;
-                bootloaderData.BootloaderInfo.Build = respMsg.bldData.bldVersion.build;
-                try
-                {
-                    bootloaderData.BootloaderInfo.Date = DateTime.Parse(respMsg.bldData.bldVersion.date.Years.ToString("D4") + "-" + respMsg.bldData.bldVersion.date.Months.ToString("D2") + "-" + respMsg.bldData.bldVersion.date.Days.ToString("D2"));
-                }
-                catch
-                {
-                    bootloaderData.BootloaderInfo.Date = new DateTime();
-                }
-                bootloaderData.BootloaderInfo.Description = respMsg.bldData.bldVersion.description;
-                bootloaderData.BootloaderInfo.Name = respMsg.bldData.bldVersion.name;
-                bootloaderData.Crc = (int)respMsg.bldData.bldCrc;
-                bootloaderData.Size = (int)respMsg.bldData.bldSize;
-                bootloaderData.StartAddress = (int)respMsg.bldData.bldStartAddress;
-                bootloaderData.BootUpdateMode = respMsg.bldData.bootUpdateMode;
-
-                // Application info.
-                bootloaderData.ApplicationData = new ApplicationData();
-                bootloaderData.ApplicationData.AppVersion = new VersionInfo();
-                bootloaderData.ApplicationData.AppVersion.Author = respMsg.appData.appVersion.author;
-                bootloaderData.ApplicationData.AppVersion.Major = respMsg.appData.appVersion.major;
-                bootloaderData.ApplicationData.AppVersion.Minor = respMsg.appData.appVersion.minor;
-                bootloaderData.ApplicationData.AppVersion.Build = respMsg.appData.appVersion.build;
-                try
-                {
-                    bootloaderData.ApplicationData.AppVersion.Date = DateTime.Parse(respMsg.appData.appVersion.date.Years.ToString("D4") + "-" + respMsg.appData.appVersion.date.Months.ToString("D2") + "-" + respMsg.appData.appVersion.date.Days.ToString("D2"));
-                }
-                catch
-                {
-                    bootloaderData.ApplicationData.AppVersion.Date = new DateTime();
-                }
-                bootloaderData.ApplicationData.AppVersion.Description = respMsg.appData.appVersion.description;
-                bootloaderData.ApplicationData.AppVersion.Name = respMsg.appData.appVersion.name;
-
-                // Application driver data.
-                bootloaderData.ApplicationData.DriverVersion = new VersionInfo();
-                bootloaderData.ApplicationData.DriverVersion.Author = respMsg.appData.appDriverVersion.author;
-                bootloaderData.ApplicationData.DriverVersion.Major = respMsg.appData.appDriverVersion.major;
-                bootloaderData.ApplicationData.DriverVersion.Minor = respMsg.appData.appDriverVersion.minor;
-                bootloaderData.ApplicationData.DriverVersion.Build = respMsg.appData.appDriverVersion.build;
-
-                try
-                {
-                    bootloaderData.ApplicationData.DriverVersion.Date = DateTime.Parse(respMsg.appData.appDriverVersion.date.Years.ToString("D4") + "-" + respMsg.appData.appDriverVersion.date.Months.ToString("D2") + "-" + respMsg.appData.appDriverVersion.date.Days.ToString("D2"));
-                }
-                catch
-                {
-                    bootloaderData.ApplicationData.DriverVersion.Date = new DateTime();
-                }
-                bootloaderData.ApplicationData.DriverVersion.Description = respMsg.appData.appDriverVersion.description;
-                bootloaderData.ApplicationData.DriverVersion.Name = respMsg.appData.appDriverVersion.name;
-
-
-                bootloaderData.ApplicationData.Crc = (int)respMsg.appData.appCrc;
-                bootloaderData.ApplicationData.Size = (int)respMsg.appData.appSize;
-                bootloaderData.ApplicationData.StartAddress = (int)respMsg.appData.appStartAddress;
+                hardwareInfo.GetFromBytes(hwInfoResp);
 
                 StatusUpdateEvent?.Invoke(null, "Idle.");
             }
@@ -472,7 +395,99 @@ namespace GOSTool
 
             wirelessSemaphore.Release();
 
-            return bootloaderData;
+            return hardwareInfo;
+        }
+
+        public static SoftwareInfo GetSoftwareInfo()
+        {
+            SoftwareInfo softwareInfo = new SoftwareInfo();
+            byte[] swInfoMsg = new byte[2];
+            byte[] swInfoResp = new byte[1024];
+
+            swInfoMsg[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_SWINFO_REQ) >> 8);
+            swInfoMsg[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_SWINFO_REQ) & 0x00ff);
+
+            TcpClient client = new TcpClient();
+            client.ReceiveTimeout = 5000;
+            client.SendTimeout = 5000;
+
+            wirelessSemaphore.Wait();
+
+            try
+            {
+                client.Connect(Ip, Port);
+
+                NetworkStream stream = client.GetStream();
+
+                StatusUpdateEvent?.Invoke(null, "Reading software info...");
+
+                stream.Write(swInfoMsg, 0, 2);
+                stream.Read(swInfoResp, 0, 1024);
+
+                softwareInfo.GetFromBytes(swInfoResp);
+
+                StatusUpdateEvent?.Invoke(null, "Idle.");
+            }
+            catch
+            {
+                // Nothing.
+                StatusUpdateEvent?.Invoke(null, "Communication error.");
+            }
+
+            client.Close();
+
+            wirelessSemaphore.Release();
+
+            return softwareInfo;
+        }
+
+        public static void SynchronizeTime ()
+        {
+            SysTimeMessage sysTimeMessage = new SysTimeMessage();
+            sysTimeMessage.SystemTime.Years = (ushort)DateTime.Now.Year;
+            sysTimeMessage.SystemTime.Months = (byte)DateTime.Now.Month;
+            sysTimeMessage.SystemTime.Days = (byte)DateTime.Now.Day;
+            sysTimeMessage.SystemTime.Hours = (byte)DateTime.Now.Hour;
+            sysTimeMessage.SystemTime.Minutes = (byte)DateTime.Now.Minute;
+            sysTimeMessage.SystemTime.Seconds = (byte)DateTime.Now.Second;
+            sysTimeMessage.SystemTime.Milliseconds = (byte)DateTime.Now.Millisecond;
+           
+            byte[] syncTimeMsg = new byte[sysTimeMessage.GetBytes().Length + 2];
+            byte[] syncTimeResp = new byte[1024];
+
+            syncTimeMsg[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_SYNC_TIME_REQ) >> 8);
+            syncTimeMsg[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_SYNC_TIME_REQ) & 0x00ff);
+
+            Array.Copy(sysTimeMessage.GetBytes(), 0, syncTimeMsg, 2, sysTimeMessage.GetBytes().Length);
+
+            TcpClient client = new TcpClient();
+            client.ReceiveTimeout = 3000;
+            client.SendTimeout = 3000;
+
+            wirelessSemaphore.Wait();
+
+            Thread.Sleep(50);
+
+            try
+            {
+                client.Connect(Ip, Port);
+
+                NetworkStream stream = client.GetStream();
+
+                StatusUpdateEvent?.Invoke(null, "Synchronizing time...");
+
+                stream.Write(syncTimeMsg, 0, sysTimeMessage.GetBytes().Length + 2);
+
+                StatusUpdateEvent?.Invoke(null, "Idle.");
+            }
+            catch
+            {
+                // Nothing.
+                StatusUpdateEvent?.Invoke(null, "Communication error.");
+            }
+
+            client.Close();
+            wirelessSemaphore.Release();
         }
 
         public static bool ModifyTask (int taskIndex, IplTaskModificationType modificationType)

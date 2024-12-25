@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GOSTool
@@ -18,13 +19,16 @@ namespace GOSTool
         private List<(string, string)> configParameters = new List<(string, string)>();
         private string selectedOsPath = "";
 
-        private void GOSConfigWindow_Load(object sender, EventArgs e)
+        private async void GOSConfigWindow_Load(object sender, EventArgs e)
         {
-            GitHubHelper.UpdateOsList();
+            LoadWindow loadWindow = new LoadWindow();
+            loadWindow.TopMost = true;
+            loadWindow.Show();
+
+            await Task.Run(GitHubHelper.UpdateOsList);
 
             GetOsVersions();
             osVersionComboBox.SelectedItem = _projectData.OsConfig.Version;
-            configParameters.AddRange(_projectData.OsConfig.Configuration);
 
             FillDataGridViewFromConfig();
 
@@ -32,8 +36,9 @@ namespace GOSTool
             {
                 configParameters[args.RowIndex] = (configParameters[args.RowIndex].Item1, dataGridView1.Rows[args.RowIndex].Cells[args.ColumnIndex].Value.ToString());
             };
-        }
 
+            loadWindow.Close();
+        }
         private void FillDataGridViewFromConfig()
         {
             dataGridView1.Rows.Clear();
@@ -112,6 +117,8 @@ namespace GOSTool
             _projectData.OsConfig.Configuration = configParameters;
             ProjectHandler.SaveProjectData(_projectData);
 
+            if (Directory.Exists(ProjectHandler.WorkspacePath.Value + "\\" + ProjectHandler.ProjectName.Value + "\\Build\\GOS2022"))
+                Directory.Delete(ProjectHandler.WorkspacePath.Value + "\\" + ProjectHandler.ProjectName.Value + "\\Build\\GOS2022", true);
             Helper.CopyFilesRecursively(ProgramData.OSPath + "\\" + _projectData.OsConfig.Version, ProjectHandler.WorkspacePath.Value + "\\" + ProjectHandler.ProjectName.Value + "\\Build\\GOS2022");
             OverwriteConfig();
             Close();

@@ -10,6 +10,7 @@ namespace GOSTool
     public static class SysmonFunctions
     {
         private static SemaphoreSlim sysmonSemaphore = new SemaphoreSlim(1, 1);
+        public static EventHandler<(int, int)> BinaryDownloadProgressEvent; 
         public enum PingResult
         {
             OK,
@@ -34,7 +35,7 @@ namespace GOSTool
             }
             else
             {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 1000) != true)
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 1000) != true)
                 {
                     result = PingResult.NOK;
                 }
@@ -74,7 +75,7 @@ namespace GOSTool
 
             while (true)
             {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 1000) == true)
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 1000) == true)
                 {
                     taskDataMessage.GetFromBytes(recvBuf);
 
@@ -98,102 +99,60 @@ namespace GOSTool
             return taskDatas;
         }
 
-        public static BootloaderData GetSoftwareInfo()
+        public static void SynchronizeTime()
         {
-            BootloaderData bootloaderData = new BootloaderData();           
-            bld_com_data_resp_msg_t respMsg = new bld_com_data_resp_msg_t();
+            SysTimeMessage sysTimeMessage = new SysTimeMessage();
+            sysTimeMessage.SystemTime.Years = (ushort)DateTime.Now.Year;
+            sysTimeMessage.SystemTime.Months = (byte)DateTime.Now.Month;
+            sysTimeMessage.SystemTime.Days = (byte)DateTime.Now.Day;
+            sysTimeMessage.SystemTime.Hours = (byte)DateTime.Now.Hour;
+            sysTimeMessage.SystemTime.Minutes = (byte)DateTime.Now.Minute;
+            sysTimeMessage.SystemTime.Seconds = (byte)DateTime.Now.Second;
+            sysTimeMessage.SystemTime.Milliseconds = (byte)DateTime.Now.Millisecond;
             byte[] recvBuf;
             GcpMessageHeader messageHeader = new GcpMessageHeader();
 
-            messageHeader.MessageId = (UInt16)BootloaderMessageId.BLD_MSG_DATA_REQ_ID;
+            messageHeader.MessageId = (ushort)SysmonMessageId.GOS_SYSMON_MSG_SYSTIME_SET_ID;
+            messageHeader.ProtocolVersion = 1;
+            messageHeader.PayloadSize = SysTimeMessage.ExpectedSize;
+
+            sysmonSemaphore.Wait();
+
+            if (GCP.TransmitMessage(0, messageHeader, sysTimeMessage.GetBytes(), 0xffff) == true)
+            {
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 1000) == true)
+                {
+                    //softwareInfo.GetFromBytes(recvBuf); TODO response?
+                }
+                else
+                {
+                    // Error.
+                }
+            }
+            else
+            {
+                // Error.
+            }
+            Thread.Sleep(10);
+            sysmonSemaphore.Release();
+        }
+
+        public static SoftwareInfo GetSoftwareInfo()
+        {
+            SoftwareInfo softwareInfo = new SoftwareInfo();
+            byte[] recvBuf;
+            GcpMessageHeader messageHeader = new GcpMessageHeader();
+
+            messageHeader.MessageId = 0x2000;
             messageHeader.ProtocolVersion = 1;
             messageHeader.PayloadSize = 0;
 
             sysmonSemaphore.Wait();
             if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
             {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 1000) == true)
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 2000) == true)
                 {
-                    respMsg.GetFromBytes(recvBuf);
-
-                    // Driver info.
-                    bootloaderData.BootloaderDriverInfo = new VersionInfo();
-                    bootloaderData.BootloaderDriverInfo.Author = respMsg.bldData.bldDriverVersion.author;
-                    bootloaderData.BootloaderDriverInfo.Major = respMsg.bldData.bldDriverVersion.major;
-                    bootloaderData.BootloaderDriverInfo.Minor = respMsg.bldData.bldDriverVersion.minor;
-                    bootloaderData.BootloaderDriverInfo.Build = respMsg.bldData.bldDriverVersion.build;
-                    try
-                    {
-                        bootloaderData.BootloaderDriverInfo.Date = DateTime.Parse(respMsg.bldData.bldDriverVersion.date.Years.ToString("D4") + "-" + respMsg.bldData.bldDriverVersion.date.Months.ToString("D2") + "-" + respMsg.bldData.bldDriverVersion.date.Days.ToString("D2"));
-                    }
-                    catch
-                    {
-                        bootloaderData.BootloaderDriverInfo.Date = new DateTime();
-                    }
-                    bootloaderData.BootloaderDriverInfo.Description = respMsg.bldData.bldDriverVersion.description;
-                    bootloaderData.BootloaderDriverInfo.Name = respMsg.bldData.bldDriverVersion.name;
-
-                    // Bootloader info.
-                    bootloaderData.BootloaderInfo = new VersionInfo();
-                    bootloaderData.BootloaderInfo.Author = respMsg.bldData.bldVersion.author;
-                    bootloaderData.BootloaderInfo.Major = respMsg.bldData.bldVersion.major;
-                    bootloaderData.BootloaderInfo.Minor = respMsg.bldData.bldVersion.minor;
-                    bootloaderData.BootloaderInfo.Build = respMsg.bldData.bldVersion.build;
-                    try
-                    {
-                        bootloaderData.BootloaderInfo.Date = DateTime.Parse(respMsg.bldData.bldVersion.date.Years.ToString("D4") + "-" + respMsg.bldData.bldVersion.date.Months.ToString("D2") + "-" + respMsg.bldData.bldVersion.date.Days.ToString("D2"));
-                    }
-                    catch
-                    {
-                        bootloaderData.BootloaderInfo.Date = new DateTime();
-                    }
-                    bootloaderData.BootloaderInfo.Description = respMsg.bldData.bldVersion.description;
-                    bootloaderData.BootloaderInfo.Name = respMsg.bldData.bldVersion.name;
-                    bootloaderData.Crc = (int)respMsg.bldData.bldCrc;
-                    bootloaderData.Size = (int)respMsg.bldData.bldSize;
-                    bootloaderData.StartAddress = (int)respMsg.bldData.bldStartAddress;
-                    bootloaderData.BootUpdateMode = respMsg.bldData.bootUpdateMode;
-
-                    // Application info.
-                    bootloaderData.ApplicationData = new ApplicationData();
-                    bootloaderData.ApplicationData.AppVersion = new VersionInfo();
-                    bootloaderData.ApplicationData.AppVersion.Author = respMsg.appData.appVersion.author;
-                    bootloaderData.ApplicationData.AppVersion.Major = respMsg.appData.appVersion.major;
-                    bootloaderData.ApplicationData.AppVersion.Minor = respMsg.appData.appVersion.minor;
-                    bootloaderData.ApplicationData.AppVersion.Build = respMsg.appData.appVersion.build;
-                    try
-                    {
-                        bootloaderData.ApplicationData.AppVersion.Date = DateTime.Parse(respMsg.appData.appVersion.date.Years.ToString("D4") + "-" + respMsg.appData.appVersion.date.Months.ToString("D2") + "-" + respMsg.appData.appVersion.date.Days.ToString("D2"));
-                    }
-                    catch
-                    {
-                        bootloaderData.ApplicationData.AppVersion.Date = new DateTime();
-                    }
-                    bootloaderData.ApplicationData.AppVersion.Description = respMsg.appData.appVersion.description;
-                    bootloaderData.ApplicationData.AppVersion.Name = respMsg.appData.appVersion.name;
-
-                    // Application driver data.
-                    bootloaderData.ApplicationData.DriverVersion = new VersionInfo();
-                    bootloaderData.ApplicationData.DriverVersion.Author = respMsg.appData.appDriverVersion.author;
-                    bootloaderData.ApplicationData.DriverVersion.Major = respMsg.appData.appDriverVersion.major;
-                    bootloaderData.ApplicationData.DriverVersion.Minor = respMsg.appData.appDriverVersion.minor;
-                    bootloaderData.ApplicationData.DriverVersion.Build = respMsg.appData.appDriverVersion.build;
-
-                    try
-                    {
-                        bootloaderData.ApplicationData.DriverVersion.Date = DateTime.Parse(respMsg.appData.appDriverVersion.date.Years.ToString("D4") + "-" + respMsg.appData.appDriverVersion.date.Months.ToString("D2") + "-" + respMsg.appData.appDriverVersion.date.Days.ToString("D2"));
-                    }
-                    catch
-                    {
-                        bootloaderData.ApplicationData.DriverVersion.Date = new DateTime();
-                    }
-                    bootloaderData.ApplicationData.DriverVersion.Description = respMsg.appData.appDriverVersion.description;
-                    bootloaderData.ApplicationData.DriverVersion.Name = respMsg.appData.appDriverVersion.name;
-
-
-                    bootloaderData.ApplicationData.Crc = (int)respMsg.appData.appCrc;
-                    bootloaderData.ApplicationData.Size = (int)respMsg.appData.appSize;
-                    bootloaderData.ApplicationData.StartAddress = (int)respMsg.appData.appStartAddress;
+                    softwareInfo.GetFromBytes(recvBuf);
                 }
                 else
                 {
@@ -207,7 +166,39 @@ namespace GOSTool
             Thread.Sleep(10);
             sysmonSemaphore.Release();
 
-            return bootloaderData;
+            return softwareInfo;
+        }
+
+        public static HardwareInfo GetHardwareInfo()
+        {
+            HardwareInfo hardwareInfo = new HardwareInfo();
+            byte[] recvBuf;
+            GcpMessageHeader messageHeader = new GcpMessageHeader();
+
+            messageHeader.MessageId = 0x2001;
+            messageHeader.ProtocolVersion = 1;
+            messageHeader.PayloadSize = 0;
+
+            sysmonSemaphore.Wait();
+            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
+            {
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 2000) == true)
+                {
+                    hardwareInfo.GetFromBytes(recvBuf);
+                }
+                else
+                {
+                    // Error.
+                }
+            }
+            else
+            {
+                // Error.
+            }
+            Thread.Sleep(10);
+            sysmonSemaphore.Release();
+
+            return hardwareInfo;
         }
 
         public static SysmonMessageResult ModifyTask(int taskIndex, SysmonTaskModifyType modifyType)
@@ -226,7 +217,7 @@ namespace GOSTool
 
             sysmonSemaphore.Wait();
             GCP.TransmitMessage(0, messageHeader, taskModifyMessage.GetBytes(), 0xffff);
-            GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 50);
+            GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff);
             sysmonSemaphore.Release();
 
             taskModifyResultMessage.GetFromBytes(recvBuf);
@@ -247,6 +238,153 @@ namespace GOSTool
             sysmonSemaphore.Release();
         }
 
+        public static int GetBinaryNum()
+        {
+            byte[] recvBuf;
+            int binaryNum = 0;
+            GcpMessageHeader messageHeader = new GcpMessageHeader();
+
+            messageHeader.MessageId = 0x2101;
+            messageHeader.ProtocolVersion = 1;
+            messageHeader.PayloadSize = 0;
+
+            sysmonSemaphore.Wait();
+            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
+            {
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 1000) == true)
+                {
+                    binaryNum = ((recvBuf[1] << 8) + recvBuf[0]);
+                }
+            }
+            Thread.Sleep(10);
+            sysmonSemaphore.Release();
+
+            return binaryNum;
+        }
+
+        public static BinaryDescriptorMessage GetBinaryInfo(int index)
+        {
+            byte[] recvBuf;
+            BinaryDescriptorMessage binaryInfo = new BinaryDescriptorMessage();
+            GcpMessageHeader messageHeader = new GcpMessageHeader();
+
+            messageHeader.MessageId = 0x2102;
+            messageHeader.ProtocolVersion = 1;
+            messageHeader.PayloadSize = 2;
+
+            sysmonSemaphore.Wait();
+            if (GCP.TransmitMessage(0, messageHeader, new byte[] { (byte)(index), (byte)((int)index >> 8), }, 0xffff) == true)
+            {
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 1000) == true)
+                {
+                    binaryInfo.GetFromBytes(recvBuf);
+                }
+            }
+            Thread.Sleep(10);
+            sysmonSemaphore.Release();
+
+            return binaryInfo;
+        }
+
+        public static bool SendBinary(List<byte> bytes)
+        {
+            byte[] recvBuf;
+            bool res = false;
+            int chunkSize = 2048;
+
+            ChunkDescriptor chunkDesc = new ChunkDescriptor();
+            GcpMessageHeader messageHeader = new GcpMessageHeader();
+
+            sysmonSemaphore.Wait();
+
+            Thread.Sleep(10);
+
+            int chunks = bytes.Count / chunkSize + (bytes.Count % chunkSize == 0 ? 0 : 1);
+
+            for (int chunkCounter = 0; chunkCounter < chunks; chunkCounter++)
+            {
+                chunkDesc.ChunkIndex = (UInt16)chunkCounter;
+
+                messageHeader.MessageId = 0x2104;
+                messageHeader.ProtocolVersion = 1;
+                messageHeader.PayloadSize = (UInt16)(chunkDesc.GetBytes().Length + chunkSize);
+
+                List<byte> payload = new List<byte>();
+                payload.AddRange(chunkDesc.GetBytes());
+
+                if (bytes.Skip(chunkCounter * chunkSize).ToArray().Length >= chunkSize)
+                {
+                    payload.AddRange(bytes.Skip(chunkCounter * chunkSize).Take(chunkSize));
+                }
+                else
+                {
+                    payload.AddRange(bytes.Skip(chunkCounter * chunkSize).Take(bytes.Skip(chunkCounter * chunkSize).ToArray().Length));
+                }
+
+                if (GCP.TransmitMessage(0, messageHeader, payload.ToArray(), 0xffff) == true)
+                {
+                    if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 2000) == true)
+                    {
+                        chunkDesc.GetFromBytes(recvBuf);
+
+                        if (chunkDesc.Result != 1)
+                        {
+                            res = false;
+                            break;
+                        }
+                        else
+                        {
+                            res = true;
+                            BinaryDownloadProgressEvent?.Invoke(null, (chunkCounter + 1, chunks));
+                        }
+                    }
+                    else
+                    {
+                        res = false;
+                        break;
+                    }
+                }
+                else
+                {
+                    res = false;
+                    break;
+                }
+            }
+            
+            //Thread.Sleep(10);
+            sysmonSemaphore.Release();
+
+            return res;
+        }
+
+        public static BinaryDownloadRequestResult SendBinaryDownloadRequest(BinaryDescriptorMessage binaryDescriptor)
+        {
+            byte[] recvBuf;
+            BinaryDownloadRequestResult result = BinaryDownloadRequestResult.COMM_ERR;
+            GcpMessageHeader messageHeader = new GcpMessageHeader();
+
+            messageHeader.MessageId = 0x2103;
+            messageHeader.ProtocolVersion = 1;
+            messageHeader.PayloadSize = (UInt16)binaryDescriptor.GetBytes().Length;
+
+            sysmonSemaphore.Wait();
+
+            Thread.Sleep(10);
+
+            if (GCP.TransmitMessage(0, messageHeader, binaryDescriptor.GetBytes(), 0xffff) == true)
+            {
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 2000) == true)
+                {
+                    result = (BinaryDownloadRequestResult)recvBuf[0];
+                }
+            }
+
+            //Thread.Sleep(10);
+            sysmonSemaphore.Release();
+
+            return result;
+        }
+
         public static float GetCpuLoad()
         {
             byte[] recvBuf;
@@ -261,7 +399,7 @@ namespace GOSTool
             sysmonSemaphore.Wait();
             if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
             {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 1000) == true)
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 1000) == true)
                 {
                     cpuUsageMessage.GetFromBytes(recvBuf);
 
@@ -291,7 +429,7 @@ namespace GOSTool
             sysmonSemaphore.Wait();
             if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
             {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 1000) == true)
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 1000) == true)
                 {
                     sysRuntimeMessage.GetFromBytes(recvBuf);
 
@@ -328,7 +466,7 @@ namespace GOSTool
             
             if (GCP.TransmitMessage(0, messageHeader, taskDataGetMessage.GetBytes(), 0xffff) == true)
             {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 1000) == true)
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 1000) == true)
                 {
                     taskDataMessage.GetFromBytes(recvBuf);
 
