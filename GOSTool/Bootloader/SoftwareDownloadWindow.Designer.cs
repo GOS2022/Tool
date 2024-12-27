@@ -35,8 +35,9 @@ namespace GOSTool
             this.wirelessComRadioButton = new System.Windows.Forms.RadioButton();
             this.usbComRadioButton = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.resetButton = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.installButton = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.selectedBinaryCB = new System.Windows.Forms.ComboBox();
             this.binaryNameTb = new System.Windows.Forms.TextBox();
@@ -54,7 +55,6 @@ namespace GOSTool
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.binaryTree = new System.Windows.Forms.TreeView();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.resetButton = new System.Windows.Forms.Button();
             this.wirelessConfigUserControl1 = new GOSTool.SystemMonitoring.WirelessConfigUserControl();
             this.usbConfigUserControl1 = new GOSTool.UsbConfigUserControl();
             this.groupBox2.SuspendLayout();
@@ -119,7 +119,7 @@ namespace GOSTool
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.resetButton);
             this.groupBox1.Controls.Add(this.button2);
-            this.groupBox1.Controls.Add(this.button1);
+            this.groupBox1.Controls.Add(this.installButton);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.selectedBinaryCB);
             this.groupBox1.Controls.Add(this.binaryNameTb);
@@ -138,6 +138,16 @@ namespace GOSTool
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Control";
             // 
+            // resetButton
+            // 
+            this.resetButton.Location = new System.Drawing.Point(680, 21);
+            this.resetButton.Name = "resetButton";
+            this.resetButton.Size = new System.Drawing.Size(144, 38);
+            this.resetButton.TabIndex = 21;
+            this.resetButton.Text = "Reset";
+            this.resetButton.UseVisualStyleBackColor = true;
+            this.resetButton.Click += new System.EventHandler(this.resetButton_Click);
+            // 
             // button2
             // 
             this.button2.Enabled = false;
@@ -148,15 +158,16 @@ namespace GOSTool
             this.button2.Text = "Erase";
             this.button2.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // installButton
             // 
-            this.button1.Enabled = false;
-            this.button1.Location = new System.Drawing.Point(347, 21);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(144, 38);
-            this.button1.TabIndex = 19;
-            this.button1.Text = "Install";
-            this.button1.UseVisualStyleBackColor = true;
+            this.installButton.Enabled = false;
+            this.installButton.Location = new System.Drawing.Point(347, 21);
+            this.installButton.Name = "installButton";
+            this.installButton.Size = new System.Drawing.Size(144, 38);
+            this.installButton.TabIndex = 19;
+            this.installButton.Text = "Install";
+            this.installButton.UseVisualStyleBackColor = true;
+            this.installButton.Click += new System.EventHandler(this.installButton_Click);
             // 
             // label5
             // 
@@ -235,6 +246,7 @@ namespace GOSTool
             this.browseButton.TabIndex = 10;
             this.browseButton.Text = "...";
             this.browseButton.UseVisualStyleBackColor = true;
+            this.browseButton.Click += new System.EventHandler(this.browseButton_Click);
             // 
             // binaryPathTb
             // 
@@ -322,16 +334,6 @@ namespace GOSTool
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Binary list";
             // 
-            // resetButton
-            // 
-            this.resetButton.Location = new System.Drawing.Point(680, 21);
-            this.resetButton.Name = "resetButton";
-            this.resetButton.Size = new System.Drawing.Size(144, 38);
-            this.resetButton.TabIndex = 21;
-            this.resetButton.Text = "Reset";
-            this.resetButton.UseVisualStyleBackColor = true;
-            this.resetButton.Click += new System.EventHandler(this.resetButton_Click);
-            // 
             // wirelessConfigUserControl1
             // 
             this.wirelessConfigUserControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -400,7 +402,7 @@ namespace GOSTool
         private System.Windows.Forms.TreeView binaryTree;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button installButton;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox selectedBinaryCB;
         private System.Windows.Forms.Button resetButton;

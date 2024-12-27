@@ -115,6 +115,7 @@ namespace GOSTool
                     TraceProgressNew_ThreadSafe("Done.");
 
                     EnableButton_ThreadSafe(downloadButton, true);
+                    EnableButton_ThreadSafe(installButton, true);
                     EnableButton_ThreadSafe(resetButton, true);
                 });
             }
@@ -145,7 +146,7 @@ namespace GOSTool
                         Name = binaryNameTb.Text,
                         StartAddress = UInt32.Parse(binaryAddrTb.Text, System.Globalization.NumberStyles.HexNumber),
                         Size = (UInt32)memoryContent.Count,
-                        Crc = Crc.GetCrc32(memoryContent.ToArray())
+                        Crc = Crc.GetCrc32_new(memoryContent.ToArray())
                     };
 
                     TraceProgressNew_ThreadSafe("Sending download request...");
@@ -342,6 +343,40 @@ namespace GOSTool
                     Wireless.SendResetRequest();
                 }
             });
+        }
+
+        private async void installButton_Click(object sender, EventArgs e)
+        {
+            if (selectedBinaryCB.SelectedItem == null /*|| selectedBinaryCB.SelectedText == ""*/)
+            {
+                MessageBox.Show("First select a binary to install.");
+            }
+            else
+            {
+                int index = selectedBinaryCB.SelectedIndex;
+
+                await Task.Run(() =>
+                {
+                    if (!wireless)
+                    {
+                        SysmonFunctions.SendInstallRequest(index);
+                    }
+                    else
+                    {
+                        // TODO
+                    }
+                });
+            }
+        }
+
+        private void browseButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                binaryPathTb.Text = openFileDialog.FileName;
+            }
         }
     }
 }

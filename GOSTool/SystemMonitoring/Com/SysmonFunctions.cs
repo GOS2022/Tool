@@ -286,6 +286,34 @@ namespace GOSTool
             return binaryInfo;
         }
 
+        public static bool SendInstallRequest(int index)
+        {
+            byte[] recvBuf;
+            bool retval = false;
+            GcpMessageHeader messageHeader = new GcpMessageHeader();
+
+            messageHeader.MessageId = 0x2105;
+            messageHeader.ProtocolVersion = 1;
+            messageHeader.PayloadSize = 2;
+
+            sysmonSemaphore.Wait();
+            if (GCP.TransmitMessage(0, messageHeader, new byte[] { (byte)(index), (byte)((int)index >> 8), }, 0xffff) == true)
+            {
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 1000) == true)
+                {
+                    int idx = 0;
+                    int rxIdx = Helper<UInt16>.GetVariable(recvBuf, ref idx);
+
+                    if (rxIdx == index)
+                        retval = true;
+                }
+            }
+            Thread.Sleep(10);
+            sysmonSemaphore.Release();
+
+            return retval;
+        }
+
         public static bool SendBinary(List<byte> bytes)
         {
             byte[] recvBuf;
@@ -351,7 +379,6 @@ namespace GOSTool
                 }
             }
             
-            //Thread.Sleep(10);
             sysmonSemaphore.Release();
 
             return res;
@@ -379,7 +406,6 @@ namespace GOSTool
                 }
             }
 
-            //Thread.Sleep(10);
             sysmonSemaphore.Release();
 
             return result;
