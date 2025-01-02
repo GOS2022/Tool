@@ -26,11 +26,11 @@ namespace GOSTool
 
             // TODO: test
             binaryPathTb.Text = "C:\\Users\\Gabor\\STM32CubeIDE\\workspace_1.5.1\\GOS2022_iplTest\\Debug\\GOS2022_iplTest.bin";
-            binaryAddrTb.Text = "8000000";
+            binaryAddrTb.Text = "8020000";
 
             SysmonFunctions.BinaryDownloadProgressEvent += (sender, param) =>
             {
-                TraceProgressChanging_ThreadSafe("Installing progress: [" + param.Item1 + " / " + param.Item2 + "] chunks");
+                TraceProgressChanging_ThreadSafe("Downloading progress: [" + param.Item1 + " / " + param.Item2 + "] chunks");
                 SetProgressBar_ThreadSafe(100 * param.Item1 / param.Item2);
             };
         }
@@ -72,6 +72,8 @@ namespace GOSTool
             richTextBox1.Text = "";
             binaryTree.Nodes.Clear();        
             selectedBinaryCB.Items.Clear();
+            //selectedBinaryCB.SelectedText = "";
+            selectedBinaryCB.SelectedValue = "";
             binaryDescriptors.Clear();
 
             // Check for invalid configuration.
@@ -90,16 +92,41 @@ namespace GOSTool
                     if (!wireless)
                     {
                         Uart.Init(usbConfigUserControl1.Port, usbConfigUserControl1.Baud);
+                        TraceProgressNew_ThreadSafe("Reading software info on " + usbConfigUserControl1.Port + "...");
+                    }
+                    else
+                    {
+                        TraceProgressNew_ThreadSafe("Reading software info on " + wirelessConfigUserControl1.Ip + ":" + wirelessConfigUserControl1.Port + "...");
+                    }
+                    
+                    int binaryNum = 0;
+
+                    if (!wireless)
+                    {
+                        binaryNum = SysmonFunctions.GetBinaryNum();
+                    }
+                    else
+                    {
+                        binaryNum = Wireless.GetBinaryNum();
                     }
 
-                    TraceProgressNew_ThreadSafe("Reading software info on " + usbConfigUserControl1.Port + "...");
-                    int binaryNum = SysmonFunctions.GetBinaryNum();
                     TraceProgressNew_ThreadSafe("Number of binaries: " + binaryNum);
                     
-                    for(int i = 0; i < binaryNum; i++)
+                    for (int i = 0; i < binaryNum; i++)
                     {
                         TraceProgressNew_ThreadSafe("Reading binary info [" + (i + 1) + "/" + binaryNum + "] ...");
-                        BinaryDescriptorMessage binaryDesc = SysmonFunctions.GetBinaryInfo(i);
+                        BinaryDescriptorMessage binaryDesc = new BinaryDescriptorMessage();
+                        
+                        if (!wireless)
+                        {
+                            binaryDesc = SysmonFunctions.GetBinaryInfo(i);
+                        }
+                        else
+                        {
+                            binaryDesc = Wireless.GetBinaryInfo(i);
+                            System.Threading.Thread.Sleep(100);
+                        }
+
                         binaryDescriptors.Add(binaryDesc);
                         
                         TreeNode node = new TreeNode(binaryDesc.Name);
@@ -116,6 +143,7 @@ namespace GOSTool
 
                     EnableButton_ThreadSafe(downloadButton, true);
                     EnableButton_ThreadSafe(installButton, true);
+                    EnableButton_ThreadSafe(eraseButton, true);
                     EnableButton_ThreadSafe(resetButton, true);
                 });
             }
@@ -129,8 +157,10 @@ namespace GOSTool
             }
             else
             {
-                binaryTree.Nodes.Clear();
+                //binaryTree.Nodes.Clear();
                 selectedBinaryCB.Items.Clear();
+                //selectedBinaryCB.SelectedText = "";
+                selectedBinaryCB.SelectedValue = "";
                 binaryDescriptors.Clear();
 
                 TraceProgressNew_ThreadSafe("Reading binary file...");
@@ -153,21 +183,44 @@ namespace GOSTool
 
                     await Task.Run(() =>
                     {
-                        if (SysmonFunctions.SendBinaryDownloadRequest(testDesc) == BinaryDownloadRequestResult.OK)
+                        if ((!wireless && SysmonFunctions.SendBinaryDownloadRequest(testDesc) == BinaryDownloadRequestResult.OK) ||
+                            (wireless && Wireless.SendBinaryDownloadRequest(testDesc) == BinaryDownloadRequestResult.OK))
                         {
                             TraceProgressNew_ThreadSafe("Starting download...");
 
-                            if (SysmonFunctions.SendBinary(memoryContent) == true)
+                            if ((!wireless && SysmonFunctions.SendBinary(memoryContent) == true) ||
+                                (wireless && Wireless.SendBinary(memoryContent) == true))
                             {
                                 TraceProgressNew_ThreadSafe("Download successful.");
 
                                 TraceProgressNew_ThreadSafe("Updating data...");
 
-                                int binaryNum = SysmonFunctions.GetBinaryNum();
+                                int binaryNum = 0;
+
+                                if (!wireless)
+                                {
+                                    binaryNum = SysmonFunctions.GetBinaryNum();
+                                }
+                                else
+                                {
+                                    binaryNum = Wireless.GetBinaryNum();
+                                }
+
+                                TreeViewClear_ThreadSafe();
 
                                 for (int i = 0; i < binaryNum; i++)
                                 {
-                                    BinaryDescriptorMessage binaryDesc = SysmonFunctions.GetBinaryInfo(i);
+                                    BinaryDescriptorMessage binaryDesc = new BinaryDescriptorMessage();
+                                    
+                                    if (!wireless)
+                                    {
+                                        binaryDesc = SysmonFunctions.GetBinaryInfo(i);
+                                    }
+                                    else
+                                    {
+                                        binaryDesc = Wireless.GetBinaryInfo(i);
+                                    }
+                                    
                                     binaryDescriptors.Add(binaryDesc);
 
                                     TreeNode node = new TreeNode(binaryDesc.Name);
@@ -204,7 +257,10 @@ namespace GOSTool
 
         private void ComboBoxAddItem(string item)
         {
-            selectedBinaryCB.Items.Add(item);
+            if (item != null)
+            {
+                selectedBinaryCB.Items.Add(item);
+            }
         }
 
         private void ComboBoxAddItem_ThreadSafe(string item)
@@ -217,6 +273,26 @@ namespace GOSTool
             else
             {
                 ComboBoxAddItem(item);
+            }
+        }
+
+        private delegate void TreeViewClearDelegate();
+
+        private void TreeViewClear()
+        {
+            binaryTree.Nodes.Clear();
+        }
+
+        private void TreeViewClear_ThreadSafe()
+        {
+            if (binaryTree.InvokeRequired)
+            {
+                TreeViewClearDelegate d = new TreeViewClearDelegate(TreeViewClear);
+                binaryTree.Invoke(d);
+            }
+            else
+            {
+                TreeViewClear();
             }
         }
 
@@ -347,23 +423,28 @@ namespace GOSTool
 
         private async void installButton_Click(object sender, EventArgs e)
         {
-            if (selectedBinaryCB.SelectedItem == null /*|| selectedBinaryCB.SelectedText == ""*/)
+            if (selectedBinaryCB.SelectedItem == null)
             {
                 MessageBox.Show("First select a binary to install.");
             }
             else
             {
                 int index = selectedBinaryCB.SelectedIndex;
+                string fileName = selectedBinaryCB.SelectedItem.ToString();
 
                 await Task.Run(() =>
                 {
                     if (!wireless)
                     {
                         SysmonFunctions.SendInstallRequest(index);
+                        TraceProgressNew_ThreadSafe("Install request sent for " + fileName + ".");
+                        SysmonFunctions.SendResetRequest();
                     }
                     else
                     {
-                        // TODO
+                        Wireless.SendInstallRequest(index);
+                        TraceProgressNew_ThreadSafe("Install request sent for " + fileName + ".");
+                        Wireless.SendResetRequest();
                     }
                 });
             }
@@ -376,6 +457,80 @@ namespace GOSTool
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 binaryPathTb.Text = openFileDialog.FileName;
+            }
+        }
+
+        private async void eraseButton_Click(object sender, EventArgs e)
+        {
+            if (selectedBinaryCB.SelectedItem == null)
+            {
+                MessageBox.Show("First select a binary to erase.");
+            }
+            else
+            {
+                int index = selectedBinaryCB.SelectedIndex;
+                string binaryName = selectedBinaryCB.SelectedItem.ToString();
+                //binaryTree.Nodes.Clear();
+                selectedBinaryCB.Items.Clear();
+                selectedBinaryCB.SelectedValue = "";
+                //selectedBinaryCB.SelectedText = "";
+                binaryDescriptors.Clear();
+
+                await Task.Run(() =>
+                {
+                    TraceProgressNew_ThreadSafe("Erase request sent for " + binaryName + ". This might take a while...");
+
+                    if (!wireless)
+                    {
+                        SysmonFunctions.SendEraseRequest(index);
+                    }
+                    else
+                    {
+                        Wireless.SendEraseRequest(index);
+                    }
+
+                    TraceProgressNew_ThreadSafe("Updating data...");
+
+                    int binaryNum = 0;
+
+                    if (!wireless)
+                    {
+                        binaryNum = SysmonFunctions.GetBinaryNum();
+                    }
+                    else
+                    {
+                        binaryNum = Wireless.GetBinaryNum();
+                    }
+
+                    TreeViewClear_ThreadSafe();
+
+                    for (int i = 0; i < binaryNum; i++)
+                    {
+                        BinaryDescriptorMessage binaryDesc = new BinaryDescriptorMessage();
+                        
+                        if (!wireless)
+                        {
+                            binaryDesc = SysmonFunctions.GetBinaryInfo(i);
+                        }
+                        else
+                        {
+                            binaryDesc = Wireless.GetBinaryInfo(i);
+                        }
+                                              
+                        binaryDescriptors.Add(binaryDesc);
+
+                        TreeNode node = new TreeNode(binaryDesc.Name);
+                        node.Nodes.Add("Location: 0x" + binaryDesc.Location.ToString("X"));
+                        node.Nodes.Add("Start address: 0x" + binaryDesc.StartAddress.ToString("X"));
+                        node.Nodes.Add("Size: " + binaryDesc.Size + " bytes");
+                        node.Nodes.Add("Crc: 0x" + binaryDesc.Crc.ToString("X"));
+
+                        ComboBoxAddItem_ThreadSafe(binaryDesc.Name);
+                        TreeViewAddNode_ThreadSafe(node);
+                    }
+
+                    TraceProgressNew_ThreadSafe("Done.");
+                });
             }
         }
     }

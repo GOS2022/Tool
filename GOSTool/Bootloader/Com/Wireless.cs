@@ -30,7 +30,20 @@ namespace GOSTool
         SVL_IPC_MSG_ID_HWINFO_REQ = 0x1013,
         SVL_IPC_MSG_ID_HWINFO_RESP = 0x6013,
         SVL_IPC_MSG_ID_SYNC_TIME_REQ = 0x1014,
-        SVL_IPC_MSG_ID_SYNC_TIME_RESP = 0x6014
+        SVL_IPC_MSG_ID_SYNC_TIME_RESP = 0x6014,
+
+        MSG_BINARY_NUM_REQ_ID = (0x1015),
+        MSG_BINARY_NUM_RESP_ID = (0x6015),
+        MSG_BINARY_INFO_REQ_ID = (0x1016),
+        MSG_BINARY_INFO_RESP_ID = (0x6016),
+        MSG_DOWNLOAD_REQ_ID = (0x1017),
+        MSG_DOWNLOAD_RESP_ID = (0x6017),
+        MSG_BINARY_CHUNK_REQ_ID = (0x1018),
+        MSG_BIANRY_CHUNK_RESP_ID = (0x6018),
+        MSG_INSTALL_REQ_ID = (0x1019),
+        MSG_INSTALL_RESP_ID = (0x6019),
+        MSG_ERASE_REQ_ID = (0x1020),
+        MSG_ERASE_RESP_ID = (0x6020),
     }
 
     public enum IplTaskModificationType
@@ -537,6 +550,297 @@ namespace GOSTool
             wirelessSemaphore.Release();
 
             return result;
+        }
+
+        public static int GetBinaryNum()
+        {
+            int binaryNum = 0;
+            byte[] binaryNumMsg = new byte[2];
+            byte[] binaryNumResp = new byte[1024];
+
+            binaryNumMsg[0] = (byte)((int)(IplMsgId.MSG_BINARY_NUM_REQ_ID) >> 8);
+            binaryNumMsg[1] = (byte)((int)(IplMsgId.MSG_BINARY_NUM_REQ_ID) & 0x00ff);
+
+            TcpClient client = new TcpClient();
+            client.ReceiveTimeout = 5000;
+            client.SendTimeout = 5000;
+
+            wirelessSemaphore.Wait();
+
+            try
+            {
+                client.Connect(Ip, Port);
+
+                NetworkStream stream = client.GetStream();
+
+                stream.Write(binaryNumMsg, 0, 2);
+                stream.Read(binaryNumResp, 0, 1024);
+
+                binaryNum = ((binaryNumResp[1] << 8) + binaryNumResp[0]);
+            }
+            catch
+            {
+                // Nothing.
+            }
+
+            client.Close();
+
+            wirelessSemaphore.Release();
+
+            return binaryNum;
+        }
+
+        public static BinaryDescriptorMessage GetBinaryInfo(int index)
+        {
+            BinaryDescriptorMessage binaryInfo = new BinaryDescriptorMessage();
+
+            byte[] binaryInfoMsg = new byte[4];
+            byte[] binaryInfoResp = new byte[1024];
+
+            binaryInfoMsg[0] = (byte)((int)(IplMsgId.MSG_BINARY_INFO_REQ_ID) >> 8);
+            binaryInfoMsg[1] = (byte)((int)(IplMsgId.MSG_BINARY_INFO_REQ_ID) & 0x00ff);
+            binaryInfoMsg[3] = (byte)(index >> 8);
+            binaryInfoMsg[2] = (byte)(index & 0x00ff);
+
+            TcpClient client = new TcpClient();
+            client.ReceiveTimeout = 5000;
+            client.SendTimeout = 5000;
+
+            wirelessSemaphore.Wait();
+
+            try
+            {
+                client.Connect(Ip, Port);
+
+                NetworkStream stream = client.GetStream();
+
+                stream.Write(binaryInfoMsg, 0, 4);
+                stream.Read(binaryInfoResp, 0, 1024);
+
+                binaryInfo.GetFromBytes(binaryInfoResp);
+            }
+            catch
+            {
+                // Nothing.
+            }
+
+            client.Close();
+
+            wirelessSemaphore.Release();
+
+            return binaryInfo;
+        }
+
+        public static BinaryDownloadRequestResult SendBinaryDownloadRequest(BinaryDescriptorMessage binaryDescriptor)
+        {
+            BinaryDownloadRequestResult result = BinaryDownloadRequestResult.COMM_ERR;
+            byte[] reqMsg = new byte[binaryDescriptor.GetBytes().Length + 2];
+            byte[] respMsg = new byte[1024];
+
+            reqMsg[0] = (byte)((int)(IplMsgId.MSG_DOWNLOAD_REQ_ID) >> 8);
+            reqMsg[1] = (byte)((int)(IplMsgId.MSG_DOWNLOAD_REQ_ID) & 0x00ff);
+
+            Array.Copy(binaryDescriptor.GetBytes(), 0, reqMsg, 2, binaryDescriptor.GetBytes().Length);
+
+            TcpClient client = new TcpClient();
+            client.ReceiveTimeout = 5000;
+            client.SendTimeout = 5000;
+
+            wirelessSemaphore.Wait();
+
+            try
+            {
+                client.Connect(Ip, Port);
+
+                NetworkStream stream = client.GetStream();
+
+                stream.Write(reqMsg, 0, reqMsg.Length);
+                stream.Read(respMsg, 0, 1024);
+
+                result = (BinaryDownloadRequestResult)respMsg[0];
+            }
+            catch
+            {
+                // Nothing.
+            }
+
+            client.Close();
+
+            wirelessSemaphore.Release();
+
+            return result;
+        }
+
+        public static bool SendBinary(List<byte> bytes)
+        {
+            bool res = false;
+            int chunkSize = 2048;
+            bool repeat = false;
+            ChunkDescriptor chunkDesc = new ChunkDescriptor();
+
+            wirelessSemaphore.Wait();
+
+            int chunks = bytes.Count / chunkSize + (bytes.Count % chunkSize == 0 ? 0 : 1);
+
+            for (int chunkCounter = 0; chunkCounter < chunks; chunkCounter++)
+            {               
+                if (repeat)
+                {
+                    chunkCounter--;
+                }
+
+                chunkDesc.ChunkIndex = (UInt16)chunkCounter;
+
+                byte[] reqMsg = new byte[chunkDesc.GetBytes().Length + chunkSize + 2];
+                byte[] respMsg = new byte[1024];
+
+                reqMsg[0] = (byte)((int)(IplMsgId.MSG_BINARY_CHUNK_REQ_ID) >> 8);
+                reqMsg[1] = (byte)((int)(IplMsgId.MSG_BINARY_CHUNK_REQ_ID) & 0x00ff);
+
+                List<byte> payload = new List<byte>();
+                payload.AddRange(chunkDesc.GetBytes());
+
+                if (bytes.Skip(chunkCounter * chunkSize).ToArray().Length >= chunkSize)
+                {
+                    payload.AddRange(bytes.Skip(chunkCounter * chunkSize).Take(chunkSize));
+                }
+                else
+                {
+                    payload.AddRange(bytes.Skip(chunkCounter * chunkSize).Take(bytes.Skip(chunkCounter * chunkSize).ToArray().Length));
+                }
+
+                Array.Copy(payload.ToArray(), 0, reqMsg, 2, payload.Count());
+
+                TcpClient client = new TcpClient();
+                client.ReceiveTimeout = 5000;
+                client.SendTimeout = 5000;
+
+                try
+                {
+                    client.Connect(Ip, Port);
+
+                    NetworkStream stream = client.GetStream();
+
+                    stream.Write(reqMsg, 0, reqMsg.Length);
+                    stream.Read(respMsg, 0, 1024);
+
+                    chunkDesc.GetFromBytes(respMsg);
+
+                    if (chunkDesc.Result != 1)
+                    {
+                        //res = false;
+                        //break;
+                        repeat = true;
+                    }
+                    else
+                    {
+                        res = true;
+                        BinaryDownloadProgressEvent?.Invoke(null, (chunkCounter + 1, chunks));
+                        repeat = false;
+                    }
+                }
+                catch
+                {
+                    // Nothing.
+                    res = false;
+                    break;
+                }
+
+                client.Close();
+            }
+
+            wirelessSemaphore.Release();
+
+            return res;
+        }
+
+        public static bool SendInstallRequest(int index)
+        {
+            bool retval = false;
+            byte[] reqMsg = new byte[4];
+            byte[] respMsg = new byte[1024];
+
+            reqMsg[0] = (byte)((int)(IplMsgId.MSG_INSTALL_REQ_ID) >> 8);
+            reqMsg[1] = (byte)((int)(IplMsgId.MSG_INSTALL_REQ_ID) & 0x00ff);
+            reqMsg[3] = (byte)(index >> 8);
+            reqMsg[2] = (byte)(index & 0x00ff);
+
+            TcpClient client = new TcpClient();
+            client.ReceiveTimeout = 5000;
+            client.SendTimeout = 5000;
+
+            wirelessSemaphore.Wait();
+
+            try
+            {
+                client.Connect(Ip, Port);
+
+                NetworkStream stream = client.GetStream();
+
+                stream.Write(reqMsg, 0, reqMsg.Length);
+                stream.Read(respMsg, 0, 1024);
+
+                int idx = 0;
+                int rxIdx = Helper<UInt16>.GetVariable(respMsg, ref idx);
+
+                if (rxIdx == index)
+                    retval = true;
+            }
+            catch
+            {
+                // Nothing.
+            }
+            
+            client.Close();
+
+            wirelessSemaphore.Release();
+            return retval;
+        }
+
+        public static bool SendEraseRequest(int index)
+        {
+            bool retval = false;
+            byte[] reqMsg = new byte[5];
+            byte[] respMsg = new byte[1024];
+
+            reqMsg[0] = (byte)((int)(IplMsgId.MSG_ERASE_REQ_ID) >> 8);
+            reqMsg[1] = (byte)((int)(IplMsgId.MSG_ERASE_REQ_ID) & 0x00ff);
+            reqMsg[3] = (byte)(index >> 8);
+            reqMsg[2] = (byte)(index & 0x00ff);
+            reqMsg[4] = (byte)(73);
+
+
+            TcpClient client = new TcpClient();
+            client.ReceiveTimeout = 15000;
+            client.SendTimeout = 5000;
+
+            wirelessSemaphore.Wait();
+
+            try
+            {
+                client.Connect(Ip, Port);
+
+                NetworkStream stream = client.GetStream();
+
+                stream.Write(reqMsg, 0, reqMsg.Length);
+                stream.Read(respMsg, 0, 1024);
+
+                int idx = 0;
+                int rxIdx = Helper<UInt16>.GetVariable(respMsg, ref idx);
+
+                if (rxIdx == index)
+                    retval = true;
+            }
+            catch
+            {
+                // Nothing.
+            }
+
+            client.Close();
+
+            wirelessSemaphore.Release();
+
+            return retval;
         }
     }
 }

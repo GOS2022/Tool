@@ -314,6 +314,34 @@ namespace GOSTool
             return retval;
         }
 
+        public static bool SendEraseRequest(int index)
+        {
+            byte[] recvBuf;
+            bool retval = false;
+            GcpMessageHeader messageHeader = new GcpMessageHeader();
+
+            messageHeader.MessageId = 0x2106;
+            messageHeader.ProtocolVersion = 1;
+            messageHeader.PayloadSize = 3;
+
+            sysmonSemaphore.Wait();
+            if (GCP.TransmitMessage(0, messageHeader, new byte[] { (byte)(index), (byte)((int)index >> 8),  73 }, 0xffff) == true)
+            {
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 10000) == true)
+                {
+                    int idx = 0;
+                    int rxIdx = Helper<UInt16>.GetVariable(recvBuf, ref idx);
+
+                    if (rxIdx == index)
+                        retval = true;
+                }
+            }
+            Thread.Sleep(10);
+            sysmonSemaphore.Release();
+
+            return retval;
+        }
+
         public static bool SendBinary(List<byte> bytes)
         {
             byte[] recvBuf;
@@ -322,10 +350,6 @@ namespace GOSTool
 
             ChunkDescriptor chunkDesc = new ChunkDescriptor();
             GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            sysmonSemaphore.Wait();
-
-            Thread.Sleep(10);
 
             int chunks = bytes.Count / chunkSize + (bytes.Count % chunkSize == 0 ? 0 : 1);
 
@@ -348,6 +372,10 @@ namespace GOSTool
                 {
                     payload.AddRange(bytes.Skip(chunkCounter * chunkSize).Take(bytes.Skip(chunkCounter * chunkSize).ToArray().Length));
                 }
+
+                sysmonSemaphore.Wait();
+
+                Thread.Sleep(10);
 
                 if (GCP.TransmitMessage(0, messageHeader, payload.ToArray(), 0xffff) == true)
                 {
@@ -377,9 +405,9 @@ namespace GOSTool
                     res = false;
                     break;
                 }
-            }
-            
-            sysmonSemaphore.Release();
+
+                sysmonSemaphore.Release();
+            }            
 
             return res;
         }
