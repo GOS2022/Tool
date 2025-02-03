@@ -44,6 +44,9 @@ namespace GOSTool
             this.monitoringToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.softwareDownloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.systemMonitoringToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.monitoringDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eventsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.projectDataAndConfigurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.graphicsDesignerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createFLASHImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -163,24 +166,48 @@ namespace GOSTool
             // 
             this.monitoringToolToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.softwareDownloadToolStripMenuItem,
-            this.systemMonitoringToolStripMenuItem});
+            this.systemMonitoringToolStripMenuItem,
+            this.monitoringDataToolStripMenuItem,
+            this.eventsToolStripMenuItem,
+            this.projectDataAndConfigurationToolStripMenuItem});
             this.monitoringToolToolStripMenuItem.Name = "monitoringToolToolStripMenuItem";
-            this.monitoringToolToolStripMenuItem.Size = new System.Drawing.Size(128, 24);
-            this.monitoringToolToolStripMenuItem.Text = "Monitoring tool";
+            this.monitoringToolToolStripMenuItem.Size = new System.Drawing.Size(108, 24);
+            this.monitoringToolToolStripMenuItem.Text = "Maintenance";
             // 
             // softwareDownloadToolStripMenuItem
             // 
             this.softwareDownloadToolStripMenuItem.Name = "softwareDownloadToolStripMenuItem";
-            this.softwareDownloadToolStripMenuItem.Size = new System.Drawing.Size(222, 26);
+            this.softwareDownloadToolStripMenuItem.Size = new System.Drawing.Size(294, 26);
             this.softwareDownloadToolStripMenuItem.Text = "Software download";
             this.softwareDownloadToolStripMenuItem.Click += new System.EventHandler(this.softwareDownloadToolStripMenuItem_Click);
             // 
             // systemMonitoringToolStripMenuItem
             // 
             this.systemMonitoringToolStripMenuItem.Name = "systemMonitoringToolStripMenuItem";
-            this.systemMonitoringToolStripMenuItem.Size = new System.Drawing.Size(222, 26);
+            this.systemMonitoringToolStripMenuItem.Size = new System.Drawing.Size(294, 26);
             this.systemMonitoringToolStripMenuItem.Text = "System monitoring";
             this.systemMonitoringToolStripMenuItem.Click += new System.EventHandler(this.systemMonitoringToolStripMenuItem_Click);
+            // 
+            // monitoringDataToolStripMenuItem
+            // 
+            this.monitoringDataToolStripMenuItem.Name = "monitoringDataToolStripMenuItem";
+            this.monitoringDataToolStripMenuItem.Size = new System.Drawing.Size(294, 26);
+            this.monitoringDataToolStripMenuItem.Text = "Monitoring data";
+            this.monitoringDataToolStripMenuItem.Click += new System.EventHandler(this.monitoringDataToolStripMenuItem_Click);
+            // 
+            // eventsToolStripMenuItem
+            // 
+            this.eventsToolStripMenuItem.Name = "eventsToolStripMenuItem";
+            this.eventsToolStripMenuItem.Size = new System.Drawing.Size(294, 26);
+            this.eventsToolStripMenuItem.Text = "Event monitoring";
+            this.eventsToolStripMenuItem.Click += new System.EventHandler(this.eventsToolStripMenuItem_Click);
+            // 
+            // projectDataAndConfigurationToolStripMenuItem
+            // 
+            this.projectDataAndConfigurationToolStripMenuItem.Name = "projectDataAndConfigurationToolStripMenuItem";
+            this.projectDataAndConfigurationToolStripMenuItem.Size = new System.Drawing.Size(294, 26);
+            this.projectDataAndConfigurationToolStripMenuItem.Text = "Project data and configuration";
+            this.projectDataAndConfigurationToolStripMenuItem.Click += new System.EventHandler(this.projectDataAndConfigurationToolStripMenuItem_Click);
             // 
             // graphicsDesignerToolStripMenuItem
             // 
@@ -292,7 +319,7 @@ namespace GOSTool
             this.bldVersionLabel.AutoSize = true;
             this.bldVersionLabel.Location = new System.Drawing.Point(283, 67);
             this.bldVersionLabel.Name = "bldVersionLabel";
-            this.bldVersionLabel.Size = new System.Drawing.Size(30, 17);
+            this.bldVersionLabel.Size = new System.Drawing.Size(26, 16);
             this.bldVersionLabel.TabIndex = 10;
             this.bldVersionLabel.Text = "X.X";
             // 
@@ -301,7 +328,7 @@ namespace GOSTool
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(191, 67);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(85, 17);
+            this.label6.Size = new System.Drawing.Size(80, 16);
             this.label6.TabIndex = 9;
             this.label6.Text = "BLD version";
             // 
@@ -310,7 +337,7 @@ namespace GOSTool
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(191, 31);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(64, 17);
+            this.label7.Size = new System.Drawing.Size(61, 16);
             this.label7.TabIndex = 8;
             this.label7.Text = "Use BLD";
             // 
@@ -329,7 +356,7 @@ namespace GOSTool
             this.libVersionLabel.AutoSize = true;
             this.libVersionLabel.Location = new System.Drawing.Point(98, 131);
             this.libVersionLabel.Name = "libVersionLabel";
-            this.libVersionLabel.Size = new System.Drawing.Size(30, 17);
+            this.libVersionLabel.Size = new System.Drawing.Size(26, 16);
             this.libVersionLabel.TabIndex = 6;
             this.libVersionLabel.Text = "X.X";
             // 
@@ -338,7 +365,7 @@ namespace GOSTool
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(6, 131);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(78, 17);
+            this.label5.Size = new System.Drawing.Size(73, 16);
             this.label5.TabIndex = 5;
             this.label5.Text = "LIB version";
             // 
@@ -347,7 +374,7 @@ namespace GOSTool
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(6, 95);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(57, 17);
+            this.label3.Size = new System.Drawing.Size(54, 16);
             this.label3.TabIndex = 4;
             this.label3.Text = "Use LIB";
             // 
@@ -356,7 +383,7 @@ namespace GOSTool
             this.osVersionLabel.AutoSize = true;
             this.osVersionLabel.Location = new System.Drawing.Point(98, 61);
             this.osVersionLabel.Name = "osVersionLabel";
-            this.osVersionLabel.Size = new System.Drawing.Size(30, 17);
+            this.osVersionLabel.Size = new System.Drawing.Size(26, 16);
             this.osVersionLabel.TabIndex = 3;
             this.osVersionLabel.Text = "X.X";
             // 
@@ -375,7 +402,7 @@ namespace GOSTool
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(6, 61);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(78, 17);
+            this.label2.Size = new System.Drawing.Size(73, 16);
             this.label2.TabIndex = 1;
             this.label2.Text = "OS version";
             // 
@@ -384,7 +411,7 @@ namespace GOSTool
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(6, 31);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(57, 17);
+            this.label1.Size = new System.Drawing.Size(54, 16);
             this.label1.TabIndex = 0;
             this.label1.Text = "Use OS";
             // 
@@ -462,5 +489,8 @@ namespace GOSTool
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ToolStripMenuItem softwareDownloadToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem monitoringDataToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem eventsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem projectDataAndConfigurationToolStripMenuItem;
     }
 }

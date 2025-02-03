@@ -104,34 +104,34 @@ namespace GOSTool
                 {
                     await Task.Run(() =>
                     {
-                    // Try to connect on the given port configuration.
-                    if (!wireless)
-                    {
-                        Uart.Init(usbConfigUserControl1.Port, usbConfigUserControl1.Baud);
-                    }
-
-                    if ((!wireless && SysmonFunctions.PingDevice() == SysmonFunctions.PingResult.OK) ||
-                        (wireless && Wireless.PingDevice() == SysmonFunctions.PingResult.OK))
-                    {
-                        Helper.SetCheckBoxParameters_ThreadSafe(this, linkActiveCheckBox, "Link active", Color.Green, true);
-                        List<TaskData> taskDatas = new List<TaskData>();
-
-                        // Get all task data.
-                        if (wireless)
+                        // Try to connect on the given port configuration.
+                        if (!wireless)
                         {
-                            taskDatas = Wireless.GetAllTaskData();
-                        }
-                        else
-                        {
-                            taskDatas = SysmonFunctions.GetAllTaskData();
+                            Uart.Init(usbConfigUserControl1.Port, usbConfigUserControl1.Baud);
                         }
 
-                        List<ListViewItem> listViewItems = new List<ListViewItem>();
-                        taskData = taskDatas;
-
-                        foreach (var taskData in taskDatas)
+                        if ((!wireless && SysmonFunctions.PingDevice() == SysmonFunctions.PingResult.OK) ||
+                            (wireless && Wireless.PingDevice() == SysmonFunctions.PingResult.OK))
                         {
-                            string[] row = {
+                            Helper.SetCheckBoxParameters_ThreadSafe(this, linkActiveCheckBox, "Link active", Color.Green, true);
+                            List<TaskData> taskDatas = new List<TaskData>();
+
+                            // Get all task data.
+                            if (wireless)
+                            {
+                                taskDatas = Wireless.GetAllTaskData();
+                            }
+                            else
+                            {
+                                taskDatas = SysmonFunctions.GetAllTaskData();
+                            }
+
+                            List<ListViewItem> listViewItems = new List<ListViewItem>();
+                            taskData = taskDatas;
+
+                            foreach (var taskData in taskDatas)
+                            {
+                                string[] row = {
                                 string.Format("0x{0:X4}", taskData.TaskId),
                                 taskData.TaskName,
                                 string.Format("0x{0:X4}", taskData.TaskStackSize),
@@ -140,106 +140,106 @@ namespace GOSTool
                                 Convert.ToString(taskData.TaskPrivileges, 2).PadLeft(16, '0'),
                             };
 
-                            var listViewItem = new ListViewItem(row);
-                            listViewItems.Add(listViewItem);
-                        }
+                                var listViewItem = new ListViewItem(row);
+                                listViewItems.Add(listViewItem);
+                            }
 
-                        Helper.UpdateListViewWithItems_ThreadSafe(this, taskListView, listViewItems);
-                        Helper.ResizeListView_ThreadSafe(this, taskListView);
+                            Helper.UpdateListViewWithItems_ThreadSafe(this, taskListView, listViewItems);
+                            Helper.ResizeListView_ThreadSafe(this, taskListView);
 
-                        Thread.Sleep(100);
+                            Thread.Sleep(100);
 
-                        List<ListViewItem> swInfoItems = new List<ListViewItem>();
-                        SoftwareInfo softwareInfo = new SoftwareInfo();
+                            List<ListViewItem> swInfoItems = new List<ListViewItem>();
+                            SoftwareInfo softwareInfo = new SoftwareInfo();
 
-                        // Get software info.
-                        if (wireless)
-                        {
-                            softwareInfo = Wireless.GetSoftwareInfo();
-                        }
-                        else
-                        {
-                            softwareInfo = SysmonFunctions.GetSoftwareInfo();
-                        }
+                            // Get software info.
+                            if (wireless)
+                            {
+                                softwareInfo = Wireless.GetSoftwareInfo();
+                            }
+                            else
+                            {
+                                softwareInfo = SysmonFunctions.GetSoftwareInfo();
+                            }
 
-                        if (softwareInfo.AppSwVerInfo.Name != "")
-                        {
-                            swInfoItems.Add(new ListViewItem(new string[] { "Application driver lib name", softwareInfo.AppLibVerInfo.Name }));
-                            swInfoItems.Add(new ListViewItem(new string[] { "Application driver lib version", softwareInfo.AppLibVerInfo.Major.ToString("D2") + "." + softwareInfo.AppLibVerInfo.Minor.ToString("D2") + "." + softwareInfo.AppLibVerInfo.Build.ToString("D2") }));
-                            swInfoItems.Add(new ListViewItem(new string[] { "Application driver lib author", softwareInfo.AppLibVerInfo.Author }));
-                            swInfoItems.Add(new ListViewItem(new string[] { "Application driver lib description", softwareInfo.AppLibVerInfo.Description }));
-                            swInfoItems.Add(new ListViewItem(new string[] { "Application driver lib date", softwareInfo.AppLibVerInfo.Date.ToString("yyyy-MM-dd") }));
+                            if (softwareInfo.AppSwVerInfo.Name != "")
+                            {
+                                swInfoItems.Add(new ListViewItem(new string[] { "Application driver lib name", softwareInfo.AppLibVerInfo.Name }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Application driver lib version", softwareInfo.AppLibVerInfo.Major.ToString("D2") + "." + softwareInfo.AppLibVerInfo.Minor.ToString("D2") + "." + softwareInfo.AppLibVerInfo.Build.ToString("D2") }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Application driver lib author", softwareInfo.AppLibVerInfo.Author }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Application driver lib description", softwareInfo.AppLibVerInfo.Description }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Application driver lib date", softwareInfo.AppLibVerInfo.Date.ToString("yyyy-MM-dd") }));
 
-                            swInfoItems.Add(new ListViewItem(new string[] { "Application name", softwareInfo.AppSwVerInfo.Name }));
-                            swInfoItems.Add(new ListViewItem(new string[] { "Application version", softwareInfo.AppSwVerInfo.Major.ToString("D2") + "." + softwareInfo.AppSwVerInfo.Minor.ToString("D2") + "." + softwareInfo.AppSwVerInfo.Build.ToString("D2") }));
-                            swInfoItems.Add(new ListViewItem(new string[] { "Application author", softwareInfo.AppSwVerInfo.Author }));
-                            swInfoItems.Add(new ListViewItem(new string[] { "Application description", softwareInfo.AppSwVerInfo.Description }));
-                            swInfoItems.Add(new ListViewItem(new string[] { "Application date", softwareInfo.AppSwVerInfo.Date.ToString("yyyy-MM-dd") }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Application name", softwareInfo.AppSwVerInfo.Name }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Application version", softwareInfo.AppSwVerInfo.Major.ToString("D2") + "." + softwareInfo.AppSwVerInfo.Minor.ToString("D2") + "." + softwareInfo.AppSwVerInfo.Build.ToString("D2") }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Application author", softwareInfo.AppSwVerInfo.Author }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Application description", softwareInfo.AppSwVerInfo.Description }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Application date", softwareInfo.AppSwVerInfo.Date.ToString("yyyy-MM-dd") }));
 
-                            swInfoItems.Add(new ListViewItem(new string[] { "Application OS version", softwareInfo.AppOsInfo.Major.ToString("D2") + "." + softwareInfo.AppOsInfo.Minor.ToString("D2") }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Application OS version", softwareInfo.AppOsInfo.Major.ToString("D2") + "." + softwareInfo.AppOsInfo.Minor.ToString("D2") }));
 
-                            swInfoItems.Add(new ListViewItem(new string[] { "Application address", "0x" + softwareInfo.AppBinaryInfo.StartAddress.ToString("X8") }));
-                            swInfoItems.Add(new ListViewItem(new string[] { "Application size", softwareInfo.AppBinaryInfo.Size.ToString() }));
-                            swInfoItems.Add(new ListViewItem(new string[] { "Application CRC", "0x" + softwareInfo.AppBinaryInfo.Crc.ToString("X8") }));
-                        }
+                                swInfoItems.Add(new ListViewItem(new string[] { "Application address", "0x" + softwareInfo.AppBinaryInfo.StartAddress.ToString("X8") }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Application size", softwareInfo.AppBinaryInfo.Size.ToString() }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Application CRC", "0x" + softwareInfo.AppBinaryInfo.Crc.ToString("X8") }));
+                            }
 
-                        if (softwareInfo.BldSwVerInfo.Name != "")
-                        {
-                            swInfoItems.Add(new ListViewItem(new string[] { "Bootloader driver lib name", softwareInfo.BldLibVerInfo.Name }));
-                            swInfoItems.Add(new ListViewItem(new string[] { "Bootloader driver lib version", softwareInfo.BldLibVerInfo.Major.ToString("D2") + "." + softwareInfo.BldLibVerInfo.Minor.ToString("D2") + "." + softwareInfo.BldLibVerInfo.Build.ToString("D2") }));
-                            swInfoItems.Add(new ListViewItem(new string[] { "Bootloader driver lib author", softwareInfo.BldLibVerInfo.Author }));
-                            swInfoItems.Add(new ListViewItem(new string[] { "Bootloader driver lib description", softwareInfo.BldLibVerInfo.Description }));
-                            swInfoItems.Add(new ListViewItem(new string[] { "Bootloader driver lib date", softwareInfo.BldLibVerInfo.Date.ToString("yyyy-MM-dd") }));
+                            if (softwareInfo.BldSwVerInfo.Name != "")
+                            {
+                                swInfoItems.Add(new ListViewItem(new string[] { "Bootloader driver lib name", softwareInfo.BldLibVerInfo.Name }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Bootloader driver lib version", softwareInfo.BldLibVerInfo.Major.ToString("D2") + "." + softwareInfo.BldLibVerInfo.Minor.ToString("D2") + "." + softwareInfo.BldLibVerInfo.Build.ToString("D2") }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Bootloader driver lib author", softwareInfo.BldLibVerInfo.Author }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Bootloader driver lib description", softwareInfo.BldLibVerInfo.Description }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Bootloader driver lib date", softwareInfo.BldLibVerInfo.Date.ToString("yyyy-MM-dd") }));
 
-                            swInfoItems.Add(new ListViewItem(new string[] { "Bootloader name", softwareInfo.BldSwVerInfo.Name }));
-                            swInfoItems.Add(new ListViewItem(new string[] { "Bootloader version", softwareInfo.BldSwVerInfo.Major.ToString("D2") + "." + softwareInfo.BldSwVerInfo.Minor.ToString("D2") + "." + softwareInfo.BldSwVerInfo.Build.ToString("D2") }));
-                            swInfoItems.Add(new ListViewItem(new string[] { "Bootloader author", softwareInfo.BldSwVerInfo.Author }));
-                            swInfoItems.Add(new ListViewItem(new string[] { "Bootloader description", softwareInfo.BldSwVerInfo.Description }));
-                            swInfoItems.Add(new ListViewItem(new string[] { "Bootloader date", softwareInfo.BldSwVerInfo.Date.ToString("yyyy-MM-dd") }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Bootloader name", softwareInfo.BldSwVerInfo.Name }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Bootloader version", softwareInfo.BldSwVerInfo.Major.ToString("D2") + "." + softwareInfo.BldSwVerInfo.Minor.ToString("D2") + "." + softwareInfo.BldSwVerInfo.Build.ToString("D2") }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Bootloader author", softwareInfo.BldSwVerInfo.Author }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Bootloader description", softwareInfo.BldSwVerInfo.Description }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Bootloader date", softwareInfo.BldSwVerInfo.Date.ToString("yyyy-MM-dd") }));
 
-                            swInfoItems.Add(new ListViewItem(new string[] { "Bootloader OS version", softwareInfo.BldOsInfo.Major.ToString("D2") + "." + softwareInfo.BldOsInfo.Minor.ToString("D2") }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Bootloader OS version", softwareInfo.BldOsInfo.Major.ToString("D2") + "." + softwareInfo.BldOsInfo.Minor.ToString("D2") }));
 
-                            swInfoItems.Add(new ListViewItem(new string[] { "Bootloader address", "0x" + softwareInfo.BldBinaryInfo.StartAddress.ToString("X8") }));
-                            swInfoItems.Add(new ListViewItem(new string[] { "Bootloader size", softwareInfo.BldBinaryInfo.Size.ToString() }));
-                            swInfoItems.Add(new ListViewItem(new string[] { "Bootloader CRC", "0x" + softwareInfo.BldBinaryInfo.Crc.ToString("X8") }));
-                        }
+                                swInfoItems.Add(new ListViewItem(new string[] { "Bootloader address", "0x" + softwareInfo.BldBinaryInfo.StartAddress.ToString("X8") }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Bootloader size", softwareInfo.BldBinaryInfo.Size.ToString() }));
+                                swInfoItems.Add(new ListViewItem(new string[] { "Bootloader CRC", "0x" + softwareInfo.BldBinaryInfo.Crc.ToString("X8") }));
+                            }
 
-                        Helper.UpdateListViewWithItems_ThreadSafe(this, swInfoListView, swInfoItems);
-                        Helper.ResizeListView_ThreadSafe(this, swInfoListView);
+                            Helper.UpdateListViewWithItems_ThreadSafe(this, swInfoListView, swInfoItems);
+                            Helper.ResizeListView_ThreadSafe(this, swInfoListView);
 
-                        Thread.Sleep(100);
+                            Thread.Sleep(100);
 
-                        List<ListViewItem> hwInfoItems = new List<ListViewItem>();
-                        HardwareInfo hardwareInfo = new HardwareInfo();
+                            List<ListViewItem> hwInfoItems = new List<ListViewItem>();
+                            HardwareInfo hardwareInfo = new HardwareInfo();
 
-                        // Get software info.
-                        if (wireless)
-                        {
-                            hardwareInfo = Wireless.GetHardwareInfo();
-                        }
-                        else
-                        {
-                            hardwareInfo = SysmonFunctions.GetHardwareInfo();
-                        }
+                            // Get software info.
+                            if (wireless)
+                            {
+                                hardwareInfo = Wireless.GetHardwareInfo();
+                            }
+                            else
+                            {
+                                hardwareInfo = SysmonFunctions.GetHardwareInfo();
+                            }
 
-                        hwInfoItems.Add(new ListViewItem(new string[] { "Board name", hardwareInfo.BoardName }));
-                        hwInfoItems.Add(new ListViewItem(new string[] { "Revision", hardwareInfo.Revision }));
-                        hwInfoItems.Add(new ListViewItem(new string[] { "Author", hardwareInfo.Author }));
-                        hwInfoItems.Add(new ListViewItem(new string[] { "Description", hardwareInfo.Description }));
-                        hwInfoItems.Add(new ListViewItem(new string[] { "Date", hardwareInfo.Date.ToString("yyyy-MM-dd") }));
-                        hwInfoItems.Add(new ListViewItem(new string[] { "Serial number", hardwareInfo.SerialNumber }));
+                            hwInfoItems.Add(new ListViewItem(new string[] { "Board name", hardwareInfo.BoardName }));
+                            hwInfoItems.Add(new ListViewItem(new string[] { "Revision", hardwareInfo.Revision }));
+                            hwInfoItems.Add(new ListViewItem(new string[] { "Author", hardwareInfo.Author }));
+                            hwInfoItems.Add(new ListViewItem(new string[] { "Description", hardwareInfo.Description }));
+                            hwInfoItems.Add(new ListViewItem(new string[] { "Date", hardwareInfo.Date.ToString("yyyy-MM-dd") }));
+                            hwInfoItems.Add(new ListViewItem(new string[] { "Serial number", hardwareInfo.SerialNumber }));
 
-                        Helper.UpdateListViewWithItems_ThreadSafe(this, hwInfoListView, hwInfoItems);
-                        Helper.ResizeListView_ThreadSafe(this, hwInfoListView);
+                            Helper.UpdateListViewWithItems_ThreadSafe(this, hwInfoListView, hwInfoItems);
+                            Helper.ResizeListView_ThreadSafe(this, hwInfoListView);
 
-                        Thread.Sleep(100);
+                            Thread.Sleep(100);
                         }
                         else
                         {
                             Uart.DeInit();
                             Helper.SetCheckBoxParameters_ThreadSafe(this, linkActiveCheckBox, "Link inactive", Color.Gray, false);
                         }
-                    });   
+                    });
                 }
             }
             else
@@ -343,6 +343,17 @@ namespace GOSTool
         {            
             isMonitoringOn = false;
             Uart.DeInit();
+
+            foreach (var tabPage in tabControl1.TabPages)
+            {
+                foreach (var control in (tabPage as TabPage).Controls)
+                {
+                    if (control is TaskDetailViewUserControl)
+                    {
+                        (control as TaskDetailViewUserControl).isMonitoringOn = false;
+                    }
+                }
+            }
         }
 
         private void taskListView_MouseClick(object sender, MouseEventArgs e)

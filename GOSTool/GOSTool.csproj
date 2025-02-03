@@ -212,12 +212,6 @@
     <Compile Include="Bootloader\SoftwareDownloadWindow.Designer.cs">
       <DependentUpon>SoftwareDownloadWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Bootloader\SoftwareInstallWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Bootloader\SoftwareInstallWindow.Designer.cs">
-      <DependentUpon>SoftwareInstallWindow.cs</DependentUpon>
-    </Compile>
     <Compile Include="CodeGenerator\CodeGenerator.cs" />
     <Compile Include="Converter\Converter.cs" />
     <Compile Include="DataHandler\DataVariable.cs" />
@@ -268,17 +262,35 @@
     <Compile Include="SystemMonitoring\Com\SysmonFunctions.cs" />
     <Compile Include="SystemMonitoring\Com\SysmonMessages.cs" />
     <Compile Include="SystemMonitoring\Com\Uart.cs" />
+    <Compile Include="SystemMonitoring\EventsWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SystemMonitoring\EventsWindow.Designer.cs">
+      <DependentUpon>EventsWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="SystemMonitoring\LoadGraphUserControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="SystemMonitoring\LoadGraphUserControl.Designer.cs">
       <DependentUpon>LoadGraphUserControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="SystemMonitoring\MonitoringDataWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SystemMonitoring\MonitoringDataWindow.Designer.cs">
+      <DependentUpon>MonitoringDataWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="SystemMonitoring\MonitoringWindow.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SystemMonitoring\MonitoringWindow.Designer.cs">
       <DependentUpon>MonitoringWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SystemMonitoring\ProjectDataConfigWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SystemMonitoring\ProjectDataConfigWindow.Designer.cs">
+      <DependentUpon>ProjectDataConfigWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="SystemMonitoring\TaskDetailViewUserControl.cs">
       <SubType>UserControl</SubType>
@@ -314,9 +326,6 @@
     <EmbeddedResource Include="Bootloader\SoftwareDownloadWindow.resx">
       <DependentUpon>SoftwareDownloadWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Bootloader\SoftwareInstallWindow.resx">
-      <DependentUpon>SoftwareInstallWindow.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="FileViewer\FileViewerWindow.resx">
       <DependentUpon>FileViewerWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -345,11 +354,20 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="SystemMonitoring\EventsWindow.resx">
+      <DependentUpon>EventsWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SystemMonitoring\LoadGraphUserControl.resx">
       <DependentUpon>LoadGraphUserControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="SystemMonitoring\MonitoringDataWindow.resx">
+      <DependentUpon>MonitoringDataWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SystemMonitoring\MonitoringWindow.resx">
       <DependentUpon>MonitoringWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SystemMonitoring\ProjectDataConfigWindow.resx">
+      <DependentUpon>ProjectDataConfigWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SystemMonitoring\TaskDetailViewUserControl.resx">
       <DependentUpon>TaskDetailViewUserControl.cs</DependentUpon>
@@ -394,6 +412,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\LoadingIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\MonitoringDataIcon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

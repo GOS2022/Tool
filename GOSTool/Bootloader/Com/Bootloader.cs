@@ -6,370 +6,7 @@ using System.Threading.Tasks;
 
 namespace GOSTool
 {
-    public enum BootloaderMessageId
-    {
-        BLD_MSG_UNKNOWN_ID = 0,        //!< Unknown message ID.
-        BLD_MSG_CONN_REQ_ID = 0x1011,   //!< todo message ID.
-        BLD_MSG_CONN_RESP_ID = 0xA011,   //!< todo response message ID.
-        BLD_MSG_DATA_REQ_ID = 0x1020,
-        BLD_MSG_DATA_RESP_ID = 0xA020,
-        BLD_MSG_APP_DATA_REQ_ID = 0x1030,
-        BLD_MSG_APP_DATA_RESP_ID = 0xA030,
-        BLD_MSG_PACKET_REQ_ID = 0x1040,
-        BLD_MSG_PACKET_RESP_ID = 0xA040,
-        BLD_MSG_DISCONN_REQ_ID = 0x1050,
-        BLD_MSG_DISCONN_RESP_ID = 0xA050,
-        BLD_MSG_CONFIG_REQ_ID = 0x1060,
-        BLD_MSG_CONFIG_RESP_ID = 0xA060,
-
-        // Custom messages.
-        BLD_MSG_SWITCH_TO_BOOT_MODE = 0x9999
-    }
-
-    public enum bld_com_conn_result_t
-    {
-        BLD_COM_CONNECTION_ACCEPTED = 100,
-        BLD_COM_CONNECTION_REFUSED = 1,
-        BLD_COM_DISCONNECT_ACCEPTED = 2,
-        BLD_COM_DISCONNECT_REFUSED = 3,
-        BLD_COM_DISCONNECT_TMO = 4
-    }
-
-    public enum bld_com_update_t
-    {
-        BLD_COM_UPDATE_TYPE_INSTALL = 0,
-        BLD_COM_UPDATE_TYPE_ERASE = 1
-    }
-
-    public enum bld_com_install_req_result_t
-    {
-        BLD_COM_INSTALL_REQUEST_ACCEPTED = 100,
-        BLD_COM_INSTALL_REQUEST_SIZE_ERROR = 1,
-        BLD_COM_INSTALL_REQUEST_START_ADDRESS_ERROR = 2,
-        BLD_COM_INSTALL_REQUEST_DATA_CRC_ERROR = 3,
-        BLD_COM_ERASE_SUCCESSFUL = 101,
-        BLD_COM_ERASE_FAILED = 4
-    }
-
-    public enum bld_com_install_packet_req_result_t
-    {
-        BLD_COM_INSTALL_PACKET_ACCEPTED = 100,
-        BLD_COM_INSTALL_PACKET_REPEAT = 0
-    }
-    public class bld_com_client_data_t
-    {
-        public string name { get; set; }
-        public byte[] GetBytes()
-        {
-            List<byte> bytes = new List<byte>();
-            bytes.AddRange(Encoding.ASCII.GetBytes(name));
-            for (int i = 0; i < (32 - name.Length); i++)
-                bytes.Add(0);
-            return bytes.ToArray();
-        }
-    }
-
-    public class lib_version_t
-    {
-        public const int ExpectedSize = 6 + Time.ExpectedSize + 48 + 64 + 32;
-        public UInt16 major { get; set; } = 0;
-        public UInt16 minor { get; set; } = 0;
-        public UInt16 build { get; set; } = 0;
-        public Time date { get; set; } = new Time();
-        public string name { get; set; } = "N/A";
-        public string description { get; set; } = "N/A";
-        public string author { get; set; } = "N/A";
-
-        public byte[] GetBytes()
-        {
-            List<byte> bytes = new List<byte>();
-            bytes.AddRange(Helper<UInt16>.GetBytes(major));
-            bytes.AddRange(Helper<UInt16>.GetBytes(minor));
-            bytes.AddRange(Helper<UInt16>.GetBytes(build));
-            bytes.AddRange(date.GetBytes());
-            bytes.AddRange(Encoding.ASCII.GetBytes(name));
-            for (int i = 0; i < (48 - name.Length); i++)
-                bytes.Add(0);
-            bytes.AddRange(Encoding.ASCII.GetBytes(description));
-            for (int i = 0; i < (64 - description.Length); i++)
-                bytes.Add(0);
-            bytes.AddRange(Encoding.ASCII.GetBytes(author));
-            for (int i = 0; i < (32 - author.Length); i++)
-                bytes.Add(0);
-            return bytes.ToArray();
-        }
-        public void GetFromBytes(byte[] bytes)
-        {
-            int idx = 0;
-            major = Helper<UInt16>.GetVariable(bytes, ref idx);
-            minor = Helper<UInt16>.GetVariable(bytes, ref idx);
-            build = Helper<UInt16>.GetVariable(bytes, ref idx);
-            date.GetFromBytes(bytes.Skip(idx).Take(Time.ExpectedSize).ToArray());
-            idx += Time.ExpectedSize;
-            name = Encoding.ASCII.GetString(bytes.Skip(idx).Take(48).ToArray());
-            idx += 48;
-            description = Encoding.ASCII.GetString(bytes.Skip(idx).Take(64).ToArray());
-            idx += 64;
-            author = Encoding.ASCII.GetString(bytes.Skip(idx).Take(32).ToArray());
-            idx += 32;
-        }
-    }
-
-    public class bld_app_data_struct_t
-    {
-        public const int ExpectedSize = 16 + 2 * lib_version_t.ExpectedSize + 4;
-        public UInt32 initPattern { get; set; }
-        public UInt32 appStartAddress { get; set; }
-        public UInt32 appSize { get; set; }
-        public UInt32 appCrc { get; set; }
-        public lib_version_t appDriverVersion { get; set; } = new lib_version_t();
-        public lib_version_t appVersion { get; set; } = new lib_version_t();
-        public UInt32 appDataCrc { get; set; }
-
-        public byte[] GetBytes()
-        {
-            List<byte> bytes = new List<byte>();
-            bytes.AddRange(Helper<UInt32>.GetBytes(initPattern));
-            bytes.AddRange(Helper<UInt32>.GetBytes(appStartAddress));
-            bytes.AddRange(Helper<UInt32>.GetBytes(appSize));
-            bytes.AddRange(Helper<UInt32>.GetBytes(appCrc));
-            bytes.AddRange(appDriverVersion.GetBytes());
-            bytes.AddRange(appVersion.GetBytes());
-            bytes.AddRange(Helper<UInt32>.GetBytes(appDataCrc));
-            return bytes.ToArray();
-        }
-        public void GetFromBytes(byte[] bytes)
-        {
-            int idx = 0;
-            initPattern = Helper<UInt32>.GetVariable(bytes, ref idx);
-            appStartAddress = Helper<UInt32>.GetVariable(bytes, ref idx);
-            appSize = Helper<UInt32>.GetVariable(bytes, ref idx);
-            appCrc = Helper<UInt32>.GetVariable(bytes, ref idx);
-            appDriverVersion.GetFromBytes(bytes.Skip(idx).Take(lib_version_t.ExpectedSize).ToArray());
-            idx += lib_version_t.ExpectedSize;
-            appVersion.GetFromBytes(bytes.Skip(idx).Take(lib_version_t.ExpectedSize).ToArray());
-            idx += lib_version_t.ExpectedSize;
-            appDataCrc = Helper<UInt32>.GetVariable(bytes, ref idx);
-        }
-    }
-
-    public class bld_data_struct_t
-    {
-        public const int ExpectedSize = 16 + 2 * lib_version_t.ExpectedSize + /*bld_app_data_struct_t.ExpectedSize +*/ 1 + 4 /*+ 3*/;
-        public UInt32 initPattern { get; set; }
-        public UInt32 bldStartAddress { get; set; }
-        public UInt32 bldSize { get; set; }
-        public UInt32 bldCrc { get; set; }
-        public lib_version_t bldDriverVersion { get; set; } = new lib_version_t();
-        public lib_version_t bldVersion { get; set; } = new lib_version_t();
-        //public bld_app_data_struct_t appData { get; set; } = new bld_app_data_struct_t();
-        public bool bootUpdateMode { get; set; }
-        public UInt32 bldDataCrc { get; set; }
-
-        public byte[] GetBytes()
-        {
-            return null;
-        }
-        public void GetFromBytes(byte[] bytes)
-        {
-            int idx = 0;
-            initPattern = Helper<UInt32>.GetVariable(bytes, ref idx);
-            bldStartAddress = Helper<UInt32>.GetVariable(bytes, ref idx);
-            bldSize = Helper<UInt32>.GetVariable(bytes, ref idx);
-            bldCrc = Helper<UInt32>.GetVariable(bytes, ref idx);
-            bldDriverVersion.GetFromBytes(bytes.Skip(idx).Take(lib_version_t.ExpectedSize).ToArray());
-            idx += lib_version_t.ExpectedSize;
-            bldVersion.GetFromBytes(bytes.Skip(idx).Take(lib_version_t.ExpectedSize).ToArray());
-            idx += lib_version_t.ExpectedSize;
-            //appData.GetFromBytes(bytes.Skip(idx).Take(bld_app_data_struct_t.ExpectedSize).ToArray());
-            //idx += bld_app_data_struct_t.ExpectedSize;
-            bootUpdateMode = bytes[idx] == 54 ? true : false;
-            idx++;
-            bldDataCrc = Helper<UInt32>.GetVariable(bytes, ref idx);
-        }
-    }
-
-    public class bld_com_data_resp_msg_t
-    {
-        //public lib_version_t drvData { get; set; } = new lib_version_t();        
-        public bld_data_struct_t bldData { get; set; } = new bld_data_struct_t();
-        public bld_app_data_struct_t appData { get; set; } = new bld_app_data_struct_t();
-
-        public void GetFromBytes(byte[] bytes)
-        {
-            int idx = 0;
-            bldData.GetFromBytes(bytes.Skip(idx).Take(bld_data_struct_t.ExpectedSize).ToArray());
-            idx += bld_data_struct_t.ExpectedSize;
-            appData.GetFromBytes(bytes.Skip(idx).Take(bld_app_data_struct_t.ExpectedSize).ToArray());
-            idx += bld_app_data_struct_t.ExpectedSize;
-        }
-    }
-
-    public class bld_com_conn_req_msg_t
-    {
-        public bld_com_client_data_t client { get; set; } = new bld_com_client_data_t();
-
-        public byte[] GetBytes()
-        {
-            return client.GetBytes();
-        }
-    }
-
-    public class bld_com_conn_resp_msg_t
-    {
-        public bld_com_conn_result_t result { get; set; }
-
-        public void GetFromBytes(byte[] bytes)
-        {
-            int idx = 0;
-            result = (bld_com_conn_result_t)Helper<byte>.GetVariable(bytes, ref idx);
-        }
-    }
-
-    public class bld_com_disconn_req_msg_t
-    {
-        public UInt16 reason { get; set; }
-
-        public byte[] GetBytes()
-        {
-            List<byte> bytes = new List<byte>();
-            bytes.AddRange(Helper<UInt16>.GetBytes(reason));
-            return bytes.ToArray();
-        }
-    }
-
-    public class bld_com_disconn_resp_msg_t
-    {
-        public bld_com_conn_result_t result { get; set; }
-        public void GetFromBytes(byte[] bytes)
-        {
-            int idx = 0;
-            result = (bld_com_conn_result_t)Helper<byte>.GetVariable(bytes, ref idx);
-        }
-    }
-
-    public class bld_com_install_data_req_msg_t
-    {
-        public bld_com_update_t updateType { get; set; } = new bld_com_update_t();
-        public bld_app_data_struct_t appData { get; set; } = new bld_app_data_struct_t();
-
-        public void GetFromBytes(byte[] bytes)
-        {
-
-        }
-        public byte[] GetBytes()
-        {
-            List<byte> bytes = new List<byte>();
-            bytes.Add((byte)updateType);
-            bytes.AddRange(appData.GetBytes());
-            return bytes.ToArray();
-        }
-    }
-
-    public class bld_com_install_data_resp_msg_t
-    {
-        public bld_com_install_req_result_t result { get; set; }
-
-        public void GetFromBytes(byte[] bytes)
-        {
-            int idx = 0;
-            result = (bld_com_install_req_result_t)Helper<byte>.GetVariable(bytes, ref idx);
-        }
-    }
-
-    public class bld_com_install_packet_req_msg_t
-    {
-        public UInt16 packetSize { get; set; }
-        public UInt32 sequenceCounter { get; set; }
-        public UInt32 packetChk { get; set; }
-        public List<byte> packetBuffer { get; set; } = new List<byte>();
-
-        public byte[] GetBytes()
-        {
-            List<byte> bytes = new List<byte>();
-            bytes.AddRange(Helper<UInt16>.GetBytes(packetSize));
-            bytes.AddRange(Helper<UInt32>.GetBytes(sequenceCounter));
-            bytes.AddRange(Helper<UInt32>.GetBytes(packetChk));
-            bytes.AddRange(packetBuffer);
-            return bytes.ToArray();
-        }
-    }
-
-    public class bld_com_install_packet_resp_msg_t
-    {
-        public UInt32 sequenceCounter { get; set; }
-        public bld_com_install_packet_req_result_t result { get; set; }
-
-        public void GetFromBytes(byte[] bytes)
-        {
-            int idx = 0;
-            sequenceCounter = Helper<UInt32>.GetVariable(bytes, ref idx);
-            result = (bld_com_install_packet_req_result_t)Helper<byte>.GetVariable(bytes, ref idx);
-        }
-    }
-
-    public class bld_bootloaderConfig_t
-    {
-        public UInt32 initPattern { get; set; }
-        public bool waitForConnectionOnStartup { get; set; }
-        public byte startupCounter { get; set; }
-        public UInt32 connectionTimeout { get; set; }
-        public UInt32 requestTimeout { get; set; }
-        public UInt32 installTimeout { get; set; }
-        public UInt32 dataCrc { get; set; }
-        public byte[] GetBytes()
-        {
-            List<byte> bytes = new List<byte>();
-            bytes.AddRange(Helper<UInt32>.GetBytes(initPattern));
-            bytes.AddRange(Helper<bool>.GetBytes(waitForConnectionOnStartup));
-            bytes.AddRange(Helper<byte>.GetBytes(startupCounter));
-            bytes.AddRange(Helper<UInt32>.GetBytes(connectionTimeout));
-            bytes.AddRange(Helper<UInt32>.GetBytes(requestTimeout));
-            bytes.AddRange(Helper<UInt32>.GetBytes(installTimeout));
-            bytes.AddRange(Helper<UInt32>.GetBytes(dataCrc));
-            return bytes.ToArray();
-        }
-    }
-
-    public class bld_com_config_req_msg_t
-    {
-        public bld_bootloaderConfig_t config { get; set; }
-        public byte[] GetBytes()
-        {
-            return config.GetBytes();
-        }
-    }
-
-    public class bld_com_config_resp_msg_t
-    {
-        public byte result { get; set; }
-        public void GetFromBytes(byte[] bytes)
-        {
-            int idx = 0;
-            result = Helper<byte>.GetVariable(bytes, ref idx);
-        }
-    }
-
-    public enum BootloaderMessagePv
-    {
-        BLD_MSG_UNKNOWN_PV = 1,
-        BLD_MSG_PING_REQ_PV = 1,
-        BLD_MSG_PING_RESP_PV = 1,
-        BLD_MSG_DATA_REQ_PV = 1,
-        BLD_MSG_DATA_RESP_PV = 1,
-        BLD_MSG_UPDATE_REQ_PV = 1,
-        BLD_MSG_UPDATE_RESP_PV = 1,
-        BLD_MSG_BINARY_PACKET_SEND_PV = 1,
-        BLD_MSG_BINARY_PACKET_ACK_PV = 1,
-        BLD_MSG_UPDATE_ABORT_REQ_PV = 1,
-        BLD_MSG_UPDATE_ABORT_RESP_PV = 1,
-        BLD_MSG_DATA_SET_REQ_PV = 1,
-        BLD_MSG_DATA_SET_RESP_PV = 1,
-        BLD_MSG_QUIT_REQ_PV = 1,
-        BLD_MSG_QUIT_RESP_PV = 1,
-    }
-
-    public class VersionInfo
+    /*public class VersionInfo
     {
         public int Major { get; set; }
         public int Minor { get; set; }
@@ -378,18 +15,18 @@ namespace GOSTool
         public string Name { get; set; }
         public string Description { get; set; }
         public string Author { get; set; }
-    }
+    }*/
 
-    public class ApplicationData
+    /*public class ApplicationData
     {
         public int StartAddress { get; set; }
         public int Size { get; set; }
         public int Crc { get; set; }
         public VersionInfo DriverVersion { get; set; } = new VersionInfo();
         public VersionInfo AppVersion { get; set; } = new VersionInfo();
-    }
+    }*/
 
-    public class BootloaderData
+    /*public class BootloaderData
     {
         public VersionInfo BootloaderDriverInfo { get; set; } = new VersionInfo();
         public int StartAddress { get; set; }
@@ -398,7 +35,7 @@ namespace GOSTool
         public VersionInfo BootloaderInfo { get; set; } = new VersionInfo();
         public ApplicationData ApplicationData { get; set; } = new ApplicationData();
         public bool BootUpdateMode { get; set; }
-    }
+    }*/
 
     public class SoftwareVersionInfo
     {
@@ -428,7 +65,6 @@ namespace GOSTool
                 Date = new DateTime();
             }
             
-            //Date.GetFromBytes(bytes.Skip(idx).Take(Time.ExpectedSize).ToArray());
             idx += Time.ExpectedSize;
             Name = Encoding.ASCII.GetString(bytes.Skip(idx).Take(48).ToArray()).Trim('\0');
             idx += 48;
@@ -436,6 +72,43 @@ namespace GOSTool
             idx += 48;
             Author = Encoding.ASCII.GetString(bytes.Skip(idx).Take(48).ToArray()).Trim('\0');
             idx += 48;
+        }
+
+        public byte[] GetBytes()
+        {
+            List<byte> bytes = new List<byte>();
+            bytes.AddRange(Helper<UInt16>.GetBytes(Major));
+            bytes.AddRange(Helper<UInt16>.GetBytes(Minor));
+            bytes.AddRange(Helper<UInt16>.GetBytes(Build));
+
+            Time time = new Time();
+            time.Years = (UInt16)Date.Year;
+            time.Months = (byte)Date.Month;
+            time.Days = (UInt16)Date.Day;
+            bytes.AddRange(time.GetBytes());
+
+            bytes.AddRange(Encoding.ASCII.GetBytes(Name));
+            int padding = 48 - Encoding.ASCII.GetBytes(Name).Length;
+            for (int i = 0; i < padding; i++)
+            {
+                bytes.Add(0);
+            }
+
+            bytes.AddRange(Encoding.ASCII.GetBytes(Description));
+            padding = 48 - Encoding.ASCII.GetBytes(Description).Length;
+            for (int i = 0; i < padding; i++)
+            {
+                bytes.Add(0);
+            }
+
+            bytes.AddRange(Encoding.ASCII.GetBytes(Author));
+            padding = 48 - Encoding.ASCII.GetBytes(Author).Length;
+            for (int i = 0; i < padding; i++)
+            {
+                bytes.Add(0);
+            }
+
+            return bytes.ToArray();
         }
     }
 
@@ -450,6 +123,16 @@ namespace GOSTool
             int idx = 0;
             Major = Helper<UInt16>.GetVariable(bytes, ref idx);
             Minor = Helper<UInt16>.GetVariable(bytes, ref idx);
+        }
+
+        public byte[] GetBytes()
+        {
+            List<byte> bytes = new List<byte>();
+
+            bytes.AddRange(Helper<UInt16>.GetBytes(Major));
+            bytes.AddRange(Helper<UInt16>.GetBytes(Minor));
+
+            return bytes.ToArray();
         }
     }
 
@@ -466,6 +149,17 @@ namespace GOSTool
             StartAddress = Helper<UInt32>.GetVariable(bytes, ref idx);
             Size = Helper<UInt32>.GetVariable(bytes, ref idx);
             Crc = Helper<UInt32>.GetVariable(bytes, ref idx);
+        }
+
+        public byte[] GetBytes()
+        {
+            List<byte> bytes = new List<byte>();
+
+            bytes.AddRange(Helper<UInt32>.GetBytes(StartAddress));
+            bytes.AddRange(Helper<UInt32>.GetBytes(Size));
+            bytes.AddRange(Helper<UInt32>.GetBytes(Crc));
+
+            return bytes.ToArray();
         }
     }
 
@@ -503,6 +197,51 @@ namespace GOSTool
             SerialNumber = Encoding.ASCII.GetString(bytes.Skip(idx).Take(48).ToArray()).Trim('\0');
             idx += 48;
         }
+
+        public byte[] GetBytes()
+        {
+            List<byte> bytes = new List<byte>();
+            
+            bytes.AddRange(Encoding.ASCII.GetBytes(BoardName));
+            int padding = 48 - Encoding.ASCII.GetBytes(BoardName).Length;
+            for (int i = 0; i < padding; i++)
+            {
+                bytes.Add(0);
+            }
+
+            bytes.AddRange(Encoding.ASCII.GetBytes(Revision));
+            padding = 48 - Encoding.ASCII.GetBytes(Revision).Length;
+            for (int i = 0; i < padding; i++)
+            {
+                bytes.Add(0);
+            }
+
+            bytes.AddRange(Encoding.ASCII.GetBytes(Author));
+            padding = 48 - Encoding.ASCII.GetBytes(Author).Length;
+            for (int i = 0; i < padding; i++)
+            {
+                bytes.Add(0);
+            }
+
+            bytes.AddRange(Encoding.ASCII.GetBytes(Description));
+            padding = 48 - Encoding.ASCII.GetBytes(Description).Length;
+            for (int i = 0; i < padding; i++)
+            {
+                bytes.Add(0);
+            }
+
+            Time time = new Time() { Years = (UInt16)Date.Year, Months = (byte)Date.Month, Days = (UInt16)Date.Day };
+            bytes.AddRange(time.GetBytes());
+
+            bytes.AddRange(Encoding.ASCII.GetBytes(SerialNumber));
+            padding = 48 - Encoding.ASCII.GetBytes(SerialNumber).Length;
+            for (int i = 0; i < padding; i++)
+            {
+                bytes.Add(0);
+            }
+
+            return bytes.ToArray();
+        }
     }
 
     public class SoftwareInfo
@@ -537,177 +276,129 @@ namespace GOSTool
             AppBinaryInfo.GetFromBytes(bytes.Skip(idx).Take(BinaryInfo.ExpectedSize).ToArray());
             idx += BinaryInfo.ExpectedSize;
         }
+
+        public byte[] GetBytes()
+        {
+            List<byte> bytes = new List<byte>();
+            bytes.AddRange(BldLibVerInfo.GetBytes());
+            bytes.AddRange(BldSwVerInfo.GetBytes());
+            bytes.AddRange(BldOsInfo.GetBytes());
+            bytes.AddRange(BldBinaryInfo.GetBytes());
+
+            bytes.AddRange(AppLibVerInfo.GetBytes());
+            bytes.AddRange(AppSwVerInfo.GetBytes());
+            bytes.AddRange(AppOsInfo.GetBytes());
+            bytes.AddRange(AppBinaryInfo.GetBytes());
+
+            return bytes.ToArray();
+        }
     }
 
-#if false
-    public enum BootloaderUpdateType
+    public class BootloaderConfig
     {
-        BLD_COM_UPDATE_TYPE_INSTALL = 0,
-        BLD_COM_UPDATE_TYPE_ERASE = 1
-    }
-
-    public class ApplicationData
-    {
-        public UInt32 AppStartAddress { get; set; }
-        public UInt32 AppSize { get; set; }
-        public UInt32 AppCrc { get; set; }
-        public byte AppMajorVersion { get; set; }
-        public byte AppMinorVersion { get; set; }
-        public Time AppInstallDate { get; set; }
-        public string AppName { get; set; }
-        public UInt32 AppDataCrc { get; set; }
-
-        public const int ExpectedSize = 12 + 2 + Time.ExpectedSize + 32 + 4;
+        public bool InstallRequested { get; set; }
+        public byte Reserved { get; set; }
+        public UInt16 BinaryIndex { get; set; }
+        public bool UpdateMode { get; set; }
+        public bool WirelessUpdate { get; set; }
+        public bool WaitForConnectionOnStartup { get; set; }
+        public byte StartupCounter { get; set; }
+        public UInt32 ConnectionTimeout { get; set; }
+        public UInt32 RequestTimeout { get; set; }
+        public UInt32 InstallTimeout { get; set; }
 
         public void GetFromBytes(byte[] bytes)
         {
             int idx = 0;
-            AppStartAddress = Helper<UInt32>.GetVariable(bytes, ref idx);
-            AppSize = Helper<UInt32>.GetVariable(bytes, ref idx);
-            AppCrc = Helper<UInt32>.GetVariable(bytes, ref idx);
-            AppMajorVersion = Helper<byte>.GetVariable(bytes, ref idx);
-            AppMinorVersion = Helper<byte>.GetVariable(bytes, ref idx);
-            AppInstallDate = new Time();
-            AppInstallDate.GetFromBytes(bytes.Skip(idx).Take(Time.ExpectedSize).ToArray());
-            idx += Time.ExpectedSize;
-            AppName = Encoding.ASCII.GetString(bytes.Skip(idx).Take(32).ToArray());
-            idx += 32;
-            AppDataCrc = Helper<UInt32>.GetVariable(bytes, ref idx);
+            InstallRequested = Helper<bool>.GetVariable(bytes, ref idx);
+            Reserved = Helper<byte>.GetVariable(bytes, ref idx);
+            BinaryIndex = Helper<UInt16>.GetVariable(bytes, ref idx);
+            UpdateMode = Helper<bool>.GetVariable(bytes, ref idx);
+            WirelessUpdate = Helper<bool>.GetVariable(bytes, ref idx);
+            WaitForConnectionOnStartup = Helper<bool>.GetVariable(bytes, ref idx);
+            StartupCounter = Helper<byte>.GetVariable(bytes, ref idx);
+            ConnectionTimeout = Helper<UInt32>.GetVariable(bytes, ref idx);
+            RequestTimeout = Helper<UInt32>.GetVariable(bytes, ref idx);
+            InstallTimeout = Helper<UInt32>.GetVariable(bytes, ref idx);
         }
 
         public byte[] GetBytes()
         {
             List<byte> bytes = new List<byte>();
-            bytes.AddRange(Helper<UInt32>.GetBytes(AppStartAddress));
-            bytes.AddRange(Helper<UInt32>.GetBytes(AppSize));
-            bytes.AddRange(Helper<UInt32>.GetBytes(AppCrc));
-            bytes.AddRange(Helper<byte>.GetBytes(AppMajorVersion));
-            bytes.AddRange(Helper<byte>.GetBytes(AppMinorVersion));
-            bytes.AddRange(AppInstallDate.GetBytes());
-            bytes.AddRange(Encoding.ASCII.GetBytes(AppName));
-            for (int i = 0; i < (32 - AppName.Length); i++)
+
+            bytes.AddRange(Helper<bool>.GetBytes(InstallRequested));
+            bytes.AddRange(Helper<byte>.GetBytes(Reserved));
+            bytes.AddRange(Helper<UInt16>.GetBytes(BinaryIndex));
+            bytes.AddRange(Helper<bool>.GetBytes(UpdateMode));
+            bytes.AddRange(Helper<bool>.GetBytes(WirelessUpdate));
+            bytes.AddRange(Helper<bool>.GetBytes(WaitForConnectionOnStartup));
+            bytes.AddRange(Helper<byte>.GetBytes(StartupCounter));
+            bytes.AddRange(Helper<UInt32>.GetBytes(ConnectionTimeout));
+            bytes.AddRange(Helper<UInt32>.GetBytes(RequestTimeout));
+            bytes.AddRange(Helper<UInt32>.GetBytes(InstallTimeout));
+
+            return bytes.ToArray();
+        }
+    }
+
+    public class WifiConfig
+    {
+        public string Ssid { get; set; }
+        public string Pwd { get; set; }
+        public string IpAddress { get; set; }
+        public string GateWay { get; set; }
+        public string Subnet { get; set; }
+        public UInt16 Port { get; set; }
+
+        public void GetFromBytes(byte[] bytes)
+        {
+            int idx = 0;
+            Ssid = Encoding.ASCII.GetString(bytes.Skip(idx).Take(48).ToArray()).Trim('\0');
+            idx += 48;
+            Pwd = Encoding.ASCII.GetString(bytes.Skip(idx).Take(48).ToArray()).Trim('\0');
+            idx += 48;
+            IpAddress = bytes[idx++] + "." + bytes[idx++] + "." + bytes[idx++] + "." + bytes[idx++];
+            GateWay = bytes[idx++] + "." + bytes[idx++] + "." + bytes[idx++] + "." + bytes[idx++];
+            Subnet = bytes[idx++] + "." + bytes[idx++] + "." + bytes[idx++] + "." + bytes[idx++];
+            Port = Helper<UInt16>.GetVariable(bytes, ref idx);
+        }
+
+        public byte[] GetBytes()
+        {
+            List<byte> bytes = new List<byte>();
+
+            bytes.AddRange(Encoding.ASCII.GetBytes(Ssid));
+            int padding = 48 - Encoding.ASCII.GetBytes(Ssid).Length;
+            for (int i = 0; i < padding; i++)
+            {
                 bytes.Add(0);
-            bytes.AddRange(Helper<UInt32>.GetBytes(AppDataCrc));
+            }
+
+            bytes.AddRange(Encoding.ASCII.GetBytes(Pwd));
+            padding = 48 - Encoding.ASCII.GetBytes(Pwd).Length;
+            for (int i = 0; i < padding; i++)
+            {
+                bytes.Add(0);
+            }
+
+            foreach(string ipElement in IpAddress.Split('.'))
+            {
+                bytes.Add(byte.Parse(ipElement));
+            }
+
+            foreach (string ipElement in GateWay.Split('.'))
+            {
+                bytes.Add(byte.Parse(ipElement));
+            }
+
+            foreach (string ipElement in Subnet.Split('.'))
+            {
+                bytes.Add(byte.Parse(ipElement));
+            }
+
+            bytes.AddRange(Helper<UInt16>.GetBytes(Port));
 
             return bytes.ToArray();
         }
     }
-
-    public class BinaryPacketMessage
-    {
-        public UInt16 PacketId { get; set; }
-        public byte[] Bytes { get; set; } = new byte[BinaryPacketSize];
-
-        public const int BinaryPacketSize = 8192;
-
-        public const int BinaryPacketDownSize = 1024;
-        
-        public const int ExpectedSize = 2 + BinaryPacketSize;
-
-        public const int ExpectedDownSize = 2 + BinaryPacketDownSize;
-
-        public void GetFromBytes(byte[] bytes)
-        {
-            if (bytes.Length == ExpectedSize)
-            {
-                int idx = 0;
-                PacketId = Helper<UInt16>.GetVariable(bytes, ref idx);
-                Array.Copy(bytes, idx, Bytes, 0, BinaryPacketSize);
-            }
-        }
-
-        public byte[] GetBytes()
-        {
-            List<byte> bytes = new List<byte>();
-            bytes.AddRange(Helper<UInt16>.GetBytes(PacketId));
-            bytes.AddRange(Bytes.Take(BinaryPacketDownSize));
-            return bytes.ToArray();
-        }
-    }
-
-    public class BinaryPacketDescriptorMessage
-    {
-        public UInt32 NumberOfPackets { get; set; }
-
-        public const int ExpetedSize = 4;
-
-        public void GetFromBytes(byte[] bytes)
-        {
-            if (bytes.Length == ExpetedSize)
-            {
-                int idx = 0;
-                NumberOfPackets = Helper<UInt32>.GetVariable(bytes, ref idx);
-            }
-        }
-
-        public byte[] GetBytes()
-        {
-            return Helper<UInt32>.GetBytes(NumberOfPackets);
-        }
-    }
-
-    public class BootloaderUpdateDataMessage
-    {
-        public BootloaderUpdateType UpdateType { get; set; }
-        public ApplicationData ApplicationData { get; set; }
-
-        public const int ExpectedSize = 1 + ApplicationData.ExpectedSize;
-
-        public byte[] GetBytes()
-        {
-            List<byte> bytes = new List<byte>();
-            bytes.AddRange(Helper<byte>.GetBytes((byte)UpdateType));
-            bytes.AddRange(ApplicationData.GetBytes());
-
-            return bytes.ToArray();
-        }
-    }
-
-    public class BootloaderDataMessage
-    {
-        public UInt32 InitPattern { get; set; }
-        public UInt32 BldStartAddress { get; set; }
-        public UInt32 BldSize { get; set; }
-        public UInt32 BldCrc { get; set; }
-        public byte BldMajorVersion { get; set; }
-        public byte BldMinorVersion { get; set; }
-        public Time BldDate { get; set; }
-        public string BldName { get; set; }
-        public List<ApplicationData> AppData { get; set; }
-        public byte SelectedApp { get; set; }
-        public UInt32 BldDataCrc { get; set; }
-
-        public const int ExpectedSize = 16 + 2 + Time.ExpectedSize + 32 + 3 * ApplicationData.ExpectedSize + 1 + 4;
-
-        public void GetFromBytes(byte[] bytes)
-        {
-            int idx = 0;
-            if (bytes.Length == ExpectedSize)
-            {
-                InitPattern = Helper<UInt32>.GetVariable(bytes, ref idx);
-                BldStartAddress = Helper<UInt32>.GetVariable(bytes, ref idx);
-                BldSize = Helper<UInt32>.GetVariable(bytes, ref idx);
-                BldCrc = Helper<UInt32>.GetVariable(bytes, ref idx);
-                BldMajorVersion = Helper<byte>.GetVariable(bytes, ref idx);
-                BldMinorVersion = Helper<byte>.GetVariable(bytes, ref idx);
-                BldDate = new Time();
-                BldDate.GetFromBytes(bytes.Skip(idx).Take(Time.ExpectedSize).ToArray());
-                idx += Time.ExpectedSize;
-                BldName = Encoding.ASCII.GetString(bytes.Skip(idx).Take(32).ToArray());
-                idx += 32;
-                AppData = new List<ApplicationData>();
-
-                for (int i = 0; i < 3; i++)
-                {
-                    AppData.Add(new ApplicationData());
-                    AppData[i].GetFromBytes(bytes.Skip(idx).Take(ApplicationData.ExpectedSize).ToArray());
-                    idx += ApplicationData.ExpectedSize;
-                }
-
-                SelectedApp = Helper<byte>.GetVariable(bytes, ref idx);
-                BldDataCrc = Helper<byte>.GetVariable(bytes, ref idx);
-            }
-        }
-    }
-#endif
 }

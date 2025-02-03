@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GOSTool.SystemMonitoring;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -101,16 +102,28 @@ namespace GOSTool
             monitoringWindow.Show();
         }
 
-        private void softwareInstallToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SoftwareInstallWindow softwareInstallWindow = new SoftwareInstallWindow();
-            softwareInstallWindow.Show();
-        }
-
         private void softwareDownloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SoftwareDownloadWindow softwareDownloadWindow = new SoftwareDownloadWindow();
             softwareDownloadWindow.Show();
+        }
+
+        private void monitoringDataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MonitoringDataWindow monitoringDataWindow = new MonitoringDataWindow();
+            monitoringDataWindow.Show();
+        }
+
+        private void eventsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EventsWindow eventsWindow = new EventsWindow();
+            eventsWindow.Show();
+        }
+
+        private void projectDataAndConfigurationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ProjectDataConfigWindow projectDataConfigWindow = new ProjectDataConfigWindow();
+            projectDataConfigWindow.Show();
         }
     }
 }

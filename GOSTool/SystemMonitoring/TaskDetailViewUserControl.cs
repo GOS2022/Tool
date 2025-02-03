@@ -10,7 +10,7 @@ namespace GOSTool
     {
         private TaskData _taskData = new TaskData();
 
-        private bool isMonitoringOn = false;
+        public bool isMonitoringOn = false;
 
         public int TaskIndex { get; set; }
 

@@ -14,6 +14,7 @@ namespace GOSTool
     public partial class SoftwareDownloadWindow : Form
     {
         public bool wireless = false;
+        private bool forceQuit = false;
         private List<BinaryDescriptorMessage> binaryDescriptors = new List<BinaryDescriptorMessage>();
 
         public SoftwareDownloadWindow()
@@ -25,7 +26,7 @@ namespace GOSTool
             resetButton.Enabled = false;
 
             // TODO: test
-            binaryPathTb.Text = "C:\\Users\\Gabor\\STM32CubeIDE\\workspace_1.5.1\\GOS2022_iplTest\\Debug\\GOS2022_iplTest.bin";
+            //binaryPathTb.Text = "C:\\Users\\Gabor\\STM32CubeIDE\\workspace_1.5.1\\GOS2022_iplTest\\Debug\\GOS2022_iplTest.bin";
             binaryAddrTb.Text = "8020000";
 
             SysmonFunctions.BinaryDownloadProgressEvent += (sender, param) =>
@@ -112,7 +113,7 @@ namespace GOSTool
 
                     TraceProgressNew_ThreadSafe("Number of binaries: " + binaryNum);
                     
-                    for (int i = 0; i < binaryNum; i++)
+                    for (int i = 0; i < binaryNum && !forceQuit; i++)
                     {
                         TraceProgressNew_ThreadSafe("Reading binary info [" + (i + 1) + "/" + binaryNum + "] ...");
                         BinaryDescriptorMessage binaryDesc = new BinaryDescriptorMessage();
@@ -126,6 +127,10 @@ namespace GOSTool
                             binaryDesc = Wireless.GetBinaryInfo(i);
                             System.Threading.Thread.Sleep(100);
                         }
+
+                        // TODO: check error handling.
+                        if (binaryDesc.Size == 0)
+                            return;
 
                         binaryDescriptors.Add(binaryDesc);
                         
@@ -208,7 +213,7 @@ namespace GOSTool
 
                                 TreeViewClear_ThreadSafe();
 
-                                for (int i = 0; i < binaryNum; i++)
+                                for (int i = 0; i < binaryNum && !forceQuit; i++)
                                 {
                                     BinaryDescriptorMessage binaryDesc = new BinaryDescriptorMessage();
                                     
@@ -504,7 +509,7 @@ namespace GOSTool
 
                     TreeViewClear_ThreadSafe();
 
-                    for (int i = 0; i < binaryNum; i++)
+                    for (int i = 0; i < binaryNum && !forceQuit; i++)
                     {
                         BinaryDescriptorMessage binaryDesc = new BinaryDescriptorMessage();
                         
@@ -532,6 +537,11 @@ namespace GOSTool
                     TraceProgressNew_ThreadSafe("Done.");
                 });
             }
+        }
+
+        private void SoftwareDownloadWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            forceQuit = true;
         }
     }
 }

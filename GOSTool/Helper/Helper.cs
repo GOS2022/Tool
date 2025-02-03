@@ -30,10 +30,26 @@ namespace GOSTool
                 {
                     numberOfBytes = 1;
                 }
+                else if (typeof(T) == typeof(bool))
+                {
+                    numberOfBytes = 1;
+                }
 
                 for (int i = 0; i < numberOfBytes; i++)
                 {
                     returnValue += (UInt32)(buffer[index++] << (i * 8));
+                }
+            }
+
+            if (typeof(T) == typeof(bool))
+            {
+                if (returnValue == 54)
+                {
+                    returnValue = 1;
+                }
+                else
+                {
+                    returnValue = 0;
                 }
             }
 
@@ -302,6 +318,43 @@ namespace GOSTool
                     runtime.Minutes.ToString("D2") + ":" +
                     runtime.Seconds.ToString("D2") + "." +
                     runtime.Milliseconds.ToString("D3");
+            }
+        }
+
+        private delegate void UpdateDataGridViewWithItemDelegate(DataGridView dataGridView, List<string[]> dataGridViewRows);
+
+        /// <summary>
+        /// Thread-safe wrapper for datagridview updating.
+        /// </summary>
+        public static void UpdateDataGridViewWithItems_ThreadSafe(Control control, DataGridView dataGridView, List<string[]> dataGridViewRows)
+        {
+            try
+            {
+                if (dataGridView.InvokeRequired)
+                {
+                    UpdateDataGridViewWithItemDelegate d = new UpdateDataGridViewWithItemDelegate(UpdateDataGridViewWithItems);
+                    control.Invoke(d, dataGridView, dataGridViewRows);
+                }
+                else
+                {
+                    UpdateDataGridViewWithItems(dataGridView, dataGridViewRows);
+                }
+            }
+            catch
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// Datagridview updating method.
+        /// </summary>
+        private static void UpdateDataGridViewWithItems(DataGridView dataGridView, List<string[]> dataGridViewRows)
+        {
+            dataGridView.Rows.Clear();
+            foreach (string[] row in dataGridViewRows) 
+            { 
+                dataGridView.Rows.Add(row); 
             }
         }
 

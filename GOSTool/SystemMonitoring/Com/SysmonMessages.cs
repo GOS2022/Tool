@@ -45,9 +45,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 //*************************************************************************************************
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 
 namespace GOSTool
 {
@@ -235,6 +239,96 @@ namespace GOSTool
             bytes.AddRange(Helper<byte>.GetBytes(Result));
 
             return bytes.ToArray();
+        }
+    }
+
+    public class ErsEvent
+    {
+        public string Description { get; private set; }
+        public DateTime TimeStamp { get; private set; } = new DateTime();
+        public UInt32 Trigger { get; private set; }
+        public List<byte> EventData { get; private set; } = new List<byte>();
+
+        public const UInt16 ExpectedSize = 64 + Time.ExpectedSize + 4 + 8;
+
+        public void GetFromBytes(byte[] bytes)
+        {
+            if (bytes.Length >= ExpectedSize)
+            {
+                int idx = 64;
+
+                byte[] descBytes = new byte[64];
+                Array.Copy(bytes, 0, descBytes, 0, 64);
+
+                Description = Encoding.ASCII.GetString(descBytes).Substring(0, Encoding.ASCII.GetString(descBytes).IndexOf("\0"));
+
+                Time time = new Time();
+                time.GetFromBytes(bytes.Skip(idx).Take(Time.ExpectedSize).ToArray());
+                try
+                {
+                    TimeStamp = DateTime.Parse(time.Years.ToString("D4") + "-" + time.Months.ToString("D2") + "-" + time.Days.ToString("D2") + " " +
+                        time.Hours.ToString("D2") + ":" + time.Minutes.ToString("D2") + ":" + time.Seconds.ToString("D2") + "." + time.Milliseconds.ToString("D3"));
+                }
+                catch
+                {
+                    TimeStamp = new DateTime();
+                }
+
+
+                idx += Time.ExpectedSize;
+
+                Trigger = Helper<UInt32>.GetVariable(bytes, ref idx);
+
+                EventData = bytes.Skip(idx).Take(8).ToList();
+            }
+        }
+    }
+
+    public enum MdiVariableType
+    {
+        Byte,
+        Word,
+        LWord,
+        Float
+    }
+
+    public class MdiVariable
+    {
+        public string Name { get; private set; }
+        public string Value { get; private set; }
+        public MdiVariableType Type { get; private set; }
+
+        public const UInt16 ExpectedSize = 21;
+
+        public void GetFromBytes(byte[] bytes)
+        {
+            if (bytes.Length >= ExpectedSize)
+            {
+                int idx = 16;
+
+                byte[] nameBytes = new byte[16];
+                Array.Copy(bytes, 0, nameBytes, 0, 16);
+
+                Name = Encoding.ASCII.GetString(nameBytes).Substring(0, Encoding.ASCII.GetString(nameBytes).IndexOf("\0"));
+                Type = (MdiVariableType)Enum.Parse(typeof(MdiVariableType), Helper<byte>.GetVariable(bytes, ref idx).ToString());
+                
+                switch(Type)
+                {
+                    case MdiVariableType.Byte:
+                    case MdiVariableType.Word:
+                    case MdiVariableType.LWord:
+                        {
+                            Value = Helper<UInt32>.GetVariable(bytes, ref idx).ToString();
+                            break;
+                        }
+                    case MdiVariableType.Float:
+                        {
+                            Value = BitConverter.ToSingle(bytes, idx).ToString();
+                            break;
+                        }
+                    default: break;
+                }
+            }
         }
     }
 
