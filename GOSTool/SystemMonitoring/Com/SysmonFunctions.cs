@@ -470,7 +470,7 @@ namespace GOSTool
             sysmonSemaphore.Wait();
             if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
             {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 1000) == true)
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 3000) == true)
                 {
                     for (int i = 0; i < messageHeader.PayloadSize / ErsEvent.ExpectedSize; i++)
                     {

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ProjectData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <CreationTime>2025-01-28T00:07:26.8899647+01:00</CreationTime>
-  <LastModified>2025-01-28T01:17:03.3949508+01:00</LastModified>
-  <LastAccessed>2025-01-28T01:17:03.3949508+01:00</LastAccessed>
+  <LastModified>2025-03-24T21:46:19.7669299+01:00</LastModified>
+  <LastAccessed>2025-03-24T21:46:19.7658024+01:00</LastAccessed>
   <ProjectName>New project</ProjectName>
   <Workspace>C:\Users\Ahmed\Documents\GitHub\GOS2022\Tool\GOSTool\bin\Release</Workspace>
   <OsConfig>
@@ -14,6 +14,11 @@
     <Name>New Application</Name>
     <Major>0</Major>
     <Minor>1</Minor>
-    <Modules />
+    <Modules>
+      <ModuleConfig>
+        <ModuleName>Monitoring</ModuleName>
+        <Tasks />
+      </ModuleConfig>
+    </Modules>
   </AppConfig>
 </ProjectData>
