@@ -113,7 +113,7 @@ namespace GOSTool
             byte[] recvBuf;
             GcpMessageHeader messageHeader = new GcpMessageHeader();
 
-            messageHeader.MessageId = (ushort)SysmonMessageId.GOS_SYSMON_MSG_SYSTIME_SET_ID;
+            messageHeader.MessageId = (UInt16)SysmonMessageId.APP_SYSMON_MSG_RTC_SET_REQ;//(ushort)SysmonMessageId.GOS_SYSMON_MSG_SYSTIME_SET_ID;
             messageHeader.ProtocolVersion = 1;
             messageHeader.PayloadSize = SysTimeMessage.ExpectedSize;
 
@@ -144,14 +144,14 @@ namespace GOSTool
             byte[] recvBuf;
             GcpMessageHeader messageHeader = new GcpMessageHeader();
 
-            messageHeader.MessageId = 0x2000;
+            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_SOFTWARE_INFO_GET_REQ;// 0x2000;
             messageHeader.ProtocolVersion = 1;
             messageHeader.PayloadSize = 0;
 
             sysmonSemaphore.Wait();
             if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
             {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 2000) == true)
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 3000) == true)
                 {
                     softwareInfo.GetFromBytes(recvBuf);
                 }
@@ -176,7 +176,7 @@ namespace GOSTool
             byte[] recvBuf;
             GcpMessageHeader messageHeader = new GcpMessageHeader();
 
-            messageHeader.MessageId = 0x2011;
+            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_SOFTWARE_INFO_SET_REQ;//0x2011;
             messageHeader.ProtocolVersion = 1;
             messageHeader.PayloadSize = (UInt16)softwareInfo.GetBytes().Length;
 
@@ -208,14 +208,14 @@ namespace GOSTool
             byte[] recvBuf;
             GcpMessageHeader messageHeader = new GcpMessageHeader();
 
-            messageHeader.MessageId = 0x2001;
+            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_HARDWARE_INFO_GET_REQ;//0x2001;
             messageHeader.ProtocolVersion = 1;
             messageHeader.PayloadSize = 0;
 
             sysmonSemaphore.Wait();
             if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
             {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 2000) == true)
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 3000) == true)
                 {
                     hardwareInfo.GetFromBytes(recvBuf);
                 }
@@ -240,7 +240,7 @@ namespace GOSTool
             byte[] recvBuf;
             GcpMessageHeader messageHeader = new GcpMessageHeader();
 
-            messageHeader.MessageId = 0x2012;
+            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_HARDWARE_INFO_SET_REQ;//0x2012;
             messageHeader.ProtocolVersion = 1;
             messageHeader.PayloadSize = (UInt16)hardwareInfo.GetBytes().Length;
 
@@ -272,7 +272,7 @@ namespace GOSTool
             byte[] recvBuf;
             GcpMessageHeader messageHeader = new GcpMessageHeader();
 
-            messageHeader.MessageId = 0x2003;
+            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_BLD_CONFIG_GET_REQ;//0x2003;
             messageHeader.ProtocolVersion = 1;
             messageHeader.PayloadSize = 0;
 
@@ -304,7 +304,7 @@ namespace GOSTool
             byte[] recvBuf;
             GcpMessageHeader messageHeader = new GcpMessageHeader();
 
-            messageHeader.MessageId = 0x2014;
+            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_BLD_CONFIG_SET_REQ;//0x2014;
             messageHeader.ProtocolVersion = 1;
             messageHeader.PayloadSize = (UInt16)bldConfig.GetBytes().Length;
 
@@ -336,14 +336,14 @@ namespace GOSTool
             byte[] recvBuf;
             GcpMessageHeader messageHeader = new GcpMessageHeader();
 
-            messageHeader.MessageId = 0x2002;
+            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_WIFI_CONFIG_GET_REQ;//0x2002;
             messageHeader.ProtocolVersion = 1;
             messageHeader.PayloadSize = 0;
 
             sysmonSemaphore.Wait();
             if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
             {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 2000) == true)
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 3000) == true)
                 {
                     wifiConfig.GetFromBytes(recvBuf);
                 }
@@ -368,7 +368,7 @@ namespace GOSTool
             byte[] recvBuf;
             GcpMessageHeader messageHeader = new GcpMessageHeader();
 
-            messageHeader.MessageId = 0x2013;
+            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_WIFI_CONFIG_SET_REQ;//0x2013;
             messageHeader.ProtocolVersion = 1;
             messageHeader.PayloadSize = (UInt16)wifiConfig.GetBytes().Length;
 
@@ -438,7 +438,7 @@ namespace GOSTool
             byte[] recvBuf;
             GcpMessageHeader messageHeader = new GcpMessageHeader();
 
-            messageHeader.MessageId = 0x4102;
+            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_ERS_SYSMON_MSG_EVENTS_CLEAR_REQ;//0x4102;
             messageHeader.ProtocolVersion = 1;
             messageHeader.PayloadSize = 0;
 
@@ -463,7 +463,7 @@ namespace GOSTool
             byte[] recvBuf;
             GcpMessageHeader messageHeader = new GcpMessageHeader();
 
-            messageHeader.MessageId = 0x4101;
+            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_ERS_SYSMON_MSG_EVENTS_GET_REQ;//0x4101;
             messageHeader.ProtocolVersion = 1;
             messageHeader.PayloadSize = 0;
 
@@ -492,7 +492,7 @@ namespace GOSTool
             byte[] recvBuf;
             GcpMessageHeader messageHeader = new GcpMessageHeader();
 
-            messageHeader.MessageId = 0x3101;
+            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_MDI_SYSMON_MSG_MONITORING_DATA_GET_REQ;//0x3101;
             messageHeader.ProtocolVersion = 1;
             messageHeader.PayloadSize = 0;
 
@@ -521,7 +521,7 @@ namespace GOSTool
             int binaryNum = 0;
             GcpMessageHeader messageHeader = new GcpMessageHeader();
 
-            messageHeader.MessageId = 0x2101;
+            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_SDH_SYSMON_MSG_BINARY_NUM_REQ;//0x2101;
             messageHeader.ProtocolVersion = 1;
             messageHeader.PayloadSize = 0;
 
@@ -545,7 +545,7 @@ namespace GOSTool
             BinaryDescriptorMessage binaryInfo = new BinaryDescriptorMessage();
             GcpMessageHeader messageHeader = new GcpMessageHeader();
 
-            messageHeader.MessageId = 0x2102;
+            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_SDH_SYSMON_MSG_BINARY_INFO_REQ;//0x2102;
             messageHeader.ProtocolVersion = 1;
             messageHeader.PayloadSize = 2;
 
@@ -569,7 +569,7 @@ namespace GOSTool
             bool retval = false;
             GcpMessageHeader messageHeader = new GcpMessageHeader();
 
-            messageHeader.MessageId = 0x2105;
+            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_SDH_SYSMON_MSG_SOFTWARE_INSTALL_REQ;//0x2105;
             messageHeader.ProtocolVersion = 1;
             messageHeader.PayloadSize = 2;
 
@@ -597,7 +597,7 @@ namespace GOSTool
             bool retval = false;
             GcpMessageHeader messageHeader = new GcpMessageHeader();
 
-            messageHeader.MessageId = 0x2106;
+            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_SDH_SYSMON_MSG_BINARY_ERASE_REQ;//0x2106;
             messageHeader.ProtocolVersion = 1;
             messageHeader.PayloadSize = 3;
 
@@ -623,7 +623,7 @@ namespace GOSTool
         {
             byte[] recvBuf;
             bool res = false;
-            int chunkSize = 2048;
+            int chunkSize = 1024;
 
             ChunkDescriptor chunkDesc = new ChunkDescriptor();
             GcpMessageHeader messageHeader = new GcpMessageHeader();
@@ -634,9 +634,9 @@ namespace GOSTool
             {
                 chunkDesc.ChunkIndex = (UInt16)chunkCounter;
 
-                messageHeader.MessageId = 0x2104;
+                messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_SDH_SYSMON_MSG_BINARY_CHUNK_REQ;//0x2104;
                 messageHeader.ProtocolVersion = 1;
-                messageHeader.PayloadSize = (UInt16)(chunkDesc.GetBytes().Length + chunkSize);
+                messageHeader.PayloadSize = (UInt16)(chunkDesc.GetBytes().Length + chunkSize);                
 
                 List<byte> payload = new List<byte>();
                 payload.AddRange(chunkDesc.GetBytes());
@@ -649,20 +649,20 @@ namespace GOSTool
                 {
                     payload.AddRange(bytes.Skip(chunkCounter * chunkSize).Take(bytes.Skip(chunkCounter * chunkSize).ToArray().Length));
                 }
-
                 sysmonSemaphore.Wait();
 
-                Thread.Sleep(10);
+                Thread.Sleep(25);
 
                 if (GCP.TransmitMessage(0, messageHeader, payload.ToArray(), 0xffff) == true)
                 {
-                    if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 2000) == true)
+                    if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 4000) == true)
                     {
                         chunkDesc.GetFromBytes(recvBuf);
 
                         if (chunkDesc.Result != 1)
                         {
                             res = false;
+                            sysmonSemaphore.Release();
                             break;
                         }
                         else
@@ -674,17 +674,21 @@ namespace GOSTool
                     else
                     {
                         res = false;
+                        sysmonSemaphore.Release();
                         break;
                     }
                 }
                 else
                 {
                     res = false;
+                    sysmonSemaphore.Release();
                     break;
                 }
 
                 sysmonSemaphore.Release();
-            }            
+            }
+
+            Thread.Sleep(1000);
 
             return res;
         }
@@ -695,7 +699,7 @@ namespace GOSTool
             BinaryDownloadRequestResult result = BinaryDownloadRequestResult.COMM_ERR;
             GcpMessageHeader messageHeader = new GcpMessageHeader();
 
-            messageHeader.MessageId = 0x2103;
+            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_SDH_SYSMON_MSG_DOWNLOAD_REQ;// 0x2103;
             messageHeader.ProtocolVersion = 1;
             messageHeader.PayloadSize = (UInt16)binaryDescriptor.GetBytes().Length;
 

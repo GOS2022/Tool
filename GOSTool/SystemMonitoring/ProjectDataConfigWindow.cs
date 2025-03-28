@@ -171,10 +171,10 @@ namespace GOSTool.SystemMonitoring
                     bldConfigItems.Add((new string[] { "Reserved", bldConfig.Reserved.ToString() }));
                     bldConfigItems.Add((new string[] { "Bianry index", bldConfig.BinaryIndex.ToString() }));
                     bldConfigItems.Add((new string[] { "Update mode", bldConfig.UpdateMode.ToString() }));
-                    bldConfigItems.Add((new string[] { "Wireless update", bldConfig.WirelessUpdate.ToString() }));
-                    bldConfigItems.Add((new string[] { "Wait for connection on startup", bldConfig.WaitForConnectionOnStartup.ToString() }));
+                    //bldConfigItems.Add((new string[] { "Wireless update", bldConfig.WirelessUpdate.ToString() }));
+                    //bldConfigItems.Add((new string[] { "Wait for connection on startup", bldConfig.WaitForConnectionOnStartup.ToString() }));
                     bldConfigItems.Add((new string[] { "Startup counter", bldConfig.StartupCounter.ToString() }));
-                    bldConfigItems.Add((new string[] { "Connection timeout", bldConfig.ConnectionTimeout.ToString() }));
+                    //bldConfigItems.Add((new string[] { "Connection timeout", bldConfig.ConnectionTimeout.ToString() }));
                     bldConfigItems.Add((new string[] { "Request timeout", bldConfig.RequestTimeout.ToString() }));
                     bldConfigItems.Add((new string[] { "Install timeout", bldConfig.InstallTimeout.ToString() }));
 
@@ -391,12 +391,12 @@ namespace GOSTool.SystemMonitoring
                         bldConfigToSet.Reserved = byte.Parse(bldCfgGridView.Rows[1].Cells[1].Value.ToString());
                         bldConfigToSet.BinaryIndex = UInt16.Parse(bldCfgGridView.Rows[2].Cells[1].Value.ToString());
                         bldConfigToSet.UpdateMode = bool.Parse(bldCfgGridView.Rows[3].Cells[1].Value.ToString());
-                        bldConfigToSet.WirelessUpdate = bool.Parse(bldCfgGridView.Rows[4].Cells[1].Value.ToString());
-                        bldConfigToSet.WaitForConnectionOnStartup = bool.Parse(bldCfgGridView.Rows[5].Cells[1].Value.ToString());
-                        bldConfigToSet.StartupCounter = byte.Parse(bldCfgGridView.Rows[6].Cells[1].Value.ToString());
-                        bldConfigToSet.ConnectionTimeout = UInt32.Parse(bldCfgGridView.Rows[7].Cells[1].Value.ToString());
-                        bldConfigToSet.RequestTimeout = UInt32.Parse(bldCfgGridView.Rows[8].Cells[1].Value.ToString());
-                        bldConfigToSet.InstallTimeout = UInt32.Parse(bldCfgGridView.Rows[9].Cells[1].Value.ToString());
+                        //bldConfigToSet.WirelessUpdate = bool.Parse(bldCfgGridView.Rows[4].Cells[1].Value.ToString());
+                        //bldConfigToSet.WaitForConnectionOnStartup = bool.Parse(bldCfgGridView.Rows[5].Cells[1].Value.ToString());
+                        bldConfigToSet.StartupCounter = byte.Parse(bldCfgGridView.Rows[4].Cells[1].Value.ToString());
+                        //bldConfigToSet.ConnectionTimeout = UInt32.Parse(bldCfgGridView.Rows[7].Cells[1].Value.ToString());
+                        bldConfigToSet.RequestTimeout = UInt32.Parse(bldCfgGridView.Rows[5].Cells[1].Value.ToString());
+                        bldConfigToSet.InstallTimeout = UInt32.Parse(bldCfgGridView.Rows[6].Cells[1].Value.ToString());
 
                         await Task.Run(() =>
                         {
@@ -418,10 +418,10 @@ namespace GOSTool.SystemMonitoring
                                 bldConfigItems.Add((new string[] { "Reserved", bldConfig.Reserved.ToString() }));
                                 bldConfigItems.Add((new string[] { "Bianry index", bldConfig.BinaryIndex.ToString() }));
                                 bldConfigItems.Add((new string[] { "Update mode", bldConfig.UpdateMode.ToString() }));
-                                bldConfigItems.Add((new string[] { "Wireless update", bldConfig.WirelessUpdate.ToString() }));
-                                bldConfigItems.Add((new string[] { "Wait for connection on startup", bldConfig.WaitForConnectionOnStartup.ToString() }));
+                                //bldConfigItems.Add((new string[] { "Wireless update", bldConfig.WirelessUpdate.ToString() }));
+                                //bldConfigItems.Add((new string[] { "Wait for connection on startup", bldConfig.WaitForConnectionOnStartup.ToString() }));
                                 bldConfigItems.Add((new string[] { "Startup counter", bldConfig.StartupCounter.ToString() }));
-                                bldConfigItems.Add((new string[] { "Connection timeout", bldConfig.ConnectionTimeout.ToString() }));
+                                //bldConfigItems.Add((new string[] { "Connection timeout", bldConfig.ConnectionTimeout.ToString() }));
                                 bldConfigItems.Add((new string[] { "Request timeout", bldConfig.RequestTimeout.ToString() }));
                                 bldConfigItems.Add((new string[] { "Install timeout", bldConfig.InstallTimeout.ToString() }));
 

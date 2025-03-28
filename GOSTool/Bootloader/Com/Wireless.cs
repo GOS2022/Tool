@@ -674,7 +674,7 @@ namespace GOSTool
         public static bool SendBinary(List<byte> bytes)
         {
             bool res = false;
-            int chunkSize = 2048;
+            int chunkSize = 1024;// 2048;
             bool repeat = false;
             ChunkDescriptor chunkDesc = new ChunkDescriptor();
 
@@ -728,8 +728,6 @@ namespace GOSTool
 
                     if (chunkDesc.Result != 1)
                     {
-                        //res = false;
-                        //break;
                         repeat = true;
                     }
                     else
@@ -750,6 +748,8 @@ namespace GOSTool
             }
 
             wirelessSemaphore.Release();
+
+            Thread.Sleep(1000);
 
             return res;
         }

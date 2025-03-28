@@ -90,8 +90,8 @@ namespace GOSTool
 
                 serialPort = new SerialPort(port, baud);
                 serialPort.DataReceived += SerialPort_DataReceived;
-                serialPort.WriteTimeout = 5000;
-                serialPort.ReadTimeout = 5000;
+                serialPort.WriteTimeout = 1000;
+                serialPort.ReadTimeout = 1000;
                 serialPort.Open();
 
                 serialPort.DiscardInBuffer();
@@ -137,6 +137,7 @@ namespace GOSTool
                         rxTempBuffer = new byte[receivedBytes];
                         serialPort.Read(rxTempBuffer, 0, receivedBytes);
                         rxBuffer.AddRange(rxTempBuffer);
+                        Thread.Sleep(1);
                     }
                     while (serialPort.BytesToRead > 0);
                 }
@@ -203,8 +204,8 @@ namespace GOSTool
                         return false;
                     }
                 }
-
-                Thread.Sleep(25);
+                // This delay is critical.
+                Thread.Sleep(30);
                 return true;
             }
             
@@ -221,15 +222,16 @@ namespace GOSTool
         public static bool Receive(out byte[] buffer, UInt16 size, int timeout = rxTimeout)
         {
             buffer = new byte[size];
+            //rxBuffer.Clear();
             sw.Restart();
 
             if (serialPort != null && serialPort.IsOpen)
             {
-                while (rxBuffer.Count < size && sw.ElapsedMilliseconds < timeout) ;
+                while ((rxBuffer.Count < size) && (sw.ElapsedMilliseconds < timeout));
 
                 try
                 {
-                    if (sw.ElapsedMilliseconds <= timeout)
+                    if (sw.ElapsedMilliseconds < timeout)
                     {
                         Array.Copy(rxBuffer.ToArray(), buffer, size);
                         rxBuffer.RemoveRange(0, size);
@@ -239,11 +241,13 @@ namespace GOSTool
                     else
                     {
                         sw.Stop();
+                        rxBuffer.Clear();
                     }
                 }
                 catch
                 {
                     sw.Stop();
+                    rxBuffer.Clear();
                 }
 
             }

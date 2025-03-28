@@ -300,10 +300,10 @@ namespace GOSTool
         public byte Reserved { get; set; }
         public UInt16 BinaryIndex { get; set; }
         public bool UpdateMode { get; set; }
-        public bool WirelessUpdate { get; set; }
-        public bool WaitForConnectionOnStartup { get; set; }
+        //public bool WirelessUpdate { get; set; }
+        //public bool WaitForConnectionOnStartup { get; set; }
         public byte StartupCounter { get; set; }
-        public UInt32 ConnectionTimeout { get; set; }
+        //public UInt32 ConnectionTimeout { get; set; }
         public UInt32 RequestTimeout { get; set; }
         public UInt32 InstallTimeout { get; set; }
 
@@ -314,10 +314,10 @@ namespace GOSTool
             Reserved = Helper<byte>.GetVariable(bytes, ref idx);
             BinaryIndex = Helper<UInt16>.GetVariable(bytes, ref idx);
             UpdateMode = Helper<bool>.GetVariable(bytes, ref idx);
-            WirelessUpdate = Helper<bool>.GetVariable(bytes, ref idx);
-            WaitForConnectionOnStartup = Helper<bool>.GetVariable(bytes, ref idx);
+            //WirelessUpdate = Helper<bool>.GetVariable(bytes, ref idx);
+            //WaitForConnectionOnStartup = Helper<bool>.GetVariable(bytes, ref idx);
             StartupCounter = Helper<byte>.GetVariable(bytes, ref idx);
-            ConnectionTimeout = Helper<UInt32>.GetVariable(bytes, ref idx);
+            //ConnectionTimeout = Helper<UInt32>.GetVariable(bytes, ref idx);
             RequestTimeout = Helper<UInt32>.GetVariable(bytes, ref idx);
             InstallTimeout = Helper<UInt32>.GetVariable(bytes, ref idx);
         }
@@ -330,10 +330,10 @@ namespace GOSTool
             bytes.AddRange(Helper<byte>.GetBytes(Reserved));
             bytes.AddRange(Helper<UInt16>.GetBytes(BinaryIndex));
             bytes.AddRange(Helper<bool>.GetBytes(UpdateMode));
-            bytes.AddRange(Helper<bool>.GetBytes(WirelessUpdate));
-            bytes.AddRange(Helper<bool>.GetBytes(WaitForConnectionOnStartup));
+            //bytes.AddRange(Helper<bool>.GetBytes(WirelessUpdate));
+            //bytes.AddRange(Helper<bool>.GetBytes(WaitForConnectionOnStartup));
             bytes.AddRange(Helper<byte>.GetBytes(StartupCounter));
-            bytes.AddRange(Helper<UInt32>.GetBytes(ConnectionTimeout));
+            //bytes.AddRange(Helper<UInt32>.GetBytes(ConnectionTimeout));
             bytes.AddRange(Helper<UInt32>.GetBytes(RequestTimeout));
             bytes.AddRange(Helper<UInt32>.GetBytes(InstallTimeout));
 

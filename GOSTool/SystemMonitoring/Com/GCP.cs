@@ -192,23 +192,6 @@ namespace GOSTool
 
             if (messageHeader != null && ((payload != null) || (payload == null && messageHeader.PayloadSize == 0u)))
             {
-                /*if (Uart.Send(frameHeader.GetHeaderBytes(), GcpHeaderFrame.ExpectedSize) &&
-                    Uart.Send(payload, frameHeader.DataSize) &&
-                    Uart.Receive(out byte[] rxBuffer, GcpHeaderFrame.ExpectedSize))
-                {
-                    responseHeader.GetFromBytes(rxBuffer);
-
-                    if (ValidateHeader(responseHeader, out byte ack) &&
-                        responseHeader.AckType == 1)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }*/
-
                 if (Uart.Send(frameHeader.GetHeaderBytes(), GcpHeaderFrame.ExpectedSize))
                 {
                     if (frameHeader.DataSize == 0)
@@ -261,6 +244,8 @@ namespace GOSTool
                             byte[] payloadTemp = new byte[tempSize];
 
                             Array.Copy(payload, chunkIndex * maxChunkSize, payloadTemp, 0, tempSize > payload.Length ? payload.Length : tempSize);
+
+                            Thread.Sleep(50);
 
                             if (Uart.Send(payloadTemp, (UInt16)payloadTemp.Length) &&
                                 Uart.Receive(out byte[] rxBuffer, GcpHeaderFrame.ExpectedSize))
@@ -350,39 +335,6 @@ namespace GOSTool
             responseHeader.ProtocolMajor = GcpHeaderFrame.ExpectedProtocolVersionMajor;
             responseHeader.ProtocolMinor = GcpHeaderFrame.ExpectedProtocolVersionMinor;
 
-            /*if (Uart.Receive(out byte[] receivedBytes, GcpHeaderFrame.ExpectedSize, timeout))
-            {
-                rxHeader.GetFromBytes(receivedBytes);
-                if (ValidateHeader(rxHeader, out byte ack) &&
-                    ((rxHeader.DataSize == 0) || (rxHeader.DataSize > 0 && Uart.Receive(out payload, rxHeader.DataSize, timeout))) &&
-                    ValidateData(rxHeader, payload, out ack))
-                {
-                    messageHeader.MessageId = rxHeader.MessageId;
-                    messageHeader.PayloadSize = rxHeader.DataSize;
-                    messageHeader.PayloadCrc = rxHeader.DataCrc;
-
-                    responseHeader.AckType = 1;
-                    responseHeader.HeaderCrc = Crc.GetCrc32(responseHeader.GetHeaderBytes().Take(GcpHeaderFrame.ExpectedSize - 4).ToArray());
-
-                    if (Uart.Send(responseHeader.GetHeaderBytes(), GcpHeaderFrame.ExpectedSize))
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    responseHeader.AckType = ack;
-                    responseHeader.HeaderCrc = Crc.GetCrc32(responseHeader.GetHeaderBytes().Take(GcpHeaderFrame.ExpectedSize - 4).ToArray());
-
-                    if (Uart.Send(responseHeader.GetHeaderBytes(), GcpHeaderFrame.ExpectedSize))
-                    { return false; }
-                }
-            }*/
-
             if (Uart.Receive(out byte[] receivedBytes, GcpHeaderFrame.ExpectedSize, timeout))
             {
                 rxHeader.GetFromBytes(receivedBytes);
@@ -435,6 +387,8 @@ namespace GOSTool
                                 tempSize = maxChunkSize;
                             }
 
+                            Thread.Sleep(50);
+
                             if (Uart.Receive(out byte[] rx, tempSize, timeout))
                             {
                                 Array.Copy(rx, 0, payload, chunkIndex * maxChunkSize, tempSize);
@@ -448,7 +402,6 @@ namespace GOSTool
 
                                 if (Uart.Send(responseHeader.GetHeaderBytes(), GcpHeaderFrame.ExpectedSize))
                                 {
-                                    //return true;
                                     // OK, continue.
                                 }
                                 else
