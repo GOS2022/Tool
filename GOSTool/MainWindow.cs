@@ -125,5 +125,11 @@ namespace GOSTool
             ProjectDataConfigWindow projectDataConfigWindow = new ProjectDataConfigWindow();
             projectDataConfigWindow.Show();
         }
+
+        private void devicesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DevicesWindow devicesWindow = new DevicesWindow();
+            devicesWindow.Show();
+        }
     }
 }

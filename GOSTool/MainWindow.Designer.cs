@@ -70,6 +70,7 @@ namespace GOSTool
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.devicesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -169,7 +170,8 @@ namespace GOSTool
             this.systemMonitoringToolStripMenuItem,
             this.monitoringDataToolStripMenuItem,
             this.eventsToolStripMenuItem,
-            this.projectDataAndConfigurationToolStripMenuItem});
+            this.projectDataAndConfigurationToolStripMenuItem,
+            this.devicesToolStripMenuItem});
             this.monitoringToolToolStripMenuItem.Name = "monitoringToolToolStripMenuItem";
             this.monitoringToolToolStripMenuItem.Size = new System.Drawing.Size(108, 24);
             this.monitoringToolToolStripMenuItem.Text = "Maintenance";
@@ -427,6 +429,13 @@ namespace GOSTool
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Project Tree";
             // 
+            // devicesToolStripMenuItem
+            // 
+            this.devicesToolStripMenuItem.Name = "devicesToolStripMenuItem";
+            this.devicesToolStripMenuItem.Size = new System.Drawing.Size(294, 26);
+            this.devicesToolStripMenuItem.Text = "Devices";
+            this.devicesToolStripMenuItem.Click += new System.EventHandler(this.devicesToolStripMenuItem_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -492,5 +501,6 @@ namespace GOSTool
         private System.Windows.Forms.ToolStripMenuItem monitoringDataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem eventsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem projectDataAndConfigurationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem devicesToolStripMenuItem;
     }
 }

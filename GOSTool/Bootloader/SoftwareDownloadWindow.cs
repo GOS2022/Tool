@@ -162,9 +162,7 @@ namespace GOSTool
             }
             else
             {
-                //binaryTree.Nodes.Clear();
                 selectedBinaryCB.Items.Clear();
-                //selectedBinaryCB.SelectedText = "";
                 selectedBinaryCB.SelectedValue = "";
                 binaryDescriptors.Clear();
 
@@ -200,11 +198,11 @@ namespace GOSTool
 
                                 TraceProgressNew_ThreadSafe("Updating data...");
 
-                                int binaryNum = 0;
+                                int binaryNum = 0;                              
 
                                 if (!wireless)
                                 {
-                                    binaryNum = SysmonFunctions.GetBinaryNum();
+                                    binaryNum = SysmonFunctions.GetBinaryNum();                                    
                                 }
                                 else
                                 {

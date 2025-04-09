@@ -115,6 +115,11 @@ namespace GOSTool
         SVL_ERS_SYSMON_MSG_EVENTS_CLEAR_REQ = 0x4002,
         SVL_ERS_SYSMON_MSG_EVENTS_CLEAR_RESP = 0x4A02,
 
+        SVL_DHS_SYSMON_MSG_DEVICE_NUM_REQ = 0x5001,
+        SVL_DHS_SYSMON_MSG_DEVICE_NUM_RESP = 0x5A01,
+        SVL_DHS_SYSMON_MSG_DEVICE_INFO_REQ = 0x5002,
+        SVL_DHS_SYSMON_MSG_DEVICE_INFO_RESP = 0x5A02,
+
         APP_SYSMON_MSG_RTC_SET_REQ = 0x8001,
         APP_SYSMON_MSG_RTC_SET_RESP = 0x8A01
     }
@@ -369,6 +374,75 @@ namespace GOSTool
                         }
                     default: break;
                 }
+            }
+        }
+    }
+
+    public class DeviceDescriptor
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public UInt32 DeviceId { get; set; }
+        public string DeviceType { get; set; }
+        public bool Enabled { get; set; }
+        public string DeviceState { get; set; }
+        public UInt32 ErrorCode { get; set; }
+        public UInt32 ErrorCounter { get; set; }
+        public UInt32 ErrorTolerance { get; set; }
+        public UInt32 ReadCounter { get; set; }
+        public UInt32 WriteCounter { get; set; }
+
+        /// <summary>
+        /// Gets the class member values from the byte array.
+        /// </summary>
+        /// <param name="bytes"></param>
+        public void GetFromBytes(byte[] bytes)
+        {
+            //if (bytes.Length >= ExpectedSize)
+            {
+                int idx = 32;
+
+                byte[] nameBytes = new byte[32];
+                Array.Copy(bytes, 0, nameBytes, 0, 32);
+
+                Name = Encoding.ASCII.GetString(nameBytes).Substring(0, Encoding.ASCII.GetString(nameBytes).IndexOf("\0"));
+                
+                byte[] descBytes = new byte[64];
+                Array.Copy(bytes, idx, descBytes, 0, 64);
+                Description = Encoding.ASCII.GetString(descBytes).Substring(0, Encoding.ASCII.GetString(descBytes).IndexOf("\0"));
+
+                idx += 64;
+                DeviceId = Helper<UInt32>.GetVariable(bytes, ref idx);
+                idx += 4;
+                byte devType = Helper<byte>.GetVariable(bytes, ref idx);
+                DeviceType = "Unknown";
+                switch(devType)
+                {
+                    case 0: DeviceType = "Read only"; break;
+                    case 1: DeviceType = "Write only"; break;
+                    case 2: DeviceType = "Read / Write"; break;
+                    case 3: DeviceType = "Virtual"; break;
+                }
+
+                Enabled = Helper<bool>.GetVariable(bytes, ref idx);
+                idx += 4;
+                idx += 4;
+                idx += 4*4;
+                idx += 4*4;
+                byte devState = Helper<byte>.GetVariable(bytes, ref idx);
+                DeviceState = "Unknown";
+                switch (devState)
+                {
+                    case 0: DeviceState = "Uninitialized"; break;
+                    case 1: DeviceState = "Healthy"; break;
+                    case 2: DeviceState = "Error"; break;
+                }
+
+                ErrorCode = Helper<UInt32>.GetVariable(bytes, ref idx);
+                ErrorCounter = Helper<UInt32>.GetVariable(bytes, ref idx);
+                ErrorTolerance = Helper<UInt32>.GetVariable(bytes, ref idx);
+                ReadCounter = Helper<UInt32>.GetVariable(bytes, ref idx);
+                WriteCounter = Helper<UInt32>.GetVariable(bytes, ref idx);
             }
         }
     }

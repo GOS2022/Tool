@@ -262,6 +262,12 @@
     <Compile Include="SystemMonitoring\Com\SysmonFunctions.cs" />
     <Compile Include="SystemMonitoring\Com\SysmonMessages.cs" />
     <Compile Include="SystemMonitoring\Com\Uart.cs" />
+    <Compile Include="SystemMonitoring\DevicesWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SystemMonitoring\DevicesWindow.Designer.cs">
+      <DependentUpon>DevicesWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="SystemMonitoring\EventsWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -354,6 +360,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="SystemMonitoring\DevicesWindow.resx">
+      <DependentUpon>DevicesWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SystemMonitoring\EventsWindow.resx">
       <DependentUpon>EventsWindow.cs</DependentUpon>
     </EmbeddedResource>
