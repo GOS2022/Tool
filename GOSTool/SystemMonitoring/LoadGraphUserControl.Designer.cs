@@ -31,15 +31,17 @@ namespace GOSTool
         {
             this.SuspendLayout();
             // 
-            // CpuLoadGraphUserControl
+            // LoadGraphUserControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
             this.DoubleBuffered = true;
-            this.Name = "CpuLoadGraphUserControl";
+            this.Name = "LoadGraphUserControl";
             this.Size = new System.Drawing.Size(614, 148);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.LoadGraphUserControl_Paint);
+            this.MouseLeave += new System.EventHandler(this.LoadGraphUserControl_MouseLeave);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.LoadGraphUserControl_MouseMove);
             this.Resize += new System.EventHandler(this.LoadGraphUserControl_Resize);
             this.ResumeLayout(false);
 

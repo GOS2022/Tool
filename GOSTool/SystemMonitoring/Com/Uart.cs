@@ -100,6 +100,8 @@ namespace GOSTool
 
                 IsInitialized = true;
 
+                Logger.StartNewLog();
+
                 return true;
             }
             catch
@@ -136,7 +138,7 @@ namespace GOSTool
                         receivedBytes = serialPort.BytesToRead;
                         rxTempBuffer = new byte[receivedBytes];
                         serialPort.Read(rxTempBuffer, 0, receivedBytes);
-                        rxBuffer.AddRange(rxTempBuffer);
+                        rxBuffer.AddRange(rxTempBuffer);                        
                         Thread.Sleep(1);
                     }
                     while (serialPort.BytesToRead > 0);
@@ -192,20 +194,8 @@ namespace GOSTool
         {
             if (serialPort != null && serialPort.IsOpen)
             {
-                for (int i = 0; i < size; i++)
-                {
-                    try
-                    {
-                        byte[] sendByte = new byte[] { data[i] };
-                        serialPort.Write(sendByte, 0, 1);
-                    }
-                    catch
-                    {
-                        return false;
-                    }
-                }
-                // This delay is critical.
-                Thread.Sleep(30);
+                serialPort.Write(data, 0, size);
+                Logger.LogNewCom(data, Logger.ComType.RAW_TX_UART);
                 return true;
             }
             
@@ -222,7 +212,6 @@ namespace GOSTool
         public static bool Receive(out byte[] buffer, UInt16 size, int timeout = rxTimeout)
         {
             buffer = new byte[size];
-            //rxBuffer.Clear();
             sw.Restart();
 
             if (serialPort != null && serialPort.IsOpen)
@@ -232,10 +221,12 @@ namespace GOSTool
                 try
                 {
                     if (sw.ElapsedMilliseconds < timeout)
-                    {
+                    {                        
                         Array.Copy(rxBuffer.ToArray(), buffer, size);
                         rxBuffer.RemoveRange(0, size);
                         sw.Stop();
+
+                        Logger.LogNewCom(buffer, Logger.ComType.RAW_RX_UART);
                         return true;
                     }
                     else

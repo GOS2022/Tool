@@ -506,6 +506,7 @@ namespace GOSTool
             this.Text = "MonitoringWindow";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MonitoringWindow_FormClosing);
             this.Load += new System.EventHandler(this.MonitoringWindow_Load);
+            this.Resize += new System.EventHandler(this.MonitoringWindow_Resize);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.sampleNUD)).EndInit();

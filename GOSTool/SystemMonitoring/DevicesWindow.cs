@@ -20,11 +20,15 @@ namespace GOSTool.SystemMonitoring
             InitializeComponent();
             usbConfigUserControl1.Show();
             wirelessConfigUserControl1.Hide();
+
+            Font font = new Font(deviceTree.Font, FontStyle.Bold);
+            deviceTree.Font = font;
         }
 
         private async void connectButton_Click(object sender, EventArgs e)
         {
-            deviceTree.Nodes.Clear();             
+            deviceTree.Nodes.Clear();
+            Font fontRegular = new Font(deviceTree.Font, FontStyle.Regular);
 
             // Check for invalid configuration.
             if (usbComRadioButton.Checked && (usbConfigUserControl1.Port == null || usbConfigUserControl1.Baud < 0))
@@ -65,16 +69,18 @@ namespace GOSTool.SystemMonitoring
                         }
 
                         TreeNode node = new TreeNode(deviceDescriptor.Name);
-                        node.Nodes.Add("Description: " + deviceDescriptor.Description);
-                        node.Nodes.Add("Device ID: 0x" + deviceDescriptor.DeviceId.ToString("X"));
-                        node.Nodes.Add("Device type: " + deviceDescriptor.DeviceType);
-                        node.Nodes.Add("Enabled: " + deviceDescriptor.Enabled);
-                        node.Nodes.Add("State: " + deviceDescriptor.DeviceState);
-                        node.Nodes.Add("Error code: " + deviceDescriptor.ErrorCode);
-                        node.Nodes.Add("Error counter: " + deviceDescriptor.ErrorCounter);
-                        node.Nodes.Add("Error tolerance: " + deviceDescriptor.ErrorTolerance);
-                        node.Nodes.Add("Read counter: " + deviceDescriptor.ReadCounter);
-                        node.Nodes.Add("Write counter: " + deviceDescriptor.WriteCounter);
+                        node.Nodes.Add(new TreeNode("Description: " + deviceDescriptor.Description) { NodeFont = fontRegular });
+                        node.Nodes.Add(new TreeNode("Device ID: 0x" + deviceDescriptor.DeviceId.ToString("X")) { NodeFont = fontRegular });
+                        node.Nodes.Add(new TreeNode("Device type: " + deviceDescriptor.DeviceType) { NodeFont = fontRegular });
+                        node.Nodes.Add(new TreeNode("Enabled: " + deviceDescriptor.Enabled) { NodeFont = fontRegular });
+                        node.Nodes.Add(new TreeNode("State: " + deviceDescriptor.DeviceState) { 
+                            NodeFont = new Font(deviceTree.Font, FontStyle.Bold), 
+                            ForeColor = deviceDescriptor.DeviceState == "Healthy" ? Color.Green : deviceDescriptor.DeviceState == "Uninitialized" ? Color.Gray: Color.Red } );
+                        node.Nodes.Add(new TreeNode("Error code: " + deviceDescriptor.ErrorCode){ NodeFont = fontRegular });
+                        node.Nodes.Add(new TreeNode("Error counter: " + deviceDescriptor.ErrorCounter){ NodeFont = fontRegular });
+                        node.Nodes.Add(new TreeNode("Error tolerance: " + deviceDescriptor.ErrorTolerance) { NodeFont = fontRegular });
+                        node.Nodes.Add(new TreeNode("Read counter: " + deviceDescriptor.ReadCounter) { NodeFont = fontRegular });
+                        node.Nodes.Add(new TreeNode("Write counter: " + deviceDescriptor.WriteCounter) { NodeFont = fontRegular });
 
                         TreeViewAddNode_ThreadSafe(node);
                     }

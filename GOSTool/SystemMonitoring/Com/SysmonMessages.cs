@@ -450,6 +450,7 @@ namespace GOSTool
     public class BinaryDescriptorMessage
     {
         public string Name { get; set; }
+        public DateTime InstallDate { get; set; } = new DateTime();
         public UInt32 Location { get; set; }
         public UInt32 StartAddress { get; set; }
         public UInt32 Size { get; set; }
@@ -471,6 +472,22 @@ namespace GOSTool
                 Array.Copy(bytes, 0, nameBytes, 0, 32);
 
                 Name = Encoding.ASCII.GetString(nameBytes).Substring(0, Encoding.ASCII.GetString(nameBytes).IndexOf("\0"));
+
+                Time time = new Time();
+                time.GetFromBytes(bytes.Skip(idx).Take(Time.ExpectedSize).ToArray());
+                try
+                {
+                    InstallDate = DateTime.Parse(time.Years.ToString("D4") + "-" + time.Months.ToString("D2") + "-" + time.Days.ToString("D2") + " " +
+                        time.Hours.ToString("D2") + ":" + time.Minutes.ToString("D2") + ":" + time.Seconds.ToString("D2") + "." + time.Milliseconds.ToString("D3"));
+                }
+                catch
+                {
+                    InstallDate = new DateTime();
+                }
+
+
+                idx += Time.ExpectedSize;
+
                 Location = Helper<UInt32>.GetVariable(bytes, ref idx);
                 StartAddress = Helper<UInt32>.GetVariable(bytes, ref idx);
                 Size = Helper<UInt32>.GetVariable(bytes, ref idx);
@@ -491,6 +508,17 @@ namespace GOSTool
                 nameBytes.Add(0);
             
             bytes.AddRange(nameBytes);
+
+            Time time = new Time();
+            time.Years = (UInt16)InstallDate.Year;
+            time.Months = (byte)InstallDate.Month;
+            time.Days = (UInt16)InstallDate.Day;
+            time.Hours = (byte)InstallDate.Hour;
+            time.Minutes = (byte)InstallDate.Minute;
+            time.Seconds = (byte)InstallDate.Second;
+
+            bytes.AddRange(time.GetBytes());
+
             bytes.AddRange(Helper<UInt32>.GetBytes(Location));
             bytes.AddRange(Helper<UInt32>.GetBytes(StartAddress));
             bytes.AddRange(Helper<UInt32>.GetBytes(Size));

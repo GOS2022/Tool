@@ -278,6 +278,8 @@ namespace GOSTool
                 monitoringTimer.Interval = 100;
                 monitoringTimer.Tick += MonitoringTimer_Tick;
                 monitoringTimer.Start();
+
+                Logger.StartNewMeasurement();
             }
             else
             {
@@ -579,6 +581,11 @@ namespace GOSTool
                     SysmonFunctions.SynchronizeTime();
                 }
             });
+        }
+
+        private void MonitoringWindow_Resize(object sender, EventArgs e)
+        {
+            Helper.ResizeListView_ThreadSafe(this, taskListView);
         }
     }
 }

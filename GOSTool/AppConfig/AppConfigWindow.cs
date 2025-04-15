@@ -18,6 +18,8 @@ namespace GOSTool
             appNameTB.Text = _projectData.AppConfig.Name;
             appMajorNUD.Value = _projectData.AppConfig.Major;
             appMinorNUD.Value = _projectData.AppConfig.Minor;
+            moduleConfigUserControl1.Hide();
+            taskConfigUserControl1.Hide();
 
             BuildTree(_projectData.AppConfig.Modules, appTreeView.Nodes);
 
@@ -123,7 +125,10 @@ namespace GOSTool
             if (_projectData.AppConfig.Name != appNameTB.Text)
             {
                 string projectFolder = ProjectHandler.WorkspacePath.Value + "\\" + ProjectHandler.ProjectName.Value + "\\Build\\" + _projectData.AppConfig.Name;
-                Directory.Delete(projectFolder, true);
+                if (Directory.Exists(projectFolder))
+                {
+                    Directory.Delete(projectFolder, true);
+                }
             }
             _projectData.AppConfig.UseConfigPattern = useConfigPatternCb.Checked;
             _projectData.AppConfig.Name = appNameTB.Text;
@@ -137,7 +142,10 @@ namespace GOSTool
 
         private void GenerateApplicationFiles()
         {
-            Directory.Delete(ProjectHandler.WorkspacePath.Value + "\\" + ProjectHandler.ProjectName.Value + "\\Build\\" + _projectData.AppConfig.Name, true);
+            if (Directory.Exists(ProjectHandler.WorkspacePath.Value + "\\" + ProjectHandler.ProjectName.Value + "\\Build\\" + _projectData.AppConfig.Name))
+            {
+                Directory.Delete(ProjectHandler.WorkspacePath.Value + "\\" + ProjectHandler.ProjectName.Value + "\\Build\\" + _projectData.AppConfig.Name, true);
+            }
             Helper.CopyFilesRecursively(ProgramData.EmptyAppPath, ProjectHandler.WorkspacePath.Value + "\\" + ProjectHandler.ProjectName.Value + "\\Build\\" + _projectData.AppConfig.Name);
             CodeGenerator.GenerateApplicationFiles();
         }

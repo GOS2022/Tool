@@ -120,13 +120,14 @@ namespace GOSTool
             if (Directory.Exists(ProjectHandler.WorkspacePath.Value + "\\" + ProjectHandler.ProjectName.Value + "\\Build\\GOS2022"))
                 Directory.Delete(ProjectHandler.WorkspacePath.Value + "\\" + ProjectHandler.ProjectName.Value + "\\Build\\GOS2022", true);
             Helper.CopyFilesRecursively(ProgramData.OSPath + "\\" + _projectData.OsConfig.Version, ProjectHandler.WorkspacePath.Value + "\\" + ProjectHandler.ProjectName.Value + "\\Build\\GOS2022");
-            OverwriteConfig();
+            OverwriteConfig(ProjectHandler.WorkspacePath.Value + "\\" + ProjectHandler.ProjectName.Value + "\\Build\\GOS2022", "gos_config.h");
+            OverwriteConfig(ProgramData.OSPath + "\\" + _projectData.OsConfig.Version, "gos_config.h");
             Close();
         }
 
-        private void OverwriteConfig()
+        private void OverwriteConfig(string root, string configFile)
         {
-            string[] _files = Directory.GetFiles(ProjectHandler.WorkspacePath.Value + "\\" + ProjectHandler.ProjectName.Value + "\\Build\\GOS2022", "gos_config.h", SearchOption.AllDirectories);
+            string[] _files = Directory.GetFiles(root, configFile, SearchOption.AllDirectories);
 
             if (_files.Length == 1)
             {

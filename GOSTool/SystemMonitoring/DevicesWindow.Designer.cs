@@ -43,14 +43,15 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox3.Controls.Add(this.deviceTree);
-            this.groupBox3.Location = new System.Drawing.Point(332, 157);
+            this.groupBox3.Location = new System.Drawing.Point(191, 157);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.groupBox3.Size = new System.Drawing.Size(459, 322);
+            this.groupBox3.Size = new System.Drawing.Size(609, 511);
             this.groupBox3.TabIndex = 11;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Device list";
@@ -61,7 +62,7 @@
             this.deviceTree.Location = new System.Drawing.Point(3, 17);
             this.deviceTree.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.deviceTree.Name = "deviceTree";
-            this.deviceTree.Size = new System.Drawing.Size(453, 303);
+            this.deviceTree.Size = new System.Drawing.Size(603, 492);
             this.deviceTree.TabIndex = 9;
             // 
             // groupBox2
@@ -77,7 +78,7 @@
             this.groupBox2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.groupBox2.Size = new System.Drawing.Size(779, 142);
+            this.groupBox2.Size = new System.Drawing.Size(788, 142);
             this.groupBox2.TabIndex = 12;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Communication configuration";
@@ -91,7 +92,7 @@
             this.wirelessConfigUserControl1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.wirelessConfigUserControl1.Name = "wirelessConfigUserControl1";
             this.wirelessConfigUserControl1.Port = 3000;
-            this.wirelessConfigUserControl1.Size = new System.Drawing.Size(765, 60);
+            this.wirelessConfigUserControl1.Size = new System.Drawing.Size(774, 60);
             this.wirelessConfigUserControl1.TabIndex = 7;
             // 
             // usbConfigUserControl1
@@ -146,7 +147,7 @@
             this.connectButton.Name = "connectButton";
             this.connectButton.Size = new System.Drawing.Size(144, 38);
             this.connectButton.TabIndex = 15;
-            this.connectButton.Text = "Connect";
+            this.connectButton.Text = "Read";
             this.connectButton.UseVisualStyleBackColor = true;
             this.connectButton.Click += new System.EventHandler(this.connectButton_Click);
             // 
@@ -154,7 +155,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(803, 490);
+            this.ClientSize = new System.Drawing.Size(812, 679);
             this.Controls.Add(this.connectButton);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox3);

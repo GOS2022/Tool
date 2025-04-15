@@ -733,7 +733,7 @@ namespace GOSTool
                     else
                     {
                         res = true;
-                        BinaryDownloadProgressEvent?.Invoke(null, (chunkCounter + 1, chunks));
+                        SvlSdh.BinaryDownloadProgressEvent?.Invoke(null, (chunkCounter + 1, chunks));
                         repeat = false;
                     }
                 }

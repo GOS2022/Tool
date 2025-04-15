@@ -259,6 +259,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SystemMonitoring\Com\Crc.cs" />
     <Compile Include="SystemMonitoring\Com\GCP.cs" />
+    <Compile Include="SystemMonitoring\Com\Logger.cs" />
+    <Compile Include="SystemMonitoring\Com\SvlSdh.cs" />
     <Compile Include="SystemMonitoring\Com\SysmonFunctions.cs" />
     <Compile Include="SystemMonitoring\Com\SysmonMessages.cs" />
     <Compile Include="SystemMonitoring\Com\Uart.cs" />
@@ -280,6 +282,7 @@
     <Compile Include="SystemMonitoring\LoadGraphUserControl.Designer.cs">
       <DependentUpon>LoadGraphUserControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="SystemMonitoring\MonitoringData.cs" />
     <Compile Include="SystemMonitoring\MonitoringDataWindow.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -29,7 +29,7 @@ namespace GOSTool
             //binaryPathTb.Text = "C:\\Users\\Gabor\\STM32CubeIDE\\workspace_1.5.1\\GOS2022_iplTest\\Debug\\GOS2022_iplTest.bin";
             binaryAddrTb.Text = "8020000";
 
-            SysmonFunctions.BinaryDownloadProgressEvent += (sender, param) =>
+            SvlSdh.BinaryDownloadProgressEvent += (sender, param) =>
             {
                 TraceProgressChanging_ThreadSafe("Downloading progress: [" + param.Item1 + " / " + param.Item2 + "] chunks");
                 SetProgressBar_ThreadSafe(100 * param.Item1 / param.Item2);
@@ -104,7 +104,7 @@ namespace GOSTool
 
                     if (!wireless)
                     {
-                        binaryNum = SysmonFunctions.GetBinaryNum();
+                        binaryNum = SvlSdh.GetBinaryNum();
                     }
                     else
                     {
@@ -120,7 +120,7 @@ namespace GOSTool
                         
                         if (!wireless)
                         {
-                            binaryDesc = SysmonFunctions.GetBinaryInfo(i);
+                            binaryDesc = SvlSdh.GetBinaryInfo(i);
                         }
                         else
                         {
@@ -135,6 +135,7 @@ namespace GOSTool
                         binaryDescriptors.Add(binaryDesc);
                         
                         TreeNode node = new TreeNode(binaryDesc.Name);
+                        node.Nodes.Add("Install date: " + binaryDesc.InstallDate.ToString("yyyy-MM-dd HH:mm:ss"));
                         node.Nodes.Add("Location: 0x" + binaryDesc.Location.ToString("X"));
                         node.Nodes.Add("Start address: 0x" + binaryDesc.StartAddress.ToString("X"));
                         node.Nodes.Add("Size: " + binaryDesc.Size + " bytes");
@@ -177,6 +178,7 @@ namespace GOSTool
                     BinaryDescriptorMessage testDesc = new BinaryDescriptorMessage()
                     {
                         Name = binaryNameTb.Text,
+                        InstallDate = DateTime.Now,
                         StartAddress = UInt32.Parse(binaryAddrTb.Text, System.Globalization.NumberStyles.HexNumber),
                         Size = (UInt32)memoryContent.Count,
                         Crc = Crc.GetCrc32_new(memoryContent.ToArray())
@@ -186,12 +188,12 @@ namespace GOSTool
 
                     await Task.Run(() =>
                     {
-                        if ((!wireless && SysmonFunctions.SendBinaryDownloadRequest(testDesc) == BinaryDownloadRequestResult.OK) ||
+                        if ((!wireless && SvlSdh.SendBinaryDownloadRequest(testDesc) == BinaryDownloadRequestResult.OK) ||
                             (wireless && Wireless.SendBinaryDownloadRequest(testDesc) == BinaryDownloadRequestResult.OK))
                         {
                             TraceProgressNew_ThreadSafe("Starting download...");
 
-                            if ((!wireless && SysmonFunctions.SendBinary(memoryContent) == true) ||
+                            if ((!wireless && SvlSdh.SendBinary(memoryContent) == true) ||
                                 (wireless && Wireless.SendBinary(memoryContent) == true))
                             {
                                 TraceProgressNew_ThreadSafe("Download successful.");
@@ -202,7 +204,7 @@ namespace GOSTool
 
                                 if (!wireless)
                                 {
-                                    binaryNum = SysmonFunctions.GetBinaryNum();                                    
+                                    binaryNum = SvlSdh.GetBinaryNum();                                    
                                 }
                                 else
                                 {
@@ -217,7 +219,7 @@ namespace GOSTool
                                     
                                     if (!wireless)
                                     {
-                                        binaryDesc = SysmonFunctions.GetBinaryInfo(i);
+                                        binaryDesc = SvlSdh.GetBinaryInfo(i);
                                     }
                                     else
                                     {
@@ -227,6 +229,7 @@ namespace GOSTool
                                     binaryDescriptors.Add(binaryDesc);
 
                                     TreeNode node = new TreeNode(binaryDesc.Name);
+                                    node.Nodes.Add("Install date: " + binaryDesc.InstallDate.ToString("yyyy-MM-dd HH:mm:ss"));
                                     node.Nodes.Add("Location: 0x" + binaryDesc.Location.ToString("X"));
                                     node.Nodes.Add("Start address: 0x" + binaryDesc.StartAddress.ToString("X"));
                                     node.Nodes.Add("Size: " + binaryDesc.Size + " bytes");
@@ -439,7 +442,7 @@ namespace GOSTool
                 {
                     if (!wireless)
                     {
-                        SysmonFunctions.SendInstallRequest(index);
+                        SvlSdh.SendInstallRequest(index);
                         TraceProgressNew_ThreadSafe("Install request sent for " + fileName + ".");
                         SysmonFunctions.SendResetRequest();
                     }
@@ -485,7 +488,7 @@ namespace GOSTool
 
                     if (!wireless)
                     {
-                        SysmonFunctions.SendEraseRequest(index);
+                        SvlSdh.SendEraseRequest(index);
                     }
                     else
                     {
@@ -498,7 +501,7 @@ namespace GOSTool
 
                     if (!wireless)
                     {
-                        binaryNum = SysmonFunctions.GetBinaryNum();
+                        binaryNum = SvlSdh.GetBinaryNum();
                     }
                     else
                     {
@@ -513,7 +516,7 @@ namespace GOSTool
                         
                         if (!wireless)
                         {
-                            binaryDesc = SysmonFunctions.GetBinaryInfo(i);
+                            binaryDesc = SvlSdh.GetBinaryInfo(i);
                         }
                         else
                         {

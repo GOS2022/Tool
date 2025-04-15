@@ -13,23 +13,50 @@ namespace GOSTool
             var content = $"https://github.com/GOS2022/OS/archive/refs/heads/release.zip";
             using (var client = new WebClient())
             {
-                Directory.Delete(ProgramData.OSPath, true);
-                Directory.CreateDirectory(ProgramData.OSPath);
-                client.DownloadFile(content, ProgramData.OSPath + "/os.zip");
-                System.IO.Compression.ZipFile.ExtractToDirectory(ProgramData.OSPath + "/os.zip", ProgramData.OSPath);
-                File.Delete(ProgramData.OSPath + "/os.zip");
-                var allDirectories = Directory.GetDirectories(ProgramData.OSPath + "/OS-release", "*", SearchOption.AllDirectories);
+                if (!Directory.Exists(ProgramData.OSPath + "\\temp"))
+                {
+                    Directory.CreateDirectory(ProgramData.OSPath + "\\temp");
+                }                
+                
+                client.DownloadFile(content, ProgramData.OSPath + "\\temp\\os.zip");
+                System.IO.Compression.ZipFile.ExtractToDirectory(ProgramData.OSPath + "\\temp\\os.zip", ProgramData.OSPath + "\\temp");
+                File.Delete(ProgramData.OSPath + "\\temp\\os.zip");
+                var allDirectories = Directory.GetDirectories(ProgramData.OSPath + "\\temp\\OS-release", "*", SearchOption.AllDirectories);
                 foreach (string dir in allDirectories)
                 {
-                    string dirToCreate = dir.Replace(ProgramData.OSPath + "/OS-release", ProgramData.OSPath);
+                    string dirToCreate = dir.Replace(ProgramData.OSPath + "\\temp\\OS-release", ProgramData.OSPath + "\\temp");
                     Directory.CreateDirectory(dirToCreate);
                 }
-                var allFiles = Directory.GetFiles(ProgramData.OSPath + "/OS-release", "*.*", SearchOption.AllDirectories);
+                var allFiles = Directory.GetFiles(ProgramData.OSPath + "\\temp\\OS-release", "*.*", SearchOption.AllDirectories);
                 foreach (string newPath in allFiles)
                 {
-                    File.Copy(newPath, newPath.Replace(ProgramData.OSPath + "/OS-release", ProgramData.OSPath), true);
+                    File.Copy(newPath, newPath.Replace(ProgramData.OSPath + "\\temp\\OS-release", ProgramData.OSPath + "\\temp"), true);
                 }
-                Directory.Delete(ProgramData.OSPath + "/OS-release", true);
+                Directory.Delete(ProgramData.OSPath + "\\temp\\OS-release", true);
+
+                var osVersions = Directory.GetDirectories(ProgramData.OSPath + "\\temp", "*", SearchOption.TopDirectoryOnly);
+
+                foreach (var dir in osVersions)
+                {
+                    if (!Directory.Exists(ProgramData.OSPath + "\\" + Path.GetFileName(Path.GetDirectoryName(dir))))
+                    {
+                        allDirectories = Directory.GetDirectories(dir, "*", SearchOption.AllDirectories);
+                        foreach (string subdir in allDirectories)
+                        {
+                            string dirToCreate = subdir.Replace("\\temp", "");                          
+                            Directory.CreateDirectory(dirToCreate);
+                        }
+
+                        allFiles = Directory.GetFiles(dir, "*.*", SearchOption.AllDirectories);
+                        foreach (string newPath in allFiles)
+                        {
+                            File.Copy(newPath, newPath.Replace("\\temp", ""), true);
+                        }
+                        Directory.Delete(dir, true);
+                    }
+                }
+
+                Directory.Delete(ProgramData.OSPath + "\\temp", true);
             }
         }
 
