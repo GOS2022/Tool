@@ -11,7 +11,15 @@ namespace GOSTool
     public static class SysmonFunctions
     {
         private static SemaphoreSlim sysmonSemaphore = new SemaphoreSlim(1, 1);
-        
+        public static void SemaphoreWait()
+        {
+            sysmonSemaphore.Wait();
+        }
+
+        public static void SemaphoreRelease()
+        {
+            sysmonSemaphore.Release();
+        }
         public enum PingResult
         {
             OK,
@@ -121,135 +129,9 @@ namespace GOSTool
 
             if (GCP.TransmitMessage(0, messageHeader, sysTimeMessage.GetBytes(), 0xffff) == true)
             {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 1000) == true)
-                {
-                    //softwareInfo.GetFromBytes(recvBuf); TODO response?
-                }
-                else
-                {
-                    // Error.
-                }
-            }
-            else
-            {
-                // Error.
-            }
-            Thread.Sleep(10);
-            sysmonSemaphore.Release();
-        }
-
-        public static SoftwareInfo GetSoftwareInfo()
-        {
-            SoftwareInfo softwareInfo = new SoftwareInfo();
-            byte[] recvBuf;
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_SOFTWARE_INFO_GET_REQ;// 0x2000;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = 0;
-
-            sysmonSemaphore.Wait();
-            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
-            {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 3000) == true)
-                {
-                    softwareInfo.GetFromBytes(recvBuf);
-                }
-                else
-                {
-                    // Error.
-                }
-            }
-            else
-            {
-                // Error.
-            }
-            Thread.Sleep(10);
-            sysmonSemaphore.Release();
-
-            return softwareInfo;
-        }
-
-        public static SoftwareInfo SetSoftwareInfo(SoftwareInfo softwareInfo)
-        {
-            SoftwareInfo softwareInfoReadback = new SoftwareInfo();
-            byte[] recvBuf;
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_SOFTWARE_INFO_SET_REQ;//0x2011;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = (UInt16)softwareInfo.GetBytes().Length;
-
-            sysmonSemaphore.Wait();
-            if (GCP.TransmitMessage(0, messageHeader, softwareInfo.GetBytes(), 0xffff) == true)
-            {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 5000) == true)
-                {
-                    softwareInfoReadback.GetFromBytes(recvBuf);
-                }
-                else
-                {
-                    // Error.
-                }
-            }
-            else
-            {
-                // Error.
-            }
-            Thread.Sleep(10);
-            sysmonSemaphore.Release();
-
-            return softwareInfoReadback;
-        }
-
-        public static HardwareInfo GetHardwareInfo()
-        {
-            HardwareInfo hardwareInfo = new HardwareInfo();
-            byte[] recvBuf;
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_HARDWARE_INFO_GET_REQ;//0x2001;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = 0;
-
-            sysmonSemaphore.Wait();
-            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
-            {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 3000) == true)
-                {
-                    hardwareInfo.GetFromBytes(recvBuf);
-                }
-                else
-                {
-                    // Error.
-                }
-            }
-            else
-            {
-                // Error.
-            }
-            Thread.Sleep(10);
-            sysmonSemaphore.Release();
-
-            return hardwareInfo;
-        }
-
-        public static HardwareInfo SetHardwareInfo(HardwareInfo hardwareInfo)
-        {
-            HardwareInfo hardwareInfoReadback = new HardwareInfo();
-            byte[] recvBuf;
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_HARDWARE_INFO_SET_REQ;//0x2012;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = (UInt16)hardwareInfo.GetBytes().Length;
-
-            sysmonSemaphore.Wait();
-            if (GCP.TransmitMessage(0, messageHeader, hardwareInfo.GetBytes(), 0xffff) == true)
-            {
                 if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 2000) == true)
                 {
-                    hardwareInfoReadback.GetFromBytes(recvBuf);
+
                 }
                 else
                 {
@@ -262,136 +144,6 @@ namespace GOSTool
             }
             Thread.Sleep(10);
             sysmonSemaphore.Release();
-
-            return hardwareInfoReadback;
-        }
-
-        public static BootloaderConfig GetBootloaderConfig()
-        {
-            BootloaderConfig bootloaderConfig = new BootloaderConfig();
-            byte[] recvBuf;
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_BLD_CONFIG_GET_REQ;//0x2003;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = 0;
-
-            sysmonSemaphore.Wait();
-            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
-            {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 2000) == true)
-                {
-                    bootloaderConfig.GetFromBytes(recvBuf);
-                }
-                else
-                {
-                    // Error.
-                }
-            }
-            else
-            {
-                // Error.
-            }
-            Thread.Sleep(10);
-            sysmonSemaphore.Release();
-
-            return bootloaderConfig;
-        }
-
-        public static BootloaderConfig SetBootloaderConfig(BootloaderConfig bldConfig)
-        {
-            BootloaderConfig bldConfigReadBack = new BootloaderConfig();
-            byte[] recvBuf;
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_BLD_CONFIG_SET_REQ;//0x2014;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = (UInt16)bldConfig.GetBytes().Length;
-
-            sysmonSemaphore.Wait();
-            if (GCP.TransmitMessage(0, messageHeader, bldConfig.GetBytes(), 0xffff) == true)
-            {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 2000) == true)
-                {
-                    bldConfigReadBack.GetFromBytes(recvBuf);
-                }
-                else
-                {
-                    // Error.
-                }
-            }
-            else
-            {
-                // Error.
-            }
-            Thread.Sleep(10);
-            sysmonSemaphore.Release();
-
-            return bldConfigReadBack;
-        }
-
-        public static WifiConfig GetWifiConfig()
-        {
-            WifiConfig wifiConfig = new WifiConfig();
-            byte[] recvBuf;
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_WIFI_CONFIG_GET_REQ;//0x2002;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = 0;
-
-            sysmonSemaphore.Wait();
-            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
-            {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 3000) == true)
-                {
-                    wifiConfig.GetFromBytes(recvBuf);
-                }
-                else
-                {
-                    // Error.
-                }
-            }
-            else
-            {
-                // Error.
-            }
-            Thread.Sleep(10);
-            sysmonSemaphore.Release();
-
-            return wifiConfig;
-        }
-
-        public static WifiConfig SetWifiConfig(WifiConfig wifiConfig)
-        {
-            WifiConfig wifiConfigReadBack = new WifiConfig();
-            byte[] recvBuf;
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_WIFI_CONFIG_SET_REQ;//0x2013;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = (UInt16)wifiConfig.GetBytes().Length;
-
-            sysmonSemaphore.Wait();
-            if (GCP.TransmitMessage(0, messageHeader, wifiConfig.GetBytes(), 0xffff) == true)
-            {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 2000) == true)
-                {
-                    wifiConfigReadBack.GetFromBytes(recvBuf);
-                }
-                else
-                {
-                    // Error.
-                }
-            }
-            else
-            {
-                // Error.
-            }
-            Thread.Sleep(10);
-            sysmonSemaphore.Release();
-
-            return wifiConfigReadBack;
         }
 
         public static SysmonMessageResult ModifyTask(int taskIndex, SysmonTaskModifyType modifyType)
@@ -431,148 +183,6 @@ namespace GOSTool
             sysmonSemaphore.Release();
         }
 
-        public static bool ClearEvents()
-        {
-            UInt32 eventNum = 255;
-
-            byte[] recvBuf;
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_ERS_SYSMON_MSG_EVENTS_CLEAR_REQ;//0x4102;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = 0;
-
-            sysmonSemaphore.Wait();
-            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
-            {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 1000) == true)
-                {
-                    int idx = 0;
-                    eventNum = Helper<UInt32>.GetVariable(recvBuf, ref idx);
-                }
-            }
-            Thread.Sleep(10);
-            sysmonSemaphore.Release();
-
-            return eventNum == 0;
-        }
-
-        public static List<ErsEvent> GetEvents()
-        {
-            List<ErsEvent> events = new List<ErsEvent>();
-            byte[] recvBuf;
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_ERS_SYSMON_MSG_EVENTS_GET_REQ;//0x4101;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = 0;
-
-            sysmonSemaphore.Wait();
-            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
-            {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 3000) == true)
-                {
-                    for (int i = 0; i < messageHeader.PayloadSize / ErsEvent.ExpectedSize; i++)
-                    {
-                        ErsEvent ev = new ErsEvent();
-                        ev.GetFromBytes(recvBuf.Skip(i * ErsEvent.ExpectedSize).Take(ErsEvent.ExpectedSize).ToArray());
-                        events.Add(ev);
-                    }
-                }
-            }
-            Thread.Sleep(10);
-            sysmonSemaphore.Release();
-
-            return events;
-        }
-
-        public static List<MdiVariable> GetMonitoringData()
-        {
-            List<MdiVariable> variables = new List<MdiVariable>();
-            byte[] recvBuf;
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_MDI_SYSMON_MSG_MONITORING_DATA_GET_REQ;//0x3101;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = 0;
-
-            sysmonSemaphore.Wait();
-            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
-            {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 1000) == true)
-                {
-                    for (int i = 0; i < messageHeader.PayloadSize / MdiVariable.ExpectedSize; i++)
-                    {
-                        MdiVariable var = new MdiVariable();
-                        var.GetFromBytes(recvBuf.Skip(i * MdiVariable.ExpectedSize).Take(MdiVariable.ExpectedSize).ToArray());
-                        variables.Add(var);
-                    }
-                }
-            }
-            Thread.Sleep(10);
-            sysmonSemaphore.Release();
-
-            return variables;
-        }
-
-        public static int GetDeviceNum()
-        {
-            byte[] recvBuf;
-            int devNum = 0;
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_DHS_SYSMON_MSG_DEVICE_NUM_REQ;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = 0;
-
-            sysmonSemaphore.Wait();
-            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
-            {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 1000) == true)
-                {
-                    devNum = ((recvBuf[1] << 8) + recvBuf[0]);
-                }
-            }
-            Thread.Sleep(10);
-            sysmonSemaphore.Release();
-
-            return devNum;
-        }
-
-        public static DeviceDescriptor GetDeviceInfo(int index)
-        {
-            byte[] recvBuf;
-            DeviceDescriptor deviceInfo = new DeviceDescriptor();
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_DHS_SYSMON_MSG_DEVICE_INFO_REQ;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = 2;
-
-            sysmonSemaphore.Wait();
-            if (GCP.TransmitMessage(0, messageHeader, new byte[] { (byte)(index), (byte)((int)index >> 8), }, 0xffff) == true)
-            {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 1000) == true)
-                {
-                    deviceInfo.GetFromBytes(recvBuf);
-                }
-            }
-            Thread.Sleep(10);
-            sysmonSemaphore.Release();
-
-            return deviceInfo;
-        }
-
-        public static void SemaphoreWait()
-        {
-            sysmonSemaphore.Wait();
-        }
-
-        public static void SemaphoreRelease()
-        {
-            sysmonSemaphore.Release();
-        }
-
         public static float GetCpuLoad()
         {
             byte[] recvBuf;
@@ -587,7 +197,7 @@ namespace GOSTool
             sysmonSemaphore.Wait();
             if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
             {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 1000) == true)
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 2000) == true)
                 {
                     cpuUsageMessage.GetFromBytes(recvBuf);
 

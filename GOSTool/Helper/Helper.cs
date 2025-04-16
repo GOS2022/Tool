@@ -101,6 +101,58 @@ namespace GOSTool
 
     public static class Helper
     {
+        public static string GetString(byte[] buffer, int length, ref int index)
+        {
+            byte[] bytes = buffer.ToList().Skip(index).Take(length).ToArray();
+            string result = Encoding.ASCII.GetString(bytes).Substring(0, Encoding.ASCII.GetString(bytes).IndexOf("\0"));
+            index += length;
+            return result;
+        }
+
+        public static DateTime GetTime(byte[] buffer, ref int index)
+        {
+            Time time = new Time();
+            DateTime convertedTime = new DateTime();
+            time.GetFromBytes(buffer.Skip(index).Take(Time.ExpectedSize).ToArray());
+            try
+            {
+                convertedTime = DateTime.Parse(time.Years.ToString("D4") + "-" + time.Months.ToString("D2") + "-" + time.Days.ToString("D2") + " " +
+                    time.Hours.ToString("D2") + ":" + time.Minutes.ToString("D2") + ":" + time.Seconds.ToString("D2") + "." + time.Milliseconds.ToString("D3"));
+            }
+            catch
+            {
+                convertedTime = new DateTime();
+            }
+
+            index += Time.ExpectedSize;
+
+            return convertedTime;
+        }
+
+        public static byte[] GetBytes(string text, int  length)
+        {
+            List<byte> bytes = new List<byte>();
+            int padding = 0;
+            bytes.AddRange(Encoding.ASCII.GetBytes(text));
+            padding = length - Encoding.ASCII.GetBytes(text).Length;
+            for (int i = 0; i < padding; i++)
+            {
+                bytes.Add(0);
+            }
+            return bytes.ToArray();
+        }
+        public static byte[] GetBytes(DateTime date)
+        {
+            Time time = new Time();
+            time.Years = (UInt16)date.Year;
+            time.Months = (byte)date.Month;
+            time.Days = (UInt16)date.Day;
+            time.Hours = (byte)date.Hour;
+            time.Minutes = (byte)date.Minute;
+            time.Seconds = (byte)date.Second;
+            time.Milliseconds = (byte)date.Millisecond;
+            return time.GetBytes();
+        }
         public static void CopyFilesRecursively(string sourcePath, string targetPath)
         {
             // Now Create all of the directories

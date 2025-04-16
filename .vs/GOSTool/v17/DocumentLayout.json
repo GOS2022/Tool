@@ -3,36 +3,8 @@
   "WorkspaceRootPath": "C:\\Users\\Ahmed\\Documents\\GitHub\\GOS2022\\Tool\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{4636808A-5561-44D5-98BD-01DC852E6501}|GOSTool\\GOSTool.csproj|c:\\users\\ahmed\\documents\\github\\gos2022\\tool\\gostool\\appconfig\\appconfigwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4636808A-5561-44D5-98BD-01DC852E6501}|GOSTool\\GOSTool.csproj|solutionrelative:gostool\\appconfig\\appconfigwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4636808A-5561-44D5-98BD-01DC852E6501}|GOSTool\\GOSTool.csproj|c:\\users\\ahmed\\documents\\github\\gos2022\\tool\\gostool\\appconfig\\appconfigwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{4636808A-5561-44D5-98BD-01DC852E6501}|GOSTool\\GOSTool.csproj|solutionrelative:gostool\\appconfig\\appconfigwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4636808A-5561-44D5-98BD-01DC852E6501}|GOSTool\\GOSTool.csproj|c:\\users\\ahmed\\documents\\github\\gos2022\\tool\\gostool\\osconfig\\gosconfigwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4636808A-5561-44D5-98BD-01DC852E6501}|GOSTool\\GOSTool.csproj|solutionrelative:gostool\\osconfig\\gosconfigwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4636808A-5561-44D5-98BD-01DC852E6501}|GOSTool\\GOSTool.csproj|c:\\users\\ahmed\\documents\\github\\gos2022\\tool\\gostool\\helper\\githubhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4636808A-5561-44D5-98BD-01DC852E6501}|GOSTool\\GOSTool.csproj|solutionrelative:gostool\\helper\\githubhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4636808A-5561-44D5-98BD-01DC852E6501}|GOSTool\\GOSTool.csproj|c:\\users\\ahmed\\documents\\github\\gos2022\\tool\\gostool\\systemmonitoring\\monitoringwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4636808A-5561-44D5-98BD-01DC852E6501}|GOSTool\\GOSTool.csproj|solutionrelative:gostool\\systemmonitoring\\monitoringwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4636808A-5561-44D5-98BD-01DC852E6501}|GOSTool\\GOSTool.csproj|c:\\users\\ahmed\\documents\\github\\gos2022\\tool\\gostool\\systemmonitoring\\monitoringwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{4636808A-5561-44D5-98BD-01DC852E6501}|GOSTool\\GOSTool.csproj|solutionrelative:gostool\\systemmonitoring\\monitoringwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4636808A-5561-44D5-98BD-01DC852E6501}|GOSTool\\GOSTool.csproj|c:\\users\\ahmed\\documents\\github\\gos2022\\tool\\gostool\\systemmonitoring\\loadgraphusercontrol.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4636808A-5561-44D5-98BD-01DC852E6501}|GOSTool\\GOSTool.csproj|solutionrelative:gostool\\systemmonitoring\\loadgraphusercontrol.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4636808A-5561-44D5-98BD-01DC852E6501}|GOSTool\\GOSTool.csproj|c:\\users\\ahmed\\documents\\github\\gos2022\\tool\\gostool\\systemmonitoring\\com\\svlsdh.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4636808A-5561-44D5-98BD-01DC852E6501}|GOSTool\\GOSTool.csproj|solutionrelative:gostool\\systemmonitoring\\com\\svlsdh.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4636808A-5561-44D5-98BD-01DC852E6501}|GOSTool\\GOSTool.csproj|c:\\users\\ahmed\\documents\\github\\gos2022\\tool\\gostool\\programdata\\programdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4636808A-5561-44D5-98BD-01DC852E6501}|GOSTool\\GOSTool.csproj|solutionrelative:gostool\\programdata\\programdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -47,103 +19,14 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "AppConfigWindow.cs",
-              "DocumentMoniker": "C:\\Users\\Ahmed\\Documents\\GitHub\\GOS2022\\Tool\\GOSTool\\AppConfig\\AppConfigWindow.cs",
-              "RelativeDocumentMoniker": "GOSTool\\AppConfig\\AppConfigWindow.cs",
-              "ToolTip": "C:\\Users\\Ahmed\\Documents\\GitHub\\GOS2022\\Tool\\GOSTool\\AppConfig\\AppConfigWindow.cs",
-              "RelativeToolTip": "GOSTool\\AppConfig\\AppConfigWindow.cs",
-              "ViewState": "AgIAAHMAAAAAAAAAAAAcwJIAAAAQAAAAAAAAAA==",
+              "Title": "ProgramData.cs",
+              "DocumentMoniker": "C:\\Users\\Ahmed\\Documents\\GitHub\\GOS2022\\Tool\\GOSTool\\ProgramData\\ProgramData.cs",
+              "RelativeDocumentMoniker": "GOSTool\\ProgramData\\ProgramData.cs",
+              "ToolTip": "C:\\Users\\Ahmed\\Documents\\GitHub\\GOS2022\\Tool\\GOSTool\\ProgramData\\ProgramData.cs",
+              "RelativeToolTip": "GOSTool\\ProgramData\\ProgramData.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-15T12:04:31.033Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "GOSConfigWindow.cs",
-              "DocumentMoniker": "C:\\Users\\Ahmed\\Documents\\GitHub\\GOS2022\\Tool\\GOSTool\\OSConfig\\GOSConfigWindow.cs",
-              "RelativeDocumentMoniker": "GOSTool\\OSConfig\\GOSConfigWindow.cs",
-              "ToolTip": "C:\\Users\\Ahmed\\Documents\\GitHub\\GOS2022\\Tool\\GOSTool\\OSConfig\\GOSConfigWindow.cs",
-              "RelativeToolTip": "GOSTool\\OSConfig\\GOSConfigWindow.cs",
-              "ViewState": "AgIAACcAAAAAAAAAAAASwH8AAABEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-15T11:57:35.818Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "AppConfigWindow.cs [Design]",
-              "DocumentMoniker": "C:\\Users\\Ahmed\\Documents\\GitHub\\GOS2022\\Tool\\GOSTool\\AppConfig\\AppConfigWindow.cs",
-              "RelativeDocumentMoniker": "GOSTool\\AppConfig\\AppConfigWindow.cs",
-              "ToolTip": "C:\\Users\\Ahmed\\Documents\\GitHub\\GOS2022\\Tool\\GOSTool\\AppConfig\\AppConfigWindow.cs [Design]",
-              "RelativeToolTip": "GOSTool\\AppConfig\\AppConfigWindow.cs [Design]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-15T12:04:12.246Z",
-              "EditorCaption": " [Design]"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "GitHubHelper.cs",
-              "DocumentMoniker": "C:\\Users\\Ahmed\\Documents\\GitHub\\GOS2022\\Tool\\GOSTool\\Helper\\GitHubHelper.cs",
-              "RelativeDocumentMoniker": "GOSTool\\Helper\\GitHubHelper.cs",
-              "ToolTip": "C:\\Users\\Ahmed\\Documents\\GitHub\\GOS2022\\Tool\\GOSTool\\Helper\\GitHubHelper.cs",
-              "RelativeToolTip": "GOSTool\\Helper\\GitHubHelper.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAqwCQAAAAQAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-15T11:31:14.423Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "MonitoringWindow.cs",
-              "DocumentMoniker": "C:\\Users\\Ahmed\\Documents\\GitHub\\GOS2022\\Tool\\GOSTool\\SystemMonitoring\\MonitoringWindow.cs",
-              "RelativeDocumentMoniker": "GOSTool\\SystemMonitoring\\MonitoringWindow.cs",
-              "ToolTip": "C:\\Users\\Ahmed\\Documents\\GitHub\\GOS2022\\Tool\\GOSTool\\SystemMonitoring\\MonitoringWindow.cs",
-              "RelativeToolTip": "GOSTool\\SystemMonitoring\\MonitoringWindow.cs",
-              "ViewState": "AgIAADgCAAAAAAAAAAAmwEsCAABBAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-15T11:26:33.624Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "MonitoringWindow.cs [Design]",
-              "DocumentMoniker": "C:\\Users\\Ahmed\\Documents\\GitHub\\GOS2022\\Tool\\GOSTool\\SystemMonitoring\\MonitoringWindow.cs",
-              "RelativeDocumentMoniker": "GOSTool\\SystemMonitoring\\MonitoringWindow.cs",
-              "ToolTip": "C:\\Users\\Ahmed\\Documents\\GitHub\\GOS2022\\Tool\\GOSTool\\SystemMonitoring\\MonitoringWindow.cs [Design]",
-              "RelativeToolTip": "GOSTool\\SystemMonitoring\\MonitoringWindow.cs [Design]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-15T11:26:14.364Z",
-              "EditorCaption": " [Design]"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "LoadGraphUserControl.cs",
-              "DocumentMoniker": "C:\\Users\\Ahmed\\Documents\\GitHub\\GOS2022\\Tool\\GOSTool\\SystemMonitoring\\LoadGraphUserControl.cs",
-              "RelativeDocumentMoniker": "GOSTool\\SystemMonitoring\\LoadGraphUserControl.cs",
-              "ToolTip": "C:\\Users\\Ahmed\\Documents\\GitHub\\GOS2022\\Tool\\GOSTool\\SystemMonitoring\\LoadGraphUserControl.cs",
-              "RelativeToolTip": "GOSTool\\SystemMonitoring\\LoadGraphUserControl.cs",
-              "ViewState": "AgIAAEcAAAAAAAAAAAAgwFMAAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-15T11:21:46.17Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "SvlSdh.cs",
-              "DocumentMoniker": "C:\\Users\\Ahmed\\Documents\\GitHub\\GOS2022\\Tool\\GOSTool\\SystemMonitoring\\Com\\SvlSdh.cs",
-              "RelativeDocumentMoniker": "GOSTool\\SystemMonitoring\\Com\\SvlSdh.cs",
-              "ToolTip": "C:\\Users\\Ahmed\\Documents\\GitHub\\GOS2022\\Tool\\GOSTool\\SystemMonitoring\\Com\\SvlSdh.cs",
-              "RelativeToolTip": "GOSTool\\SystemMonitoring\\Com\\SvlSdh.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-15T11:08:30.381Z",
+              "WhenOpened": "2025-04-16T18:52:14.907Z",
               "EditorCaption": ""
             }
           ]

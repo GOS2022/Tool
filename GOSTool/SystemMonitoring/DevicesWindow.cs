@@ -52,7 +52,7 @@ namespace GOSTool.SystemMonitoring
 
                     if (!wireless)
                     {
-                        devNum = SysmonFunctions.GetDeviceNum();
+                        devNum = SvlDhs.GetDeviceNum();
                     }
                     else
                     {
@@ -61,11 +61,11 @@ namespace GOSTool.SystemMonitoring
 
                     for (int i = 0; i < devNum && !forceQuit; i++)
                     {
-                        DeviceDescriptor deviceDescriptor = new DeviceDescriptor();
+                        DhsDeviceDescriptor deviceDescriptor = new DhsDeviceDescriptor();
 
                         if (!wireless)
                         {
-                            deviceDescriptor = SysmonFunctions.GetDeviceInfo(i);
+                            deviceDescriptor = SvlDhs.GetDeviceInfo(i);
                         }
 
                         TreeNode node = new TreeNode(deviceDescriptor.Name);

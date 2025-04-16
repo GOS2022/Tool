@@ -368,9 +368,9 @@ namespace GOSTool
             wirelessSemaphore.Release();
         }
 
-        public static HardwareInfo GetHardwareInfo()
+        public static PdhHardwareInfo GetHardwareInfo()
         {
-            HardwareInfo hardwareInfo = new HardwareInfo();
+            PdhHardwareInfo hardwareInfo = new PdhHardwareInfo();
             byte[] hwInfoMsg = new byte[2];
             byte[] hwInfoResp = new byte[1024];
 
@@ -411,9 +411,9 @@ namespace GOSTool
             return hardwareInfo;
         }
 
-        public static SoftwareInfo GetSoftwareInfo()
+        public static PdhSoftwareInfo GetSoftwareInfo()
         {
-            SoftwareInfo softwareInfo = new SoftwareInfo();
+            PdhSoftwareInfo softwareInfo = new PdhSoftwareInfo();
             byte[] swInfoMsg = new byte[2];
             byte[] swInfoResp = new byte[1024];
 
@@ -590,9 +590,9 @@ namespace GOSTool
             return binaryNum;
         }
 
-        public static BinaryDescriptorMessage GetBinaryInfo(int index)
+        public static SdhBinaryDescriptorMessage GetBinaryInfo(int index)
         {
-            BinaryDescriptorMessage binaryInfo = new BinaryDescriptorMessage();
+            SdhBinaryDescriptorMessage binaryInfo = new SdhBinaryDescriptorMessage();
 
             byte[] binaryInfoMsg = new byte[4];
             byte[] binaryInfoResp = new byte[1024];
@@ -631,9 +631,9 @@ namespace GOSTool
             return binaryInfo;
         }
 
-        public static BinaryDownloadRequestResult SendBinaryDownloadRequest(BinaryDescriptorMessage binaryDescriptor)
+        public static SdhBinaryDownloadRequestResult SendBinaryDownloadRequest(SdhBinaryDescriptorMessage binaryDescriptor)
         {
-            BinaryDownloadRequestResult result = BinaryDownloadRequestResult.COMM_ERR;
+            SdhBinaryDownloadRequestResult result = SdhBinaryDownloadRequestResult.COMM_ERR;
             byte[] reqMsg = new byte[binaryDescriptor.GetBytes().Length + 2];
             byte[] respMsg = new byte[1024];
 
@@ -657,7 +657,7 @@ namespace GOSTool
                 stream.Write(reqMsg, 0, reqMsg.Length);
                 stream.Read(respMsg, 0, 1024);
 
-                result = (BinaryDownloadRequestResult)respMsg[0];
+                result = (SdhBinaryDownloadRequestResult)respMsg[0];
             }
             catch
             {

@@ -59,7 +59,7 @@ namespace GOSTool.SystemMonitoring
                     while (isMonitoringOn)
                     {
                         List<ListViewItem> ersItems = new List<ListViewItem>();
-                        List<ErsEvent> ersEvents = new List<ErsEvent>();
+                        List<SvlErsEvent> ersEvents = new List<SvlErsEvent>();
 
                         // Get monitoring data.
                         if (wireless)
@@ -68,7 +68,7 @@ namespace GOSTool.SystemMonitoring
                         }
                         else
                         {
-                            ersEvents = SysmonFunctions.GetEvents();
+                            ersEvents = SvlErs.GetEvents();
                         }
 
                         if (ersEvents.Count > 0)
@@ -138,7 +138,7 @@ namespace GOSTool.SystemMonitoring
                 }
                 else
                 {
-                    clearSuccess = SysmonFunctions.ClearEvents();
+                    clearSuccess = SvlErs.ClearEvents();
                 }
 
                 Helper.UpdateListViewWithItems_ThreadSafe(this, ersListView, new List<ListViewItem>());

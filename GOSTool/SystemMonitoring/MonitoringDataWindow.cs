@@ -60,7 +60,7 @@ namespace GOSTool.SystemMonitoring
                     while (isMonitoringOn)
                     {
                         List<ListViewItem> mdiItems = new List<ListViewItem>();
-                        List<MdiVariable> mdiVariables = new List<MdiVariable>();
+                        List<SvlMdiVariable> mdiVariables = new List<SvlMdiVariable>();
 
                         // Get monitoring data.
                         if (wireless)
@@ -69,7 +69,7 @@ namespace GOSTool.SystemMonitoring
                         }
                         else
                         {
-                            mdiVariables = SysmonFunctions.GetMonitoringData();
+                            mdiVariables = SvlMdi.GetMonitoringData();
                         }
 
                         if (mdiVariables.Count > 0)

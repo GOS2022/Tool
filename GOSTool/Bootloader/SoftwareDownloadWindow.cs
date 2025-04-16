@@ -15,7 +15,7 @@ namespace GOSTool
     {
         public bool wireless = false;
         private bool forceQuit = false;
-        private List<BinaryDescriptorMessage> binaryDescriptors = new List<BinaryDescriptorMessage>();
+        private List<SdhBinaryDescriptorMessage> binaryDescriptors = new List<SdhBinaryDescriptorMessage>();
 
         public SoftwareDownloadWindow()
         {
@@ -116,7 +116,7 @@ namespace GOSTool
                     for (int i = 0; i < binaryNum && !forceQuit; i++)
                     {
                         TraceProgressNew_ThreadSafe("Reading binary info [" + (i + 1) + "/" + binaryNum + "] ...");
-                        BinaryDescriptorMessage binaryDesc = new BinaryDescriptorMessage();
+                        SdhBinaryDescriptorMessage binaryDesc = new SdhBinaryDescriptorMessage();
                         
                         if (!wireless)
                         {
@@ -175,7 +175,7 @@ namespace GOSTool
                     List<byte> memoryContent = new List<byte>();
                     memoryContent.AddRange(File.ReadAllBytes(binaryPathTb.Text));
 
-                    BinaryDescriptorMessage testDesc = new BinaryDescriptorMessage()
+                    SdhBinaryDescriptorMessage testDesc = new SdhBinaryDescriptorMessage()
                     {
                         Name = binaryNameTb.Text,
                         InstallDate = DateTime.Now,
@@ -188,8 +188,8 @@ namespace GOSTool
 
                     await Task.Run(() =>
                     {
-                        if ((!wireless && SvlSdh.SendBinaryDownloadRequest(testDesc) == BinaryDownloadRequestResult.OK) ||
-                            (wireless && Wireless.SendBinaryDownloadRequest(testDesc) == BinaryDownloadRequestResult.OK))
+                        if ((!wireless && SvlSdh.SendBinaryDownloadRequest(testDesc) == SdhBinaryDownloadRequestResult.OK) ||
+                            (wireless && Wireless.SendBinaryDownloadRequest(testDesc) == SdhBinaryDownloadRequestResult.OK))
                         {
                             TraceProgressNew_ThreadSafe("Starting download...");
 
@@ -215,7 +215,7 @@ namespace GOSTool
 
                                 for (int i = 0; i < binaryNum && !forceQuit; i++)
                                 {
-                                    BinaryDescriptorMessage binaryDesc = new BinaryDescriptorMessage();
+                                    SdhBinaryDescriptorMessage binaryDesc = new SdhBinaryDescriptorMessage();
                                     
                                     if (!wireless)
                                     {
@@ -512,7 +512,7 @@ namespace GOSTool
 
                     for (int i = 0; i < binaryNum && !forceQuit; i++)
                     {
-                        BinaryDescriptorMessage binaryDesc = new BinaryDescriptorMessage();
+                        SdhBinaryDescriptorMessage binaryDesc = new SdhBinaryDescriptorMessage();
                         
                         if (!wireless)
                         {

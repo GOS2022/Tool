@@ -204,7 +204,6 @@
     <Compile Include="AppConfig\TaskPrivilegeSelector.Designer.cs">
       <DependentUpon>TaskPrivilegeSelector.cs</DependentUpon>
     </Compile>
-    <Compile Include="Bootloader\Com\Bootloader.cs" />
     <Compile Include="Bootloader\Com\Wireless.cs" />
     <Compile Include="Bootloader\SoftwareDownloadWindow.cs">
       <SubType>Form</SubType>
@@ -260,6 +259,10 @@
     <Compile Include="SystemMonitoring\Com\Crc.cs" />
     <Compile Include="SystemMonitoring\Com\GCP.cs" />
     <Compile Include="SystemMonitoring\Com\Logger.cs" />
+    <Compile Include="SystemMonitoring\Com\SvlDhs.cs" />
+    <Compile Include="SystemMonitoring\Com\SvlErs.cs" />
+    <Compile Include="SystemMonitoring\Com\SvlMdi.cs" />
+    <Compile Include="SystemMonitoring\Com\SvlPdh.cs" />
     <Compile Include="SystemMonitoring\Com\SvlSdh.cs" />
     <Compile Include="SystemMonitoring\Com\SysmonFunctions.cs" />
     <Compile Include="SystemMonitoring\Com\SysmonMessages.cs" />

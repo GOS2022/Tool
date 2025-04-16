@@ -245,7 +245,7 @@ namespace GOSTool
 
                             Array.Copy(payload, chunkIndex * maxChunkSize, payloadTemp, 0, tempSize > payload.Length ? payload.Length : tempSize);
 
-                            Thread.Sleep(50);
+                            Thread.Sleep(25);
 
                             if (Uart.Send(payloadTemp, (UInt16)payloadTemp.Length) &&
                                 Uart.Receive(out byte[] rxBuffer, GcpHeaderFrame.ExpectedSize))
@@ -387,7 +387,7 @@ namespace GOSTool
                                 tempSize = maxChunkSize;
                             }
 
-                            Thread.Sleep(50);
+                            Thread.Sleep(25);
 
                             if (Uart.Receive(out byte[] rx, tempSize, timeout))
                             {

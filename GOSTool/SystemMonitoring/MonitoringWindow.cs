@@ -150,7 +150,7 @@ namespace GOSTool
                             Thread.Sleep(100);
 
                             List<ListViewItem> swInfoItems = new List<ListViewItem>();
-                            SoftwareInfo softwareInfo = new SoftwareInfo();
+                            PdhSoftwareInfo softwareInfo = new PdhSoftwareInfo();
 
                             // Get software info.
                             if (wireless)
@@ -159,7 +159,7 @@ namespace GOSTool
                             }
                             else
                             {
-                                softwareInfo = SysmonFunctions.GetSoftwareInfo();
+                                softwareInfo = SvlPdh.GetSoftwareInfo();
                             }
 
                             if (softwareInfo.AppSwVerInfo.Name != "")
@@ -210,7 +210,7 @@ namespace GOSTool
                             Thread.Sleep(100);
 
                             List<ListViewItem> hwInfoItems = new List<ListViewItem>();
-                            HardwareInfo hardwareInfo = new HardwareInfo();
+                            PdhHardwareInfo hardwareInfo = new PdhHardwareInfo();
 
                             // Get software info.
                             if (wireless)
@@ -219,7 +219,7 @@ namespace GOSTool
                             }
                             else
                             {
-                                hardwareInfo = SysmonFunctions.GetHardwareInfo();
+                                hardwareInfo = SvlPdh.GetHardwareInfo();
                             }
 
                             hwInfoItems.Add(new ListViewItem(new string[] { "Board name", hardwareInfo.BoardName }));

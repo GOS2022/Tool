@@ -42,7 +42,7 @@ namespace GOSTool.SystemMonitoring
                     }
 
                     List<string[]> swInfoItems = new List<string[]>();
-                    SoftwareInfo softwareInfo = new SoftwareInfo();
+                    PdhSoftwareInfo softwareInfo = new PdhSoftwareInfo();
 
                     // Get software info.
                     if (wireless)
@@ -51,7 +51,7 @@ namespace GOSTool.SystemMonitoring
                     }
                     else
                     {
-                        softwareInfo = SysmonFunctions.GetSoftwareInfo();
+                        softwareInfo = SvlPdh.GetSoftwareInfo();
                     }
 
                     if (!(softwareInfo.AppSwVerInfo.Name is null) && softwareInfo.AppSwVerInfo.Name != "")
@@ -101,7 +101,7 @@ namespace GOSTool.SystemMonitoring
                     Thread.Sleep(100);
 
                     List<string[]> hwInfoItems = new List<string[]>();
-                    HardwareInfo hardwareInfo = new HardwareInfo();
+                    PdhHardwareInfo hardwareInfo = new PdhHardwareInfo();
 
                     // Get software info.
                     if (wireless)
@@ -110,7 +110,7 @@ namespace GOSTool.SystemMonitoring
                     }
                     else
                     {
-                        hardwareInfo = SysmonFunctions.GetHardwareInfo();
+                        hardwareInfo = SvlPdh.GetHardwareInfo();
                     }
 
                     if (hardwareInfo.BoardName != null)
@@ -128,7 +128,7 @@ namespace GOSTool.SystemMonitoring
                     }
 
                     List<string[]> wifiCfgItems = new List<string[]>();
-                    WifiConfig wifiCfg = new WifiConfig();
+                    PdhWifiConfig wifiCfg = new PdhWifiConfig();
 
                     // Get software info.
                     if (wireless)
@@ -137,7 +137,7 @@ namespace GOSTool.SystemMonitoring
                     }
                     else
                     {
-                        wifiCfg = SysmonFunctions.GetWifiConfig();
+                        wifiCfg = SvlPdh.GetWifiConfig();
                     }
 
                     if (wifiCfg.Ssid != null)
@@ -155,7 +155,7 @@ namespace GOSTool.SystemMonitoring
                     }
 
                     List<string[]> bldConfigItems = new List<string[]>();
-                    BootloaderConfig bldConfig = new BootloaderConfig();
+                    PdhBootloaderConfig bldConfig = new PdhBootloaderConfig();
 
                     // Get software info.
                     if (wireless)
@@ -164,7 +164,7 @@ namespace GOSTool.SystemMonitoring
                     }
                     else
                     {
-                        bldConfig = SysmonFunctions.GetBootloaderConfig();
+                        bldConfig = SvlPdh.GetBootloaderConfig();
                     }
 
                     bldConfigItems.Add((new string[] { "Install requested", bldConfig.InstallRequested.ToString() }));
@@ -231,7 +231,7 @@ namespace GOSTool.SystemMonitoring
                 case 0:
                     {
                         // SW info.
-                        SoftwareInfo swInfoToSet = new SoftwareInfo();
+                        PdhSoftwareInfo swInfoToSet = new PdhSoftwareInfo();
                         int idx = 0;
                         if (swInfoGridView.Rows[0].Cells[0].Value.ToString() == "Application driver lib name")
                         {
@@ -282,7 +282,7 @@ namespace GOSTool.SystemMonitoring
                         await Task.Run(() =>
                         {
                             List<string[]> swInfoItems = new List<string[]>();
-                            SoftwareInfo softwareInfo = new SoftwareInfo();
+                            PdhSoftwareInfo softwareInfo = new PdhSoftwareInfo();
 
                             // Get software info.
                             if (wireless)
@@ -291,7 +291,7 @@ namespace GOSTool.SystemMonitoring
                             }
                             else
                             {
-                                softwareInfo = SysmonFunctions.SetSoftwareInfo(swInfoToSet);
+                                softwareInfo = SvlPdh.SetSoftwareInfo(swInfoToSet);
                             }
 
                             if (!(softwareInfo.AppSwVerInfo.Name is null) && softwareInfo.AppSwVerInfo.Name != "")
@@ -345,7 +345,7 @@ namespace GOSTool.SystemMonitoring
                 case 1:
                     {
                         // HW info.
-                        HardwareInfo hwInfoToSet = new HardwareInfo();
+                        PdhHardwareInfo hwInfoToSet = new PdhHardwareInfo();
                         hwInfoToSet.BoardName = hwInfoGridView.Rows[0].Cells[1].Value.ToString();
                         hwInfoToSet.Revision = hwInfoGridView.Rows[1].Cells[1].Value.ToString();
                         hwInfoToSet.Author = hwInfoGridView.Rows[2].Cells[1].Value.ToString();
@@ -356,7 +356,7 @@ namespace GOSTool.SystemMonitoring
                         await Task.Run(() =>
                         {
                             List<string[]> hwInfoItems = new List<string[]>();
-                            HardwareInfo hardwareInfo = new HardwareInfo();
+                            PdhHardwareInfo hardwareInfo = new PdhHardwareInfo();
 
                             if (wireless)
                             {
@@ -364,7 +364,7 @@ namespace GOSTool.SystemMonitoring
                             }
                             else
                             {
-                                hardwareInfo = SysmonFunctions.SetHardwareInfo(hwInfoToSet);
+                                hardwareInfo = SvlPdh.SetHardwareInfo(hwInfoToSet);
                             }
 
                             if (hardwareInfo.BoardName != null)
@@ -386,7 +386,7 @@ namespace GOSTool.SystemMonitoring
                 case 2:
                     {
                         // BLD config.
-                        BootloaderConfig bldConfigToSet = new BootloaderConfig();
+                        PdhBootloaderConfig bldConfigToSet = new PdhBootloaderConfig();
                         bldConfigToSet.InstallRequested = bool.Parse(bldCfgGridView.Rows[0].Cells[1].Value.ToString());
                         bldConfigToSet.Reserved = byte.Parse(bldCfgGridView.Rows[1].Cells[1].Value.ToString());
                         bldConfigToSet.BinaryIndex = UInt16.Parse(bldCfgGridView.Rows[2].Cells[1].Value.ToString());
@@ -401,7 +401,7 @@ namespace GOSTool.SystemMonitoring
                         await Task.Run(() =>
                         {
                             List<string[]> bldConfigItems = new List<string[]>();
-                            BootloaderConfig bldConfig = new BootloaderConfig();
+                            PdhBootloaderConfig bldConfig = new PdhBootloaderConfig();
 
                             if (wireless)
                             {
@@ -409,7 +409,7 @@ namespace GOSTool.SystemMonitoring
                             }
                             else
                             {
-                                bldConfig = SysmonFunctions.SetBootloaderConfig(bldConfigToSet);
+                                bldConfig = SvlPdh.SetBootloaderConfig(bldConfigToSet);
                             }
 
                             if (bldConfig != null)
@@ -433,7 +433,7 @@ namespace GOSTool.SystemMonitoring
                 case 3:
                     {
                         // WiFi config.
-                        WifiConfig wifiConfigToSet = new WifiConfig();
+                        PdhWifiConfig wifiConfigToSet = new PdhWifiConfig();
                         wifiConfigToSet.Ssid = wifiCfgGridView.Rows[0].Cells[1].Value.ToString();
                         wifiConfigToSet.Pwd = wifiCfgGridView.Rows[1].Cells[1].Value.ToString();
                         wifiConfigToSet.IpAddress = wifiCfgGridView.Rows[2].Cells[1].Value.ToString();
@@ -444,7 +444,7 @@ namespace GOSTool.SystemMonitoring
                         await Task.Run(() =>
                         {
                             List<string[]> wifiCfgItems = new List<string[]>();
-                            WifiConfig wifiCfg = new WifiConfig();
+                            PdhWifiConfig wifiCfg = new PdhWifiConfig();
 
                             if (wireless)
                             {
@@ -452,7 +452,7 @@ namespace GOSTool.SystemMonitoring
                             }
                             else
                             {
-                                wifiCfg = SysmonFunctions.SetWifiConfig(wifiConfigToSet);
+                                wifiCfg = SvlPdh.SetWifiConfig(wifiConfigToSet);
                             }
 
                             if (wifiCfg != null)
