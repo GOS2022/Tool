@@ -109,6 +109,10 @@ namespace GOSTool
                         {
                             Uart.Init(usbConfigUserControl1.Port, usbConfigUserControl1.Baud);
                         }
+                        else
+                        {
+                            Wireless.Connect();
+                        }
 
                         if ((!wireless && SysmonFunctions.PingDevice() == SysmonFunctions.PingResult.OK) ||
                             (wireless && Wireless.PingDevice() == SysmonFunctions.PingResult.OK))

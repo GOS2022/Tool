@@ -56,7 +56,7 @@ namespace GOSTool.SystemMonitoring
                     }
                     else
                     {
-                        //binaryNum = Wireless.GetBinaryNum();
+                        devNum = Wireless.GetDeviceNum();
                     }
 
                     for (int i = 0; i < devNum && !forceQuit; i++)
@@ -67,6 +67,10 @@ namespace GOSTool.SystemMonitoring
                         {
                             deviceDescriptor = SvlDhs.GetDeviceInfo(i);
                         }
+                        else
+                        {
+                            deviceDescriptor = Wireless.GetDeviceInfo(i);
+                        }
 
                         TreeNode node = new TreeNode(deviceDescriptor.Name);
                         node.Nodes.Add(new TreeNode("Description: " + deviceDescriptor.Description) { NodeFont = fontRegular });
@@ -75,7 +79,7 @@ namespace GOSTool.SystemMonitoring
                         node.Nodes.Add(new TreeNode("Enabled: " + deviceDescriptor.Enabled) { NodeFont = fontRegular });
                         node.Nodes.Add(new TreeNode("State: " + deviceDescriptor.DeviceState) { 
                             NodeFont = new Font(deviceTree.Font, FontStyle.Bold), 
-                            ForeColor = deviceDescriptor.DeviceState == "Healthy" ? Color.Green : deviceDescriptor.DeviceState == "Uninitialized" ? Color.Gray: Color.Red } );
+                            ForeColor = deviceDescriptor.DeviceState == "Healthy" ? Color.Green : deviceDescriptor.DeviceState == "Uninitialized" ? Color.Gray : deviceDescriptor.DeviceState == "Warning" ? Color.Orange : Color.Red } );
                         node.Nodes.Add(new TreeNode("Error code: " + deviceDescriptor.ErrorCode){ NodeFont = fontRegular });
                         node.Nodes.Add(new TreeNode("Error counter: " + deviceDescriptor.ErrorCounter){ NodeFont = fontRegular });
                         node.Nodes.Add(new TreeNode("Error tolerance: " + deviceDescriptor.ErrorTolerance) { NodeFont = fontRegular });

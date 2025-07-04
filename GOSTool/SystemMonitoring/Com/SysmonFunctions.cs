@@ -84,7 +84,7 @@ namespace GOSTool
 
             while (true)
             {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 1000) == true)
+                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 2000) == true)
                 {
                     taskDataMessage.GetFromBytes(recvBuf);
 

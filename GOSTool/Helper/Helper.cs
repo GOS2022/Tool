@@ -104,7 +104,15 @@ namespace GOSTool
         public static string GetString(byte[] buffer, int length, ref int index)
         {
             byte[] bytes = buffer.ToList().Skip(index).Take(length).ToArray();
-            string result = Encoding.ASCII.GetString(bytes).Substring(0, Encoding.ASCII.GetString(bytes).IndexOf("\0"));
+            string result = "";
+            try
+            {
+                result = Encoding.ASCII.GetString(bytes).Substring(0, Encoding.ASCII.GetString(bytes).IndexOf("\0"));
+            }
+            catch
+            {
+                // Invalid string.
+            }
             index += length;
             return result;
         }

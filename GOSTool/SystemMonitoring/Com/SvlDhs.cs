@@ -56,7 +56,8 @@ namespace GOSTool
                 {
                     case 0: DeviceState = "Uninitialized"; break;
                     case 1: DeviceState = "Healthy"; break;
-                    case 2: DeviceState = "Error"; break;
+                    case 2: DeviceState = "Warning"; break;
+                    case 3: DeviceState = "Error"; break;
                 }
 
                 ErrorCode = Helper<UInt32>.GetVariable(bytes, ref idx);

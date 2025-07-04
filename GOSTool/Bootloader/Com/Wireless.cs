@@ -65,45 +65,62 @@ namespace GOSTool
         private static SemaphoreSlim wirelessSemaphore = new SemaphoreSlim(1, 1);
         public static string Ip { get; set; } = "192.168.100.184";
         public static int Port { get; set; } = 3000;
+        private static TcpClient _client;
+        private static NetworkStream _stream;
 
-        public static PingResult PingDevice()
+        private static void SetMessageData (ref byte[] msgArray, UInt16 msgId, UInt16 msgLength)
         {
-            byte[] pingMsg = new byte[2];
-            byte[] pingResp = new byte[16];
+            if (msgArray.Length >= 4)
+            {
+                msgArray[0] = (byte)(msgId >> 8);
+                msgArray[1] = (byte)(msgId & 0x00ff);
+                msgArray[2] = (byte)(msgLength >> 8);
+                msgArray[3] = (byte)(msgLength & 0x00ff);
+            }
+        }
 
-            PingResult result = PingResult.NOK;
+        public static void Connect()
+        {
+            Disconnect();
+            _client = new TcpClient();
+            _client.ReceiveTimeout = 1000;
+            _client.SendTimeout = 1000;
 
-            TcpClient client = new TcpClient();
-            client.ReceiveTimeout = 3000;
-            client.SendTimeout = 3000;
+            _client.Connect(Ip, Port);
+            _stream = _client.GetStream();
+        }
+
+        public static void Disconnect()
+        {
+            if (!(_client is null))
+                _client.Close();
+        }
+
+        private static byte[] SendReceive (SysmonMessageId messageId, byte[] payload)
+        {
+            int txSize = 4;
+            byte[] rxBuffer = new byte[1024];
+
+            if (!(payload is null))
+            {
+                txSize += payload.Length;
+            }
+
+            byte[] txBuffer = new byte[txSize];
+
+            SetMessageData(ref txBuffer, (UInt16)messageId, (UInt16)(txSize - 4));
+
+            if (!(payload is null))
+            {
+                Array.Copy(payload, 0, txBuffer, 4, payload.Length);
+            }
 
             wirelessSemaphore.Wait();
 
-            Thread.Sleep(50);
-
             try
             {
-                client.Connect(Ip, Port);
-
-                NetworkStream stream = client.GetStream();
-
-                pingMsg[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_PING_REQ) >> 8);
-                pingMsg[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_PING_REQ) & 0x00ff);
-
-                StatusUpdateEvent?.Invoke(null, "Pinging device...");
-
-                stream.Write(pingMsg, 0, 2);
-                stream.Read(pingResp, 0, 16);
-
-                if (pingResp[0] == 40u)
-                {
-                    result = PingResult.OK;
-                    StatusUpdateEvent?.Invoke(null, "Device found.");
-                }
-                else
-                {
-                    StatusUpdateEvent?.Invoke(null, "Device error.");
-                }
+                _stream.Write(txBuffer, 0, txBuffer.Length);
+                _stream.Read(rxBuffer, 0, rxBuffer.Length);
             }
             catch
             {
@@ -111,9 +128,28 @@ namespace GOSTool
                 StatusUpdateEvent?.Invoke(null, "Communication error.");
             }
 
-            client.Close();
-
             wirelessSemaphore.Release();
+
+            return rxBuffer;
+        }
+
+        public static PingResult PingDevice()
+        {
+            PingResult result = PingResult.NOK;
+
+            StatusUpdateEvent?.Invoke(null, "Pinging device...");
+
+            byte[] pingResp = SendReceive(SysmonMessageId.GOS_SYSMON_MSG_PING_ID, null);
+
+            if (pingResp[0] == 40u)
+            {
+                result = PingResult.OK;
+                StatusUpdateEvent?.Invoke(null, "Device found.");
+            }
+            else
+            {
+                StatusUpdateEvent?.Invoke(null, "Device error.");
+            }
 
             return result;
         }
@@ -123,33 +159,14 @@ namespace GOSTool
             string runtime = "0000:00:00:00";
             RunTime runTime = new RunTime();
 
-            byte[] runTimeMsg = new byte[2];
-            byte[] runTimeResp = new byte[64];
+            StatusUpdateEvent?.Invoke(null, "Getting runtime...");
 
-            TcpClient client = new TcpClient();
-            client.ReceiveTimeout = 3000;
-            client.SendTimeout = 3000;
-
-            wirelessSemaphore.Wait();
-
-            Thread.Sleep(50);
+            byte[] runTimeResp = SendReceive(SysmonMessageId.GOS_SYSMON_MSG_SYSRUNTIME_GET_ID, null);
 
             try
             {
-                client.Connect(Ip, Port);
-
-                NetworkStream stream = client.GetStream();
-
-                runTimeMsg[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_SYS_RUNTIME_REQ) >> 8);
-                runTimeMsg[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_SYS_RUNTIME_REQ) & 0x00ff);
-
-                StatusUpdateEvent?.Invoke(null, "Getting runtime...");
-
-                stream.Write(runTimeMsg, 0, 2);
-                stream.Read(runTimeResp, 0, 64);
-
                 runTime.GetFromBytes(runTimeResp);
-                
+
                 runtime = runTime.Days.ToString("D2") + ":" +
                     runTime.Hours.ToString("D2") + ":" +
                     runTime.Minutes.ToString("D2") + ":" +
@@ -160,105 +177,34 @@ namespace GOSTool
             }
             catch
             {
-                // Nothing.
-                StatusUpdateEvent?.Invoke(null, "Communication error.");
+                // Error.
             }
-
-            client.Close();
-
-            wirelessSemaphore.Release();
 
             return runtime;
         }
 
         public static float GetCpuLoad()
         {
-            byte[] cpuLoadMsg = new byte[2];
-            byte[] cpuLoadResp = new byte[16];
-            cpuLoadResp[0] = 255;
-            cpuLoadResp[1] = 255;
+            byte[] cpuLoadMsg = new byte[4];
 
-            TcpClient client = new TcpClient();
-            client.ReceiveTimeout = 3000;
-            client.SendTimeout = 3000;
+            StatusUpdateEvent?.Invoke(null, "Getting CPU load...");
 
-            wirelessSemaphore.Wait();
+            byte[] cpuLoadResp = SendReceive(SysmonMessageId.GOS_SYSMON_MSG_CPU_USAGE_GET_ID, null);
 
-            Thread.Sleep(50);
+            StatusUpdateEvent?.Invoke(null, "Idle.");
 
-            try
-            {
-                client.Connect(Ip, Port);
-
-                NetworkStream stream = client.GetStream();
-
-                StatusUpdateEvent?.Invoke(null, "Getting CPU load...");
-
-                cpuLoadMsg[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_CPU_LOAD_REQ) >> 8);
-                cpuLoadMsg[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_CPU_LOAD_REQ) & 0x00ff);
-
-                stream.Write(cpuLoadMsg, 0, 2);
-                stream.Read(cpuLoadResp, 0, 2);
-
-                StatusUpdateEvent?.Invoke(null, "Idle.");
-            }
-            catch
-            {
-                // Nothing.
-                StatusUpdateEvent?.Invoke(null, "Communication error.");
-            }
-
-            client.Close();
-
-            wirelessSemaphore.Release();
-
-            return (float)((UInt16)(cpuLoadResp[0] + (cpuLoadResp[1] << 8)) / 100f);
+            return (float)((UInt16)(cpuLoadResp[1] + (cpuLoadResp[2] << 8)) / 100f);
         }
 
         public static TaskVariableData GetTaskVariableData(int taskIndex)
         {
-            TaskVariableData taskVarData = null;
+            byte[] payload = new byte[] { (byte)(taskIndex & 0x00ff), (byte)(taskIndex >> 8) };
+            byte[] taskVarDataResp = SendReceive(SysmonMessageId.GOS_SYSMON_MSG_TASK_GET_VAR_DATA_ID, payload);
 
-            byte[] taskVarDataMsg = new byte[4];
-            byte[] taskVarDataResp = new byte[256];
+            TaskVariableData taskVarData = new TaskVariableData();
+            taskVarData.GetFromBytes(taskVarDataResp.Skip(1).ToArray());
 
-            taskVarDataMsg[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_TASK_VAR_DATA_REQ) >> 8);
-            taskVarDataMsg[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_TASK_VAR_DATA_REQ) & 0x00ff);
-            taskVarDataMsg[2] = (byte)taskIndex;
-            taskVarDataMsg[3] = (byte)(taskIndex >> 8);
-
-            TcpClient client = new TcpClient();
-            client.ReceiveTimeout = 3000;
-            client.SendTimeout = 3000;
-
-            wirelessSemaphore.Wait();
-
-            Thread.Sleep(50);
-            try
-            {
-                client.Connect(Ip, Port);
-
-                NetworkStream stream = client.GetStream();
-
-                StatusUpdateEvent?.Invoke(null, "Getting variable data of task...");
-
-                stream.Write(taskVarDataMsg, 0, 4);
-                stream.Read(taskVarDataResp, 0, 256);
-
-                taskVarData = new TaskVariableData();
-                taskVarData.GetFromBytes(taskVarDataResp);
-
-                StatusUpdateEvent?.Invoke(null, "Idle.");
-            }
-            catch
-            {
-                // Nothing.
-                StatusUpdateEvent?.Invoke(null, "Communication error.");
-            }
-
-            client.Close();
-
-            wirelessSemaphore.Release();
+            StatusUpdateEvent?.Invoke(null, "Idle.");
 
             return taskVarData;
         }
@@ -266,53 +212,38 @@ namespace GOSTool
         public static List<TaskData> GetAllTaskData()
         {
             List<TaskData> taskDatas = new List<TaskData>();
-            byte[] taskNumResp = new byte[16];
-            byte[] taskDataResp = new byte[256];
-
-            byte[] taskNumMsg = new byte[2];
-            taskNumMsg[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_TASK_NUM_REQ) >> 8);
-            taskNumMsg[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_TASK_NUM_REQ) & 0x00ff);
-
-            byte[] taskDataMsg = new byte[4];
-            taskDataMsg[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_TASK_DATA_REQ) >> 8);
-            taskDataMsg[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_TASK_DATA_REQ) & 0x00ff);
-
-            TcpClient client = new TcpClient();
-            client.ReceiveTimeout = 3000;
-            client.SendTimeout = 3000;
+            byte[] taskDataGetMsg = new byte[6];
+            byte[] taskDataGetResp = new byte[256];
+            int taskIndex = 0;
 
             wirelessSemaphore.Wait();
 
             try
             {
-                client.Connect(Ip, Port);
+                SetMessageData(ref taskDataGetMsg, (UInt16)SysmonMessageId.GOS_SYSMON_MSG_TASK_GET_DATA_ID, 2);
 
-                NetworkStream stream = client.GetStream();
-
-                int numberOfTasks = 0;
-
-                StatusUpdateEvent?.Invoke(null, "Getting number of tasks...");
-                ProgressUpdateEvent?.Invoke(null, 0);
-
-                stream.Write(taskNumMsg, 0, 2);
-                stream.Read(taskNumResp, 0, 2);
-                numberOfTasks = (taskNumResp[0] + (taskNumResp[1] << 8));
-
-                for (int i = 0; i < numberOfTasks; i++)
+                while (true)
                 {
-                    taskDataMsg[2] = (byte)i;
-                    taskDataMsg[3] = (byte)(i >> 8);
+                    StatusUpdateEvent?.Invoke(null, "Getting task data [" + taskIndex + "]...");
 
-                    StatusUpdateEvent?.Invoke(null, "Receiving task data [" + (i+1) + "] / [" + numberOfTasks + "]...");
-                    ProgressUpdateEvent?.Invoke(null, (int)((100f * (i + 1) ) / (float)numberOfTasks));
+                    taskDataGetMsg[5] = (byte)(taskIndex >> 8);
+                    taskDataGetMsg[4] = (byte)(taskIndex & 0x00ff);
 
-                    stream.Write(taskDataMsg, 0, 4);
-                    stream.Read(taskDataResp, 0, 256);
+                    _stream.Write(taskDataGetMsg, 0, 6);
+                    _stream.Read(taskDataGetResp, 0, 256);
 
                     TaskData taskData = new TaskData();
-                    taskData.GetFromBytes(taskDataResp);
+                    taskData.GetFromBytes(taskDataGetResp.Skip(1).ToArray());
 
-                    taskDatas.Add(taskData);
+                    if (taskDataGetResp[0] == 40)
+                    {
+                        taskDatas.Add(taskData);
+                        taskIndex++;
+                    }
+                    else
+                    {
+                        break;
+                    }                    
                 }
 
                 StatusUpdateEvent?.Invoke(null, "Idle.");
@@ -323,8 +254,6 @@ namespace GOSTool
                 StatusUpdateEvent?.Invoke(null, "Communication error.");
             }
 
-            client.Close();
-
             wirelessSemaphore.Release();
 
             return taskDatas;
@@ -332,28 +261,20 @@ namespace GOSTool
 
         public static void SendResetRequest()
         {
-            byte[] sysresMessage = new byte[2];
-            sysresMessage[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_SYS_RES) >> 8);
-            sysresMessage[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_SYS_RES) & 0x00ff);
+            byte[] sysresMessage = new byte[4];
 
-            byte[] dummyBuff = new byte[16];
+            SetMessageData(ref sysresMessage, (UInt16)SysmonMessageId.GOS_SYSMON_MSG_RESET_REQ_ID, 2);
 
-            TcpClient client = new TcpClient();
-            client.ReceiveTimeout = 3000;
-            client.SendTimeout = 3000;
+            byte[] dummyBuff = new byte[256];
 
             wirelessSemaphore.Wait();
 
             try
             {
-                client.Connect(Ip, Port);
-
-                NetworkStream stream = client.GetStream();
-
                 StatusUpdateEvent?.Invoke(null, "Resetting device...");
 
-                stream.Write(sysresMessage, 0, 2);
-                stream.Read(dummyBuff, 0, 16);
+                _stream.Write(sysresMessage, 0, 4);
+                _stream.Read(dummyBuff, 0, 256);
 
                 StatusUpdateEvent?.Invoke(null, "Idle.");
             }
@@ -363,36 +284,25 @@ namespace GOSTool
                 StatusUpdateEvent?.Invoke(null, "Communication error.");
             }
 
-            client.Close();
-
             wirelessSemaphore.Release();
         }
 
         public static PdhHardwareInfo GetHardwareInfo()
         {
             PdhHardwareInfo hardwareInfo = new PdhHardwareInfo();
-            byte[] hwInfoMsg = new byte[2];
+            byte[] hwInfoMsg = new byte[4];
             byte[] hwInfoResp = new byte[1024];
-
-            hwInfoMsg[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_HWINFO_REQ) >> 8);
-            hwInfoMsg[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_HWINFO_REQ) & 0x00ff);
-
-            TcpClient client = new TcpClient();
-            client.ReceiveTimeout = 5000;
-            client.SendTimeout = 5000;
 
             wirelessSemaphore.Wait();
 
             try
             {
-                client.Connect(Ip, Port);
-
-                NetworkStream stream = client.GetStream();
+                SetMessageData(ref hwInfoMsg, (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_HARDWARE_INFO_GET_REQ, 0);
 
                 StatusUpdateEvent?.Invoke(null, "Reading hardware info...");
 
-                stream.Write(hwInfoMsg, 0, 2);
-                stream.Read(hwInfoResp, 0, 1024);
+                _stream.Write(hwInfoMsg, 0, 4);
+                _stream.Read(hwInfoResp, 0, 1024);
 
                 hardwareInfo.GetFromBytes(hwInfoResp);
 
@@ -404,8 +314,6 @@ namespace GOSTool
                 StatusUpdateEvent?.Invoke(null, "Communication error.");
             }
 
-            client.Close();
-
             wirelessSemaphore.Release();
 
             return hardwareInfo;
@@ -414,28 +322,19 @@ namespace GOSTool
         public static PdhSoftwareInfo GetSoftwareInfo()
         {
             PdhSoftwareInfo softwareInfo = new PdhSoftwareInfo();
-            byte[] swInfoMsg = new byte[2];
+            byte[] swInfoMsg = new byte[4];
             byte[] swInfoResp = new byte[1024];
-
-            swInfoMsg[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_SWINFO_REQ) >> 8);
-            swInfoMsg[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_SWINFO_REQ) & 0x00ff);
-
-            TcpClient client = new TcpClient();
-            client.ReceiveTimeout = 5000;
-            client.SendTimeout = 5000;
 
             wirelessSemaphore.Wait();
 
             try
             {
-                client.Connect(Ip, Port);
-
-                NetworkStream stream = client.GetStream();
+                SetMessageData(ref swInfoMsg, (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_SOFTWARE_INFO_GET_REQ, 0);
 
                 StatusUpdateEvent?.Invoke(null, "Reading software info...");
 
-                stream.Write(swInfoMsg, 0, 2);
-                stream.Read(swInfoResp, 0, 1024);
+                _stream.Write(swInfoMsg, 0, 4);
+                _stream.Read(swInfoResp, 0, 1024);
 
                 softwareInfo.GetFromBytes(swInfoResp);
 
@@ -447,7 +346,6 @@ namespace GOSTool
                 StatusUpdateEvent?.Invoke(null, "Communication error.");
             }
 
-            client.Close();
 
             wirelessSemaphore.Release();
 
@@ -464,43 +362,16 @@ namespace GOSTool
             sysTimeMessage.SystemTime.Minutes = (byte)DateTime.Now.Minute;
             sysTimeMessage.SystemTime.Seconds = (byte)DateTime.Now.Second;
             sysTimeMessage.SystemTime.Milliseconds = (byte)DateTime.Now.Millisecond;
-           
-            byte[] syncTimeMsg = new byte[sysTimeMessage.GetBytes().Length + 2];
-            byte[] syncTimeResp = new byte[1024];
 
-            syncTimeMsg[0] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_SYNC_TIME_REQ) >> 8);
-            syncTimeMsg[1] = (byte)((int)(IplMsgId.SVL_IPC_MSG_ID_SYNC_TIME_REQ) & 0x00ff);
+            byte[] payload = new byte[sysTimeMessage.GetBytes().Length];
 
-            Array.Copy(sysTimeMessage.GetBytes(), 0, syncTimeMsg, 2, sysTimeMessage.GetBytes().Length);
+            StatusUpdateEvent?.Invoke(null, "Synchronizing time...");
 
-            TcpClient client = new TcpClient();
-            client.ReceiveTimeout = 3000;
-            client.SendTimeout = 3000;
+            Array.Copy(sysTimeMessage.GetBytes(), 0, payload, 0, sysTimeMessage.GetBytes().Length);
 
-            wirelessSemaphore.Wait();
+            byte[] syncTimeResp = SendReceive(SysmonMessageId.APP_SYSMON_MSG_RTC_SET_REQ, payload);
 
-            Thread.Sleep(50);
-
-            try
-            {
-                client.Connect(Ip, Port);
-
-                NetworkStream stream = client.GetStream();
-
-                StatusUpdateEvent?.Invoke(null, "Synchronizing time...");
-
-                stream.Write(syncTimeMsg, 0, sysTimeMessage.GetBytes().Length + 2);
-
-                StatusUpdateEvent?.Invoke(null, "Idle.");
-            }
-            catch
-            {
-                // Nothing.
-                StatusUpdateEvent?.Invoke(null, "Communication error.");
-            }
-
-            client.Close();
-            wirelessSemaphore.Release();
+            StatusUpdateEvent?.Invoke(null, "Idle.");
         }
 
         public static bool ModifyTask (int taskIndex, IplTaskModificationType modificationType)
@@ -841,6 +712,36 @@ namespace GOSTool
             wirelessSemaphore.Release();
 
             return retval;
+        }
+
+        public static int GetDeviceNum()
+        {
+            int devNum = 0;
+
+            StatusUpdateEvent?.Invoke(null, "Getting number of devices...");
+
+            byte[] devNumResp = SendReceive(SysmonMessageId.SVL_DHS_SYSMON_MSG_DEVICE_NUM_REQ, null);
+
+            StatusUpdateEvent?.Invoke(null, "Idle.");
+
+            devNum = ((devNumResp[1] << 8) + devNumResp[0]);
+
+            return devNum;
+        }
+
+        public static DhsDeviceDescriptor GetDeviceInfo(int devIndex)
+        {
+            byte[] payload = new byte[] { (byte)(devIndex & 0x00ff), (byte)(devIndex >> 8) };
+            byte[] devInfoResp = SendReceive(SysmonMessageId.SVL_DHS_SYSMON_MSG_DEVICE_INFO_REQ, payload);
+
+            StatusUpdateEvent?.Invoke(null, "Getting device info of device: [" + devIndex + "] ...");
+
+            DhsDeviceDescriptor devInfo = new DhsDeviceDescriptor();
+            devInfo.GetFromBytes(devInfoResp.ToArray());
+
+            StatusUpdateEvent?.Invoke(null, "Idle.");
+
+            return devInfo;
         }
     }
 }
