@@ -33,12 +33,14 @@ namespace GOSTool
             this.baudComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.statusLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // portComboBox
             // 
             this.portComboBox.FormattingEnabled = true;
-            this.portComboBox.Location = new System.Drawing.Point(85, 18);
+            this.portComboBox.Location = new System.Drawing.Point(62, 1);
             this.portComboBox.Name = "portComboBox";
             this.portComboBox.Size = new System.Drawing.Size(121, 24);
             this.portComboBox.TabIndex = 0;
@@ -48,7 +50,7 @@ namespace GOSTool
             // baudComboBox
             // 
             this.baudComboBox.FormattingEnabled = true;
-            this.baudComboBox.Location = new System.Drawing.Point(305, 18);
+            this.baudComboBox.Location = new System.Drawing.Point(248, 1);
             this.baudComboBox.Name = "baudComboBox";
             this.baudComboBox.Size = new System.Drawing.Size(121, 24);
             this.baudComboBox.TabIndex = 1;
@@ -58,7 +60,7 @@ namespace GOSTool
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(23, 25);
+            this.label1.Location = new System.Drawing.Point(22, 8);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(34, 17);
             this.label1.TabIndex = 2;
@@ -67,22 +69,40 @@ namespace GOSTool
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(238, 25);
+            this.label2.Location = new System.Drawing.Point(201, 8);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(41, 17);
             this.label2.TabIndex = 3;
             this.label2.Text = "Baud";
             // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(407, 3);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(194, 22);
+            this.progressBar1.TabIndex = 10;
+            // 
+            // statusLabel
+            // 
+            this.statusLabel.AutoSize = true;
+            this.statusLabel.Location = new System.Drawing.Point(404, 28);
+            this.statusLabel.Name = "statusLabel";
+            this.statusLabel.Size = new System.Drawing.Size(34, 17);
+            this.statusLabel.TabIndex = 9;
+            this.statusLabel.Text = "Idle.";
+            // 
             // UsbConfigUserControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.progressBar1);
+            this.Controls.Add(this.statusLabel);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.baudComboBox);
             this.Controls.Add(this.portComboBox);
             this.Name = "UsbConfigUserControl";
-            this.Size = new System.Drawing.Size(460, 64);
+            this.Size = new System.Drawing.Size(856, 52);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -94,5 +114,7 @@ namespace GOSTool
         private System.Windows.Forms.ComboBox baudComboBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.Label statusLabel;
     }
 }

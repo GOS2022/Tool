@@ -107,6 +107,118 @@ namespace GOSTool
             projData.LastAccessed = DateTime.Now;
             SaveProjectData(projData);
         }
+
+        public static List<Test.Test> GetTests()
+        {
+            string testsFolder = WorkspacePath.Value + "\\" + ProjectName.Value + "\\tests";
+            List<Test.Test> testsList = new List<Test.Test>();
+
+            if (!Directory.Exists(testsFolder))
+            {
+                Directory.CreateDirectory(testsFolder);
+            }
+
+            string[] testFiles = Directory.GetFiles(testsFolder, "*.gostest", SearchOption.TopDirectoryOnly);
+
+            foreach (string test in testFiles)
+            {
+                var mySerializer = new XmlSerializer(typeof(Test.Test));
+                var myFileStream = new FileStream(test, FileMode.Open);
+                var myObject = (Test.Test)mySerializer.Deserialize(myFileStream);
+                myFileStream.Close();
+
+                testsList.Add(myObject);
+            }
+
+            return testsList;
+        }
+
+        /*public static void SaveNewTest(Test.Test test)
+        {
+            string testsFolder = WorkspacePath.Value + "\\" + ProjectName.Value + "\\tests";
+
+            if (!Directory.Exists(testsFolder))
+            {
+                Directory.CreateDirectory(testsFolder);
+            }
+
+            XmlSerializer ser = new XmlSerializer(typeof(Test.Test));
+            TextWriter writer = new StreamWriter(testsFolder + "\\" + test.Name + ".gostest");
+            ser.Serialize(writer, test);
+            writer.Close();
+        }*/
+
+        public static List<Test.TestCase> GetTestCases ()
+        {
+            string testsFolder = WorkspacePath.Value + "\\" + ProjectName.Value + "\\tests";
+            List<Test.TestCase> testCasesList = new List<Test.TestCase>();
+
+            if (!Directory.Exists(testsFolder))
+            {
+                Directory.CreateDirectory(testsFolder);
+            }
+
+            string[] testCaseFiles = Directory.GetFiles(testsFolder, "*.gostestcase", SearchOption.TopDirectoryOnly);
+
+            foreach (string testCase in testCaseFiles)
+            {
+                try
+                {
+                    var mySerializer = Test.TestCase.CreateCustomSerializer();//new XmlSerializer(typeof(Test.TestCase), Test.TestStep.GetKnownTypes());
+                    var myFileStream = new FileStream(testCase, FileMode.Open);
+                    var myObject = (Test.TestCase)mySerializer.Deserialize(myFileStream);
+                    myFileStream.Close();
+
+                    testCasesList.Add(myObject);
+                }
+                catch
+                {
+                    File.Delete(testCase);
+                }
+            }
+
+            return testCasesList;
+        }
+
+        public static void SaveTestCase(Test.TestCase testCase)
+        {
+            string testsFolder = WorkspacePath.Value + "\\" + ProjectName.Value + "\\tests";
+
+            if (!Directory.Exists(testsFolder))
+            {
+                Directory.CreateDirectory(testsFolder);
+            }
+
+            if (File.Exists(testsFolder + "\\" + testCase.Name + ".gostestcase"))
+            {
+                File.Delete(testsFolder + "\\" + testCase.Name + ".gostestcase");
+            }
+
+            XmlSerializer ser = Test.TestCase.CreateCustomSerializer();//new XmlSerializer(testCase.GetType());
+            TextWriter writer = new StreamWriter(testsFolder + "\\" + testCase.Name + ".gostestcase");
+            ser.Serialize(writer, testCase);
+            writer.Close();
+        }
+
+        public static void SaveTest(Test.Test test)
+        {
+            string testsFolder = WorkspacePath.Value + "\\" + ProjectName.Value + "\\tests";
+
+            if (!Directory.Exists(testsFolder))
+            {
+                Directory.CreateDirectory(testsFolder);
+            }
+
+            if (File.Exists(testsFolder + "\\" + test.Name + ".gostest"))
+            {
+                File.Delete(testsFolder + "\\" + test.Name + ".gostest");
+            }
+
+            XmlSerializer ser = new XmlSerializer(typeof(Test.Test));
+            TextWriter writer = new StreamWriter(testsFolder + "\\" + test.Name + ".gostest");
+            ser.Serialize(writer, test);
+            writer.Close();
+        }
     }
 
     public class ProjectData

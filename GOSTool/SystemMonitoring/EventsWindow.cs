@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GOSTool.SystemMonitoring.Com;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -61,15 +62,8 @@ namespace GOSTool.SystemMonitoring
                         List<ListViewItem> ersItems = new List<ListViewItem>();
                         List<SvlErsEvent> ersEvents = new List<SvlErsEvent>();
 
-                        // Get monitoring data.
-                        if (wireless)
-                        {
-                            //ersEvents = Wireless.GetEvents();
-                        }
-                        else
-                        {
-                            ersEvents = SvlErs.GetEvents();
-                        }
+                        // Get events.
+                        ersEvents = Sysmon.SvlErs_GetEvents(wireless);
 
                         if (ersEvents.Count > 0)
                         {
@@ -126,20 +120,7 @@ namespace GOSTool.SystemMonitoring
 
             await Task.Run(() =>
             {
-                // Try to connect on the given port configuration.
-                if (!wireless)
-                {
-                    Uart.Init(usbConfigUserControl1.Port, usbConfigUserControl1.Baud);
-                }
-
-                if (wireless)
-                {
-                    //clearSuccess = Wireless.ClearEvents();
-                }
-                else
-                {
-                    clearSuccess = SvlErs.ClearEvents();
-                }
+                clearSuccess = Sysmon.SvlErs_ClearEvents(wireless);
 
                 Helper.UpdateListViewWithItems_ThreadSafe(this, ersListView, new List<ListViewItem>());
             });

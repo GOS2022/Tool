@@ -9,8 +9,8 @@ namespace GOSTool
     public class ProgramData
     {
         public static string Name { get; } = "GOS Tool";
-        public static string Version { get; } = "0.14";
-        public static string Date { get; } = "2025-07-04";
+        public static string Version { get; } = "0.15";
+        public static string Date { get; } = "2025-07-10";
 
         public static string BaseDirectory = AppDomain.CurrentDomain.BaseDirectory;
 

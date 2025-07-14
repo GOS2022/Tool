@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GOSTool.SystemMonitoring.Com;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -43,34 +44,11 @@ namespace GOSTool.SystemMonitoring
             {
                 await Task.Run(() =>
                 {
-                    if (!wireless)
-                    {
-                        Uart.Init(usbConfigUserControl1.Port, usbConfigUserControl1.Baud);
-                    }
-
-                    int devNum = 0;
-
-                    if (!wireless)
-                    {
-                        devNum = SvlDhs.GetDeviceNum();
-                    }
-                    else
-                    {
-                        devNum = Wireless.GetDeviceNum();
-                    }
+                    int devNum = Sysmon.SvlDhs_GetDeviceNum(wireless);
 
                     for (int i = 0; i < devNum && !forceQuit; i++)
                     {
-                        DhsDeviceDescriptor deviceDescriptor = new DhsDeviceDescriptor();
-
-                        if (!wireless)
-                        {
-                            deviceDescriptor = SvlDhs.GetDeviceInfo(i);
-                        }
-                        else
-                        {
-                            deviceDescriptor = Wireless.GetDeviceInfo(i);
-                        }
+                        DhsDeviceDescriptor deviceDescriptor = Sysmon.SvlDhs_GetDeviceInfo(i, wireless);
 
                         TreeNode node = new TreeNode(deviceDescriptor.Name);
                         node.Nodes.Add(new TreeNode("Description: " + deviceDescriptor.Description) { NodeFont = fontRegular });

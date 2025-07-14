@@ -87,8 +87,8 @@
             // 
             this.wirelessConfigUserControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.wirelessConfigUserControl1.Ip = "192.168.1.184";
-            this.wirelessConfigUserControl1.Location = new System.Drawing.Point(5, 64);
+            this.wirelessConfigUserControl1.Ip = "192.168.100.184";
+            this.wirelessConfigUserControl1.Location = new System.Drawing.Point(8, 62);
             this.wirelessConfigUserControl1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.wirelessConfigUserControl1.Name = "wirelessConfigUserControl1";
             this.wirelessConfigUserControl1.Port = 3000;
@@ -97,12 +97,14 @@
             // 
             // usbConfigUserControl1
             // 
+            this.usbConfigUserControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.usbConfigUserControl1.Baud = -2147483648;
             this.usbConfigUserControl1.Location = new System.Drawing.Point(5, 64);
             this.usbConfigUserControl1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.usbConfigUserControl1.Name = "usbConfigUserControl1";
             this.usbConfigUserControl1.Port = null;
-            this.usbConfigUserControl1.Size = new System.Drawing.Size(469, 57);
+            this.usbConfigUserControl1.Size = new System.Drawing.Size(777, 57);
             this.usbConfigUserControl1.TabIndex = 3;
             // 
             // label1
@@ -110,7 +112,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(21, 37);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(128, 16);
+            this.label1.Size = new System.Drawing.Size(135, 17);
             this.label1.TabIndex = 2;
             this.label1.Text = "Communication type";
             // 
@@ -120,7 +122,7 @@
             this.wirelessComRadioButton.Location = new System.Drawing.Point(252, 37);
             this.wirelessComRadioButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.wirelessComRadioButton.Name = "wirelessComRadioButton";
-            this.wirelessComRadioButton.Size = new System.Drawing.Size(81, 20);
+            this.wirelessComRadioButton.Size = new System.Drawing.Size(83, 21);
             this.wirelessComRadioButton.TabIndex = 1;
             this.wirelessComRadioButton.Text = "Wireless";
             this.wirelessComRadioButton.UseVisualStyleBackColor = true;
@@ -133,7 +135,7 @@
             this.usbComRadioButton.Location = new System.Drawing.Point(179, 37);
             this.usbComRadioButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.usbComRadioButton.Name = "usbComRadioButton";
-            this.usbComRadioButton.Size = new System.Drawing.Size(56, 20);
+            this.usbComRadioButton.Size = new System.Drawing.Size(57, 21);
             this.usbComRadioButton.TabIndex = 0;
             this.usbComRadioButton.TabStop = true;
             this.usbComRadioButton.Text = "USB";

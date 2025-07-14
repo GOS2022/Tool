@@ -177,6 +177,10 @@ namespace GOSTool
         {
             // TODO
             Uart.ClearRxBuffer();
+            if (payload is null)
+            {
+                payload = new byte[] { };
+            }
             messageHeader.PayloadCrc = Crc.GetCrc32(payload);
 
             GcpHeaderFrame frameHeader = new GcpHeaderFrame();

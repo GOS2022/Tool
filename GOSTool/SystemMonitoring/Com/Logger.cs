@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using static GOSTool.Logger;
 
@@ -18,9 +19,11 @@ namespace GOSTool
             RAW_TX_WIRELESS
         }
         public static string LogsFolder { get; } = ProjectHandler.WorkspacePath.Value + "/" + ProjectHandler.ProjectName.Value + "/logs";
-
+        public static bool IsLogEnabled { get; set; } = false;
         public static string LogPath { get; private set; } = LogsFolder + "/com_" + DateTime.Now.ToString("yyyyMMdd_HHssmm") + ".log";
         public static string MeasPath { get; private set; } = LogsFolder + "/meas_" + DateTime.Now.ToString("yyyyMMdd_HHssmm") + ".meas";
+
+        private static SemaphoreSlim _logSemaphore = new SemaphoreSlim(1,1);
         public static void StartNewLog()
         {
             LogPath = LogsFolder + "/com_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".log";
@@ -32,35 +35,49 @@ namespace GOSTool
 
         public static void LogNewCom(byte[] bytes, ComType comType)
         {
-            if (!Directory.Exists(LogsFolder))
+            _logSemaphore.Wait();
+
+            if (IsLogEnabled)
             {
-                Directory.CreateDirectory(LogsFolder);
+                if (!Directory.Exists(LogsFolder))
+                {
+                    Directory.CreateDirectory(LogsFolder);
+                }
+
+                string entry = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff\t");
+                entry += comType.ToString() + "\t";
+                entry += BitConverter.ToString(bytes).Replace("-", " ");
+
+                using (StreamWriter sw = File.AppendText(LogPath))
+                {
+                    sw.WriteLine(entry);
+                }
             }
 
-            string entry = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff\t");
-            entry += comType.ToString() + "\t";
-            entry += BitConverter.ToString(bytes).Replace("-", " ");
-            
-            using(StreamWriter sw = File.AppendText(LogPath))
-            {
-                sw.WriteLine(entry);
-            }
+            _logSemaphore.Release();
         }
 
         public static void LogNewMeasurement(MonitoringData measrement)
         {
-            if (!Directory.Exists(LogsFolder))
+            _logSemaphore.Wait();
+
+            if (IsLogEnabled)
             {
-                Directory.CreateDirectory(LogsFolder);
+                if (!Directory.Exists(LogsFolder))
+                {
+                    Directory.CreateDirectory(LogsFolder);
+                }
+
+                string entry = measrement.TimeStamp.ToString("yyyy-MM-dd HH:mm:ss.fff\t");
+                entry += measrement.CpuLoad;
+
+                using (StreamWriter sw = File.AppendText(MeasPath))
+                {
+                    sw.WriteLine(entry);
+                }
             }
 
-            string entry = measrement.TimeStamp.ToString("yyyy-MM-dd HH:mm:ss.fff\t");
-            entry += measrement.CpuLoad;
-
-            using (StreamWriter sw = File.AppendText(MeasPath))
-            {
-                sw.WriteLine(entry);
-            }
+            _logSemaphore.Release();
         }
     }
 }

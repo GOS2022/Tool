@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GOSTool.SystemMonitoring.Com;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,33 +13,34 @@ namespace GOSTool.SystemMonitoring
 {
     public partial class WirelessConfigUserControl : UserControl
     {
-        public string Ip { get; set; } = "";
+        public string Ip { get; set; } = "192.168.100.184";
         public int Port { get; set; } = int.MinValue;
         public WirelessConfigUserControl()
         {
             InitializeComponent();
 
-            Ip = Wireless.Ip;
-            Port = Wireless.Port;
+            Ip = Sysmon.Ip;
+            Port = Sysmon.WirelessPort;
 
             IpTextBox.Text = Ip;
             PortTextBox.Text = Port.ToString();
 
-            Wireless.StatusUpdateEvent += (object sender, string status) =>
+            Sysmon.StatusUpdateEvent += (object sender, SysmonStatusUpdateEventArgs args) =>
             {
-                Helper.SetLabelText_ThreadSafe(this, statusLabel, status);
+                if (args.IsWireless)
+                    Helper.SetLabelText_ThreadSafe(this, statusLabel, args.Status);
             };
 
-            Wireless.ProgressUpdateEvent += (object sender, int value) =>
+            /*Wireless.ProgressUpdateEvent += (object sender, int value) =>
             {
                 Helper.SetProgressBar_ThreadSafe(this, progressBar1, value);
-            };
+            };*/
         }
 
         private void IpTextBox_TextChanged(object sender, EventArgs e)
         {
             Ip = IpTextBox.Text;
-            Wireless.Ip = Ip;
+            Sysmon.Ip = Ip;
         }
 
         private void PortTextBox_TextChanged(object sender, EventArgs e)
@@ -46,7 +48,7 @@ namespace GOSTool.SystemMonitoring
             try
             {
                 Port = int.Parse(PortTextBox.Text);
-                Wireless.Port = Port;
+                Sysmon.WirelessPort = Port;
             }
             catch
             {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GOSTool.SystemMonitoring.Com;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -60,17 +61,8 @@ namespace GOSTool.SystemMonitoring
                     while (isMonitoringOn)
                     {
                         List<ListViewItem> mdiItems = new List<ListViewItem>();
-                        List<SvlMdiVariable> mdiVariables = new List<SvlMdiVariable>();
-
                         // Get monitoring data.
-                        if (wireless)
-                        {
-                            //mdiVariables = Wireless.GetMonitoringData();
-                        }
-                        else
-                        {
-                            mdiVariables = SvlMdi.GetMonitoringData();
-                        }
+                        List<SvlMdiVariable> mdiVariables = Sysmon.SvlMdi_GetMonitoringData(wireless);
 
                         if (mdiVariables.Count > 0)
                         {

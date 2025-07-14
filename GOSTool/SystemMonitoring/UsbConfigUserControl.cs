@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GOSTool.SystemMonitoring.Com;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -17,6 +18,12 @@ namespace GOSTool
         public UsbConfigUserControl()
         {
             InitializeComponent();
+
+            Sysmon.StatusUpdateEvent += (object sender, SysmonStatusUpdateEventArgs args) =>
+            {
+                if (!args.IsWireless)
+                    Helper.SetLabelText_ThreadSafe(this, statusLabel, args.Status);
+            };
         }
 
         private void portComboBox_DropDown(object sender, EventArgs e)
@@ -34,11 +41,13 @@ namespace GOSTool
         private void portComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             Port = portComboBox.SelectedItem.ToString();
+            Sysmon.SerialPort = Port;
         }
 
         private void baudComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             Baud = int.Parse(baudComboBox.SelectedItem.ToString());
+            Sysmon.Baud = Baud;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GOSTool.SystemMonitoring.Com;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -42,17 +43,8 @@ namespace GOSTool.SystemMonitoring
                     }
 
                     List<string[]> swInfoItems = new List<string[]>();
-                    PdhSoftwareInfo softwareInfo = new PdhSoftwareInfo();
-
                     // Get software info.
-                    if (wireless)
-                    {
-                        softwareInfo = Wireless.GetSoftwareInfo();
-                    }
-                    else
-                    {
-                        softwareInfo = SvlPdh.GetSoftwareInfo();
-                    }
+                    PdhSoftwareInfo softwareInfo = Sysmon.SvlPdh_GetSoftwareInfo(wireless);
 
                     if (!(softwareInfo.AppSwVerInfo.Name is null) && softwareInfo.AppSwVerInfo.Name != "")
                     {
@@ -101,17 +93,8 @@ namespace GOSTool.SystemMonitoring
                     Thread.Sleep(100);
 
                     List<string[]> hwInfoItems = new List<string[]>();
-                    PdhHardwareInfo hardwareInfo = new PdhHardwareInfo();
-
-                    // Get software info.
-                    if (wireless)
-                    {
-                        hardwareInfo = Wireless.GetHardwareInfo();
-                    }
-                    else
-                    {
-                        hardwareInfo = SvlPdh.GetHardwareInfo();
-                    }
+                    // Get hardware info.
+                    PdhHardwareInfo hardwareInfo = Sysmon.SvlPdh_GetHardwareInfo(wireless);
 
                     if (hardwareInfo.BoardName != null)
                     {
@@ -128,17 +111,8 @@ namespace GOSTool.SystemMonitoring
                     }
 
                     List<string[]> wifiCfgItems = new List<string[]>();
-                    PdhWifiConfig wifiCfg = new PdhWifiConfig();
-
-                    // Get software info.
-                    if (wireless)
-                    {
-                        //wifiCfg = Wireless.GetWifiConfig();
-                    }
-                    else
-                    {
-                        wifiCfg = SvlPdh.GetWifiConfig();
-                    }
+                    // Get WiFi configuration.
+                    PdhWifiConfig wifiCfg = Sysmon.SvlPdh_GetWifiConfig(wireless);
 
                     if (wifiCfg.Ssid != null)
                     {
@@ -155,26 +129,13 @@ namespace GOSTool.SystemMonitoring
                     }
 
                     List<string[]> bldConfigItems = new List<string[]>();
-                    PdhBootloaderConfig bldConfig = new PdhBootloaderConfig();
-
-                    // Get software info.
-                    if (wireless)
-                    {
-                        //bldConfig = Wireless.GetBootloaderConfig();
-                    }
-                    else
-                    {
-                        bldConfig = SvlPdh.GetBootloaderConfig();
-                    }
-
+                    // Get bootloader configuration.
+                    PdhBootloaderConfig bldConfig = Sysmon.SvlPdh_GetBootloaderConfig(wireless);
                     bldConfigItems.Add((new string[] { "Install requested", bldConfig.InstallRequested.ToString() }));
                     bldConfigItems.Add((new string[] { "Reserved", bldConfig.Reserved.ToString() }));
-                    bldConfigItems.Add((new string[] { "Bianry index", bldConfig.BinaryIndex.ToString() }));
+                    bldConfigItems.Add((new string[] { "Binary index", bldConfig.BinaryIndex.ToString() }));
                     bldConfigItems.Add((new string[] { "Update mode", bldConfig.UpdateMode.ToString() }));
-                    //bldConfigItems.Add((new string[] { "Wireless update", bldConfig.WirelessUpdate.ToString() }));
-                    //bldConfigItems.Add((new string[] { "Wait for connection on startup", bldConfig.WaitForConnectionOnStartup.ToString() }));
                     bldConfigItems.Add((new string[] { "Startup counter", bldConfig.StartupCounter.ToString() }));
-                    //bldConfigItems.Add((new string[] { "Connection timeout", bldConfig.ConnectionTimeout.ToString() }));
                     bldConfigItems.Add((new string[] { "Request timeout", bldConfig.RequestTimeout.ToString() }));
                     bldConfigItems.Add((new string[] { "Install timeout", bldConfig.InstallTimeout.ToString() }));
 
@@ -282,17 +243,8 @@ namespace GOSTool.SystemMonitoring
                         await Task.Run(() =>
                         {
                             List<string[]> swInfoItems = new List<string[]>();
-                            PdhSoftwareInfo softwareInfo = new PdhSoftwareInfo();
-
-                            // Get software info.
-                            if (wireless)
-                            {
-                                //softwareInfo = Wireless.SetSoftwareInfo(swInfoToSet);
-                            }
-                            else
-                            {
-                                softwareInfo = SvlPdh.SetSoftwareInfo(swInfoToSet);
-                            }
+                            // Set and read back.
+                            PdhSoftwareInfo softwareInfo = Sysmon.SvlPdh_SetSoftwareInfo(swInfoToSet, wireless);
 
                             if (!(softwareInfo.AppSwVerInfo.Name is null) && softwareInfo.AppSwVerInfo.Name != "")
                             {
@@ -356,16 +308,8 @@ namespace GOSTool.SystemMonitoring
                         await Task.Run(() =>
                         {
                             List<string[]> hwInfoItems = new List<string[]>();
-                            PdhHardwareInfo hardwareInfo = new PdhHardwareInfo();
-
-                            if (wireless)
-                            {
-                                //hardwareInfo = Wireless.SetHardwareInfo(hwInfoToSet);
-                            }
-                            else
-                            {
-                                hardwareInfo = SvlPdh.SetHardwareInfo(hwInfoToSet);
-                            }
+                            // Set and read back hardware info.
+                            PdhHardwareInfo hardwareInfo = Sysmon.SvlPdh_SetHardwareInfo(hwInfoToSet, wireless);
 
                             if (hardwareInfo.BoardName != null)
                             {
@@ -391,37 +335,23 @@ namespace GOSTool.SystemMonitoring
                         bldConfigToSet.Reserved = byte.Parse(bldCfgGridView.Rows[1].Cells[1].Value.ToString());
                         bldConfigToSet.BinaryIndex = UInt16.Parse(bldCfgGridView.Rows[2].Cells[1].Value.ToString());
                         bldConfigToSet.UpdateMode = bool.Parse(bldCfgGridView.Rows[3].Cells[1].Value.ToString());
-                        //bldConfigToSet.WirelessUpdate = bool.Parse(bldCfgGridView.Rows[4].Cells[1].Value.ToString());
-                        //bldConfigToSet.WaitForConnectionOnStartup = bool.Parse(bldCfgGridView.Rows[5].Cells[1].Value.ToString());
                         bldConfigToSet.StartupCounter = byte.Parse(bldCfgGridView.Rows[4].Cells[1].Value.ToString());
-                        //bldConfigToSet.ConnectionTimeout = UInt32.Parse(bldCfgGridView.Rows[7].Cells[1].Value.ToString());
                         bldConfigToSet.RequestTimeout = UInt32.Parse(bldCfgGridView.Rows[5].Cells[1].Value.ToString());
                         bldConfigToSet.InstallTimeout = UInt32.Parse(bldCfgGridView.Rows[6].Cells[1].Value.ToString());
 
                         await Task.Run(() =>
                         {
                             List<string[]> bldConfigItems = new List<string[]>();
-                            PdhBootloaderConfig bldConfig = new PdhBootloaderConfig();
-
-                            if (wireless)
-                            {
-                                //bldConfig = Wireless.SetBootloaderConfig(bldConfigToSet);
-                            }
-                            else
-                            {
-                                bldConfig = SvlPdh.SetBootloaderConfig(bldConfigToSet);
-                            }
+                            // Set and read back bootloader configuration.
+                            PdhBootloaderConfig bldConfig = Sysmon.SvlPdh_SetBootloaderConfig(bldConfigToSet, wireless);
 
                             if (bldConfig != null)
                             {
                                 bldConfigItems.Add((new string[] { "Install requested", bldConfig.InstallRequested.ToString() }));
                                 bldConfigItems.Add((new string[] { "Reserved", bldConfig.Reserved.ToString() }));
-                                bldConfigItems.Add((new string[] { "Bianry index", bldConfig.BinaryIndex.ToString() }));
+                                bldConfigItems.Add((new string[] { "Binary index", bldConfig.BinaryIndex.ToString() }));
                                 bldConfigItems.Add((new string[] { "Update mode", bldConfig.UpdateMode.ToString() }));
-                                //bldConfigItems.Add((new string[] { "Wireless update", bldConfig.WirelessUpdate.ToString() }));
-                                //bldConfigItems.Add((new string[] { "Wait for connection on startup", bldConfig.WaitForConnectionOnStartup.ToString() }));
                                 bldConfigItems.Add((new string[] { "Startup counter", bldConfig.StartupCounter.ToString() }));
-                                //bldConfigItems.Add((new string[] { "Connection timeout", bldConfig.ConnectionTimeout.ToString() }));
                                 bldConfigItems.Add((new string[] { "Request timeout", bldConfig.RequestTimeout.ToString() }));
                                 bldConfigItems.Add((new string[] { "Install timeout", bldConfig.InstallTimeout.ToString() }));
 
@@ -444,16 +374,8 @@ namespace GOSTool.SystemMonitoring
                         await Task.Run(() =>
                         {
                             List<string[]> wifiCfgItems = new List<string[]>();
-                            PdhWifiConfig wifiCfg = new PdhWifiConfig();
-
-                            if (wireless)
-                            {
-                                //wifiConfig = Wireless.SetBootloaderConfig(bldConfigToSet);
-                            }
-                            else
-                            {
-                                wifiCfg = SvlPdh.SetWifiConfig(wifiConfigToSet);
-                            }
+                            // Set and read back WiFi configuration.
+                            PdhWifiConfig wifiCfg = Sysmon.SvlPdh_SetWifiConfig(wifiConfigToSet, wireless);
 
                             if (wifiCfg != null)
                             {

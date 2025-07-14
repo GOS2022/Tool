@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GOSTool.SystemMonitoring.Com;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,16 +33,16 @@ namespace GOSTool
             {
                 while (isMonitoringOn)
                 {
-                    TaskVariableData taskData = null;
+                    TaskVariableData taskData = Sysmon.SvlSysmon_GetTaskVariableData(TaskIndex, window.wireless);
 
-                    if (window.wireless)
+                    /**if (window.wireless)
                     {
                         taskData = Wireless.GetTaskVariableData(TaskIndex);
                     }
                     else
                     {
                         taskData = SysmonFunctions.GetTaskVariableData(TaskIndex);
-                    }
+                    }*/
 
                     if (!(taskData is null))
                     {

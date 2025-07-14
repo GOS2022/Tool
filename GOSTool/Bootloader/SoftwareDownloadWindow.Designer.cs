@@ -86,7 +86,7 @@ namespace GOSTool
             this.wirelessConfigUserControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.wirelessConfigUserControl1.Ip = "192.168.1.184";
-            this.wirelessConfigUserControl1.Location = new System.Drawing.Point(5, 64);
+            this.wirelessConfigUserControl1.Location = new System.Drawing.Point(3, 62);
             this.wirelessConfigUserControl1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.wirelessConfigUserControl1.Name = "wirelessConfigUserControl1";
             this.wirelessConfigUserControl1.Port = 3000;
@@ -95,12 +95,14 @@ namespace GOSTool
             // 
             // usbConfigUserControl1
             // 
+            this.usbConfigUserControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.usbConfigUserControl1.Baud = -2147483648;
             this.usbConfigUserControl1.Location = new System.Drawing.Point(5, 64);
             this.usbConfigUserControl1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.usbConfigUserControl1.Name = "usbConfigUserControl1";
             this.usbConfigUserControl1.Port = null;
-            this.usbConfigUserControl1.Size = new System.Drawing.Size(469, 57);
+            this.usbConfigUserControl1.Size = new System.Drawing.Size(891, 57);
             this.usbConfigUserControl1.TabIndex = 3;
             // 
             // label1
@@ -108,7 +110,7 @@ namespace GOSTool
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(21, 37);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(128, 16);
+            this.label1.Size = new System.Drawing.Size(135, 17);
             this.label1.TabIndex = 2;
             this.label1.Text = "Communication type";
             // 
@@ -118,7 +120,7 @@ namespace GOSTool
             this.wirelessComRadioButton.Location = new System.Drawing.Point(252, 37);
             this.wirelessComRadioButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.wirelessComRadioButton.Name = "wirelessComRadioButton";
-            this.wirelessComRadioButton.Size = new System.Drawing.Size(81, 20);
+            this.wirelessComRadioButton.Size = new System.Drawing.Size(83, 21);
             this.wirelessComRadioButton.TabIndex = 1;
             this.wirelessComRadioButton.Text = "Wireless";
             this.wirelessComRadioButton.UseVisualStyleBackColor = true;
@@ -131,7 +133,7 @@ namespace GOSTool
             this.usbComRadioButton.Location = new System.Drawing.Point(179, 37);
             this.usbComRadioButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.usbComRadioButton.Name = "usbComRadioButton";
-            this.usbComRadioButton.Size = new System.Drawing.Size(56, 20);
+            this.usbComRadioButton.Size = new System.Drawing.Size(57, 21);
             this.usbComRadioButton.TabIndex = 0;
             this.usbComRadioButton.TabStop = true;
             this.usbComRadioButton.Text = "USB";
@@ -205,7 +207,7 @@ namespace GOSTool
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(381, 162);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(104, 16);
+            this.label5.Size = new System.Drawing.Size(110, 17);
             this.label5.TabIndex = 18;
             this.label5.Text = "Selected binary:";
             // 
@@ -231,7 +233,7 @@ namespace GOSTool
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(13, 162);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(85, 16);
+            this.label4.Size = new System.Drawing.Size(91, 17);
             this.label4.TabIndex = 15;
             this.label4.Text = "Binary name:";
             // 
@@ -259,7 +261,7 @@ namespace GOSTool
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(13, 122);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(101, 16);
+            this.label3.Size = new System.Drawing.Size(107, 17);
             this.label3.TabIndex = 12;
             this.label3.Text = "Binary address:";
             // 
@@ -298,7 +300,7 @@ namespace GOSTool
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(13, 79);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(77, 16);
+            this.label2.Size = new System.Drawing.Size(84, 17);
             this.label2.TabIndex = 6;
             this.label2.Text = "Binary path:";
             // 
@@ -325,7 +327,7 @@ namespace GOSTool
             this.progressLabel.AutoSize = true;
             this.progressLabel.Location = new System.Drawing.Point(868, 441);
             this.progressLabel.Name = "progressLabel";
-            this.progressLabel.Size = new System.Drawing.Size(26, 16);
+            this.progressLabel.Size = new System.Drawing.Size(28, 17);
             this.progressLabel.TabIndex = 9;
             this.progressLabel.Text = "0%";
             // 

@@ -140,23 +140,30 @@ namespace GOSTool
         public void GetFromBytes(byte[] bytes)
         {
             int idx = 0;
-            BldLibVerInfo.GetFromBytes(bytes.Skip(idx).Take(PdhSoftwareVersionInfo.ExpectedSize).ToArray());
-            idx += PdhSoftwareVersionInfo.ExpectedSize;
-            BldSwVerInfo.GetFromBytes(bytes.Skip(idx).Take(PdhSoftwareVersionInfo.ExpectedSize).ToArray());
-            idx += PdhSoftwareVersionInfo.ExpectedSize;
-            BldOsInfo.GetFromBytes(bytes.Skip(idx).Take(PdhOsInfo.ExpectedSize).ToArray());
-            idx += PdhOsInfo.ExpectedSize;
-            BldBinaryInfo.GetFromBytes(bytes.Skip(idx).Take(PdhBinaryInfo.ExpectedSize).ToArray());
-            idx += PdhBinaryInfo.ExpectedSize;
+            try
+            {
+                BldLibVerInfo.GetFromBytes(bytes.Skip(idx).Take(PdhSoftwareVersionInfo.ExpectedSize).ToArray());
+                idx += PdhSoftwareVersionInfo.ExpectedSize;
+                BldSwVerInfo.GetFromBytes(bytes.Skip(idx).Take(PdhSoftwareVersionInfo.ExpectedSize).ToArray());
+                idx += PdhSoftwareVersionInfo.ExpectedSize;
+                BldOsInfo.GetFromBytes(bytes.Skip(idx).Take(PdhOsInfo.ExpectedSize).ToArray());
+                idx += PdhOsInfo.ExpectedSize;
+                BldBinaryInfo.GetFromBytes(bytes.Skip(idx).Take(PdhBinaryInfo.ExpectedSize).ToArray());
+                idx += PdhBinaryInfo.ExpectedSize;
 
-            AppLibVerInfo.GetFromBytes(bytes.Skip(idx).Take(PdhSoftwareVersionInfo.ExpectedSize).ToArray());
-            idx += PdhSoftwareVersionInfo.ExpectedSize;
-            AppSwVerInfo.GetFromBytes(bytes.Skip(idx).Take(PdhSoftwareVersionInfo.ExpectedSize).ToArray());
-            idx += PdhSoftwareVersionInfo.ExpectedSize;
-            AppOsInfo.GetFromBytes(bytes.Skip(idx).Take(PdhOsInfo.ExpectedSize).ToArray());
-            idx += PdhOsInfo.ExpectedSize;
-            AppBinaryInfo.GetFromBytes(bytes.Skip(idx).Take(PdhBinaryInfo.ExpectedSize).ToArray());
-            idx += PdhBinaryInfo.ExpectedSize;
+                AppLibVerInfo.GetFromBytes(bytes.Skip(idx).Take(PdhSoftwareVersionInfo.ExpectedSize).ToArray());
+                idx += PdhSoftwareVersionInfo.ExpectedSize;
+                AppSwVerInfo.GetFromBytes(bytes.Skip(idx).Take(PdhSoftwareVersionInfo.ExpectedSize).ToArray());
+                idx += PdhSoftwareVersionInfo.ExpectedSize;
+                AppOsInfo.GetFromBytes(bytes.Skip(idx).Take(PdhOsInfo.ExpectedSize).ToArray());
+                idx += PdhOsInfo.ExpectedSize;
+                AppBinaryInfo.GetFromBytes(bytes.Skip(idx).Take(PdhBinaryInfo.ExpectedSize).ToArray());
+                idx += PdhBinaryInfo.ExpectedSize;
+            }
+            catch
+            {
+                // TODO
+            }
         }
 
         public byte[] GetBytes()
@@ -259,265 +266,6 @@ namespace GOSTool
             bytes.AddRange(Helper<UInt16>.GetBytes(Port));
 
             return bytes.ToArray();
-        }
-    }
-
-    public class SvlPdh
-    {
-        public static PdhSoftwareInfo GetSoftwareInfo()
-        {
-            PdhSoftwareInfo softwareInfo = new PdhSoftwareInfo();
-            byte[] recvBuf;
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_SOFTWARE_INFO_GET_REQ;// 0x2000;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = 0;
-
-            SysmonFunctions.SemaphoreWait();
-            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
-            {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 3000) == true)
-                {
-                    softwareInfo.GetFromBytes(recvBuf);
-                }
-                else
-                {
-                    // Error.
-                }
-            }
-            else
-            {
-                // Error.
-            }
-            Thread.Sleep(10);
-            SysmonFunctions.SemaphoreRelease();
-
-            return softwareInfo;
-        }
-
-        public static PdhSoftwareInfo SetSoftwareInfo(PdhSoftwareInfo softwareInfo)
-        {
-            PdhSoftwareInfo softwareInfoReadback = new PdhSoftwareInfo();
-            byte[] recvBuf;
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_SOFTWARE_INFO_SET_REQ;//0x2011;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = (UInt16)softwareInfo.GetBytes().Length;
-
-            SysmonFunctions.SemaphoreWait();
-            if (GCP.TransmitMessage(0, messageHeader, softwareInfo.GetBytes(), 0xffff) == true)
-            {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 5000) == true)
-                {
-                    softwareInfoReadback.GetFromBytes(recvBuf);
-                }
-                else
-                {
-                    // Error.
-                }
-            }
-            else
-            {
-                // Error.
-            }
-            Thread.Sleep(10);
-            SysmonFunctions.SemaphoreRelease();
-
-            return softwareInfoReadback;
-        }
-
-        public static PdhHardwareInfo GetHardwareInfo()
-        {
-            PdhHardwareInfo hardwareInfo = new PdhHardwareInfo();
-            byte[] recvBuf;
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_HARDWARE_INFO_GET_REQ;//0x2001;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = 0;
-
-            SysmonFunctions.SemaphoreWait();
-            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
-            {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 3000) == true)
-                {
-                    hardwareInfo.GetFromBytes(recvBuf);
-                }
-                else
-                {
-                    // Error.
-                }
-            }
-            else
-            {
-                // Error.
-            }
-            Thread.Sleep(10);
-            SysmonFunctions.SemaphoreRelease();
-
-            return hardwareInfo;
-        }
-
-        public static PdhHardwareInfo SetHardwareInfo(PdhHardwareInfo hardwareInfo)
-        {
-            PdhHardwareInfo hardwareInfoReadback = new PdhHardwareInfo();
-            byte[] recvBuf;
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_HARDWARE_INFO_SET_REQ;//0x2012;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = (UInt16)hardwareInfo.GetBytes().Length;
-
-            SysmonFunctions.SemaphoreWait();
-            if (GCP.TransmitMessage(0, messageHeader, hardwareInfo.GetBytes(), 0xffff) == true)
-            {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 2000) == true)
-                {
-                    hardwareInfoReadback.GetFromBytes(recvBuf);
-                }
-                else
-                {
-                    // Error.
-                }
-            }
-            else
-            {
-                // Error.
-            }
-            Thread.Sleep(10);
-            SysmonFunctions.SemaphoreRelease();
-
-            return hardwareInfoReadback;
-        }
-
-        public static PdhBootloaderConfig GetBootloaderConfig()
-        {
-            PdhBootloaderConfig bootloaderConfig = new PdhBootloaderConfig();
-            byte[] recvBuf;
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_BLD_CONFIG_GET_REQ;//0x2003;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = 0;
-
-            SysmonFunctions.SemaphoreWait();
-            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
-            {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 2000) == true)
-                {
-                    bootloaderConfig.GetFromBytes(recvBuf);
-                }
-                else
-                {
-                    // Error.
-                }
-            }
-            else
-            {
-                // Error.
-            }
-            Thread.Sleep(10);
-            SysmonFunctions.SemaphoreRelease();
-
-            return bootloaderConfig;
-        }
-
-        public static PdhBootloaderConfig SetBootloaderConfig(PdhBootloaderConfig bldConfig)
-        {
-            PdhBootloaderConfig bldConfigReadBack = new PdhBootloaderConfig();
-            byte[] recvBuf;
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_BLD_CONFIG_SET_REQ;//0x2014;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = (UInt16)bldConfig.GetBytes().Length;
-
-            SysmonFunctions.SemaphoreWait();
-            if (GCP.TransmitMessage(0, messageHeader, bldConfig.GetBytes(), 0xffff) == true)
-            {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 2000) == true)
-                {
-                    bldConfigReadBack.GetFromBytes(recvBuf);
-                }
-                else
-                {
-                    // Error.
-                }
-            }
-            else
-            {
-                // Error.
-            }
-            Thread.Sleep(10);
-            SysmonFunctions.SemaphoreRelease();
-
-            return bldConfigReadBack;
-        }
-
-        public static PdhWifiConfig GetWifiConfig()
-        {
-            PdhWifiConfig wifiConfig = new PdhWifiConfig();
-            byte[] recvBuf;
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_WIFI_CONFIG_GET_REQ;//0x2002;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = 0;
-
-            SysmonFunctions.SemaphoreWait();
-            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
-            {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 3000) == true)
-                {
-                    wifiConfig.GetFromBytes(recvBuf);
-                }
-                else
-                {
-                    // Error.
-                }
-            }
-            else
-            {
-                // Error.
-            }
-            Thread.Sleep(10);
-            SysmonFunctions.SemaphoreRelease();
-
-            return wifiConfig;
-        }
-
-        public static PdhWifiConfig SetWifiConfig(PdhWifiConfig wifiConfig)
-        {
-            PdhWifiConfig wifiConfigReadBack = new PdhWifiConfig();
-            byte[] recvBuf;
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_PDH_SYSMON_MSG_WIFI_CONFIG_SET_REQ;//0x2013;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = (UInt16)wifiConfig.GetBytes().Length;
-
-            SysmonFunctions.SemaphoreWait();
-            if (GCP.TransmitMessage(0, messageHeader, wifiConfig.GetBytes(), 0xffff) == true)
-            {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 2000) == true)
-                {
-                    wifiConfigReadBack.GetFromBytes(recvBuf);
-                }
-                else
-                {
-                    // Error.
-                }
-            }
-            else
-            {
-                // Error.
-            }
-            Thread.Sleep(10);
-            SysmonFunctions.SemaphoreRelease();
-
-            return wifiConfigReadBack;
         }
     }
 }

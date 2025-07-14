@@ -103,10 +103,10 @@ namespace GOSTool
     {
         public static string GetString(byte[] buffer, int length, ref int index)
         {
-            byte[] bytes = buffer.ToList().Skip(index).Take(length).ToArray();
             string result = "";
             try
             {
+                byte[] bytes = buffer.ToList().Skip(index).Take(length).ToArray();
                 result = Encoding.ASCII.GetString(bytes).Substring(0, Encoding.ASCII.GetString(bytes).IndexOf("\0"));
             }
             catch
@@ -121,9 +121,10 @@ namespace GOSTool
         {
             Time time = new Time();
             DateTime convertedTime = new DateTime();
-            time.GetFromBytes(buffer.Skip(index).Take(Time.ExpectedSize).ToArray());
+            
             try
             {
+                time.GetFromBytes(buffer.Skip(index).Take(Time.ExpectedSize).ToArray());
                 convertedTime = DateTime.Parse(time.Years.ToString("D4") + "-" + time.Months.ToString("D2") + "-" + time.Days.ToString("D2") + " " +
                     time.Hours.ToString("D2") + ":" + time.Minutes.ToString("D2") + ":" + time.Seconds.ToString("D2") + "." + time.Milliseconds.ToString("D3"));
             }
@@ -269,6 +270,41 @@ namespace GOSTool
 
             return privString;
         }
+
+        private delegate void SetRichTextBoxTextDelegate(Control control, RichTextBox rtb, string text, bool append);
+
+        public static void SetRichTextBoxText_ThreadSafe(Control control, RichTextBox rtb, string text, bool append)
+        {
+            try
+            {
+                if (rtb.InvokeRequired)
+                {
+                    SetRichTextBoxTextDelegate d = new SetRichTextBoxTextDelegate(SetRichTextBoxText);
+                    control.Invoke(d, control, rtb, text, append);
+                }
+                else
+                {
+                    SetRichTextBoxText(control, rtb, text, append);
+                }
+            }
+            catch
+            {
+
+            }
+        }
+
+        private static void SetRichTextBoxText(Control control, RichTextBox rtb, string text, bool append)
+        {
+            if (append)
+            {
+                rtb.Text += text;
+            }
+            else
+            {
+                rtb.Text = text;
+            }
+        }
+
 
         private delegate void SetLabelTextDelegate(Label label, string Text);
 

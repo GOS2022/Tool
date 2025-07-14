@@ -40,7 +40,7 @@ namespace GOSTool.SystemMonitoring
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(20, 23);
+            this.label1.Location = new System.Drawing.Point(19, 6);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(20, 17);
             this.label1.TabIndex = 3;
@@ -48,7 +48,7 @@ namespace GOSTool.SystemMonitoring
             // 
             // IpTextBox
             // 
-            this.IpTextBox.Location = new System.Drawing.Point(51, 20);
+            this.IpTextBox.Location = new System.Drawing.Point(50, 3);
             this.IpTextBox.Name = "IpTextBox";
             this.IpTextBox.Size = new System.Drawing.Size(176, 22);
             this.IpTextBox.TabIndex = 4;
@@ -57,7 +57,7 @@ namespace GOSTool.SystemMonitoring
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(246, 23);
+            this.label2.Location = new System.Drawing.Point(245, 6);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(34, 17);
             this.label2.TabIndex = 5;
@@ -65,7 +65,7 @@ namespace GOSTool.SystemMonitoring
             // 
             // PortTextBox
             // 
-            this.PortTextBox.Location = new System.Drawing.Point(286, 20);
+            this.PortTextBox.Location = new System.Drawing.Point(285, 3);
             this.PortTextBox.Name = "PortTextBox";
             this.PortTextBox.Size = new System.Drawing.Size(91, 22);
             this.PortTextBox.TabIndex = 6;
@@ -74,17 +74,17 @@ namespace GOSTool.SystemMonitoring
             // statusLabel
             // 
             this.statusLabel.AutoSize = true;
-            this.statusLabel.Location = new System.Drawing.Point(711, 25);
+            this.statusLabel.Location = new System.Drawing.Point(408, 28);
             this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(43, 21);
+            this.statusLabel.Size = new System.Drawing.Size(34, 17);
             this.statusLabel.TabIndex = 7;
             this.statusLabel.Text = "Idle.";
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(412, 20);
+            this.progressBar1.Location = new System.Drawing.Point(411, 3);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(281, 22);
+            this.progressBar1.Size = new System.Drawing.Size(194, 22);
             this.progressBar1.TabIndex = 8;
             // 
             // WirelessConfigUserControl
@@ -98,7 +98,7 @@ namespace GOSTool.SystemMonitoring
             this.Controls.Add(this.IpTextBox);
             this.Controls.Add(this.label1);
             this.Name = "WirelessConfigUserControl";
-            this.Size = new System.Drawing.Size(858, 60);
+            this.Size = new System.Drawing.Size(856, 49);
             this.ResumeLayout(false);
             this.PerformLayout();
 

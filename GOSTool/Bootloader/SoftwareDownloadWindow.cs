@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GOSTool.SystemMonitoring.Com;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -29,7 +30,13 @@ namespace GOSTool
             //binaryPathTb.Text = "C:\\Users\\Gabor\\STM32CubeIDE\\workspace_1.5.1\\GOS2022_iplTest\\Debug\\GOS2022_iplTest.bin";
             binaryAddrTb.Text = "8020000";
 
-            SvlSdh.BinaryDownloadProgressEvent += (sender, param) =>
+            /*SvlSdh.BinaryDownloadProgressEvent += (sender, param) =>
+            {
+                TraceProgressChanging_ThreadSafe("Downloading progress: [" + param.Item1 + " / " + param.Item2 + "] chunks");
+                SetProgressBar_ThreadSafe(100 * param.Item1 / param.Item2);
+            };*/
+
+            Sysmon.BinaryDownloadProgressEvent += (sender, param) =>
             {
                 TraceProgressChanging_ThreadSafe("Downloading progress: [" + param.Item1 + " / " + param.Item2 + "] chunks");
                 SetProgressBar_ThreadSafe(100 * param.Item1 / param.Item2);
@@ -73,7 +80,6 @@ namespace GOSTool
             richTextBox1.Text = "";
             binaryTree.Nodes.Clear();        
             selectedBinaryCB.Items.Clear();
-            //selectedBinaryCB.SelectedText = "";
             selectedBinaryCB.SelectedValue = "";
             binaryDescriptors.Clear();
 
@@ -92,41 +98,21 @@ namespace GOSTool
                 {
                     if (!wireless)
                     {
-                        Uart.Init(usbConfigUserControl1.Port, usbConfigUserControl1.Baud);
-                        TraceProgressNew_ThreadSafe("Reading software info on " + usbConfigUserControl1.Port + "...");
+                        TraceProgressNew_ThreadSafe("Reading software info on " + Sysmon.SerialPort + "...");
                     }
                     else
                     {
-                        TraceProgressNew_ThreadSafe("Reading software info on " + wirelessConfigUserControl1.Ip + ":" + wirelessConfigUserControl1.Port + "...");
+                        TraceProgressNew_ThreadSafe("Reading software info on " + Sysmon.Ip + ":" + Sysmon.WirelessPort + "...");
                     }
                     
-                    int binaryNum = 0;
-
-                    if (!wireless)
-                    {
-                        binaryNum = SvlSdh.GetBinaryNum();
-                    }
-                    else
-                    {
-                        binaryNum = Wireless.GetBinaryNum();
-                    }
+                    int binaryNum = Sysmon.SvlSdh_GetBinaryNum(wireless);
 
                     TraceProgressNew_ThreadSafe("Number of binaries: " + binaryNum);
                     
                     for (int i = 0; i < binaryNum && !forceQuit; i++)
                     {
                         TraceProgressNew_ThreadSafe("Reading binary info [" + (i + 1) + "/" + binaryNum + "] ...");
-                        SdhBinaryDescriptorMessage binaryDesc = new SdhBinaryDescriptorMessage();
-                        
-                        if (!wireless)
-                        {
-                            binaryDesc = SvlSdh.GetBinaryInfo(i);
-                        }
-                        else
-                        {
-                            binaryDesc = Wireless.GetBinaryInfo(i);
-                            System.Threading.Thread.Sleep(100);
-                        }
+                        SdhBinaryDescriptorMessage binaryDesc = Sysmon.SvlSdh_GetBinaryInfo(i, wireless);
 
                         // TODO: check error handling.
                         if (binaryDesc.Size == 0)
@@ -188,43 +174,24 @@ namespace GOSTool
 
                     await Task.Run(() =>
                     {
-                        if ((!wireless && SvlSdh.SendBinaryDownloadRequest(testDesc) == SdhBinaryDownloadRequestResult.OK) ||
-                            (wireless && Wireless.SendBinaryDownloadRequest(testDesc) == SdhBinaryDownloadRequestResult.OK))
+                        SdhBinaryDownloadRequestResult result = Sysmon.SvlSdh_SendBinaryDownloadRequest(testDesc, wireless);
+                        if (result == SdhBinaryDownloadRequestResult.OK)
                         {
                             TraceProgressNew_ThreadSafe("Starting download...");
 
-                            if ((!wireless && SvlSdh.SendBinary(memoryContent) == true) ||
-                                (wireless && Wireless.SendBinary(memoryContent) == true))
+                            if (Sysmon.SvlSdh_SendBinary(memoryContent, wireless))
                             {
                                 TraceProgressNew_ThreadSafe("Download successful.");
 
                                 TraceProgressNew_ThreadSafe("Updating data...");
 
-                                int binaryNum = 0;                              
-
-                                if (!wireless)
-                                {
-                                    binaryNum = SvlSdh.GetBinaryNum();                                    
-                                }
-                                else
-                                {
-                                    binaryNum = Wireless.GetBinaryNum();
-                                }
+                                int binaryNum = Sysmon.SvlSdh_GetBinaryNum(wireless);
 
                                 TreeViewClear_ThreadSafe();
 
                                 for (int i = 0; i < binaryNum && !forceQuit; i++)
                                 {
-                                    SdhBinaryDescriptorMessage binaryDesc = new SdhBinaryDescriptorMessage();
-                                    
-                                    if (!wireless)
-                                    {
-                                        binaryDesc = SvlSdh.GetBinaryInfo(i);
-                                    }
-                                    else
-                                    {
-                                        binaryDesc = Wireless.GetBinaryInfo(i);
-                                    }
+                                    SdhBinaryDescriptorMessage binaryDesc = Sysmon.SvlSdh_GetBinaryInfo(i, wireless);                                   
                                     
                                     binaryDescriptors.Add(binaryDesc);
 
@@ -248,7 +215,7 @@ namespace GOSTool
                         }
                         else
                         {
-                            TraceProgressNew_ThreadSafe("Download request failed.");
+                            TraceProgressNew_ThreadSafe("Download request failed. Message: " + result.ToString());
                         }
                     });
                 }
@@ -416,14 +383,15 @@ namespace GOSTool
         {
             await Task.Run(() =>
             {
-                if (!wireless)
+                /*if (!wireless)
                 {
                     SysmonFunctions.SendResetRequest();
                 }
                 else
                 {
                     Wireless.SendResetRequest();
-                }
+                }*/
+                Sysmon.SvlSysmon_SendResetRequest(wireless);
             });
         }
 
@@ -440,18 +408,9 @@ namespace GOSTool
 
                 await Task.Run(() =>
                 {
-                    if (!wireless)
-                    {
-                        SvlSdh.SendInstallRequest(index);
-                        TraceProgressNew_ThreadSafe("Install request sent for " + fileName + ".");
-                        SysmonFunctions.SendResetRequest();
-                    }
-                    else
-                    {
-                        Wireless.SendInstallRequest(index);
-                        TraceProgressNew_ThreadSafe("Install request sent for " + fileName + ".");
-                        Wireless.SendResetRequest();
-                    }
+                    Sysmon.SvlSdh_SendInstallRequest(index, wireless);
+                    TraceProgressNew_ThreadSafe("Install request sent for " + fileName + ".");
+                    Sysmon.SvlSysmon_SendResetRequest(wireless);
                 });
             }
         }
@@ -484,44 +443,19 @@ namespace GOSTool
 
                 await Task.Run(() =>
                 {
-                    TraceProgressNew_ThreadSafe("Erase request sent for " + binaryName + ". This might take a while...");
+                    TraceProgressNew_ThreadSafe("Erase request sent for " + binaryName + ". This might take a while...");   
 
-                    if (!wireless)
-                    {
-                        SvlSdh.SendEraseRequest(index);
-                    }
-                    else
-                    {
-                        Wireless.SendEraseRequest(index);
-                    }
+                    Sysmon.SvlSdh_SendEraseRequest(index, wireless);
 
                     TraceProgressNew_ThreadSafe("Updating data...");
 
-                    int binaryNum = 0;
-
-                    if (!wireless)
-                    {
-                        binaryNum = SvlSdh.GetBinaryNum();
-                    }
-                    else
-                    {
-                        binaryNum = Wireless.GetBinaryNum();
-                    }
+                    int binaryNum = Sysmon.SvlSdh_GetBinaryNum(wireless);
 
                     TreeViewClear_ThreadSafe();
 
                     for (int i = 0; i < binaryNum && !forceQuit; i++)
                     {
-                        SdhBinaryDescriptorMessage binaryDesc = new SdhBinaryDescriptorMessage();
-                        
-                        if (!wireless)
-                        {
-                            binaryDesc = SvlSdh.GetBinaryInfo(i);
-                        }
-                        else
-                        {
-                            binaryDesc = Wireless.GetBinaryInfo(i);
-                        }
+                        SdhBinaryDescriptorMessage binaryDesc = Sysmon.SvlSdh_GetBinaryInfo(i, wireless);                       
                                               
                         binaryDescriptors.Add(binaryDesc);
 

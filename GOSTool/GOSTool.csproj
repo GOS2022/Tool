@@ -204,7 +204,6 @@
     <Compile Include="AppConfig\TaskPrivilegeSelector.Designer.cs">
       <DependentUpon>TaskPrivilegeSelector.cs</DependentUpon>
     </Compile>
-    <Compile Include="Bootloader\Com\Wireless.cs" />
     <Compile Include="Bootloader\SoftwareDownloadWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -264,8 +263,8 @@
     <Compile Include="SystemMonitoring\Com\SvlMdi.cs" />
     <Compile Include="SystemMonitoring\Com\SvlPdh.cs" />
     <Compile Include="SystemMonitoring\Com\SvlSdh.cs" />
-    <Compile Include="SystemMonitoring\Com\SysmonFunctions.cs" />
-    <Compile Include="SystemMonitoring\Com\SysmonMessages.cs" />
+    <Compile Include="SystemMonitoring\Com\Sysmon.cs" />
+    <Compile Include="SystemMonitoring\Com\SvlSysmon.cs" />
     <Compile Include="SystemMonitoring\Com\Uart.cs" />
     <Compile Include="SystemMonitoring\DevicesWindow.cs">
       <SubType>Form</SubType>
@@ -322,6 +321,28 @@
     <Compile Include="SystemMonitoring\WirelessConfigUserControl.Designer.cs">
       <DependentUpon>WirelessConfigUserControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Test\EditTestCases.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Test\EditTestCases.Designer.cs">
+      <DependentUpon>EditTestCases.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Test\EditTest.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Test\EditTest.Designer.cs">
+      <DependentUpon>EditTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Test\ManageTests.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Test\ManageTests.Designer.cs">
+      <DependentUpon>ManageTests.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Test\Test.cs" />
+    <Compile Include="Test\TestCase.cs" />
+    <Compile Include="Test\TestStep.cs" />
+    <Compile Include="Test\TestSteps.cs" />
     <Compile Include="ValueHandler\ValueHandler.cs" />
     <EmbeddedResource Include="AppConfig\AppConfigWindow.resx">
       <DependentUpon>AppConfigWindow.cs</DependentUpon>
@@ -393,6 +414,15 @@
     <EmbeddedResource Include="SystemMonitoring\WirelessConfigUserControl.resx">
       <DependentUpon>WirelessConfigUserControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Test\EditTestCases.resx">
+      <DependentUpon>EditTestCases.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Test\EditTest.resx">
+      <DependentUpon>EditTest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Test\ManageTests.resx">
+      <DependentUpon>ManageTests.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -431,5 +461,6 @@
   <ItemGroup>
     <None Include="Resources\MonitoringDataIcon.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

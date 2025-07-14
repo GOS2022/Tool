@@ -45,10 +45,8 @@ namespace GOSTool
             this.currentCpuUtil = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.timeSyncButton = new System.Windows.Forms.Button();
-            this.wirelessConfigUserControl1 = new GOSTool.SystemMonitoring.WirelessConfigUserControl();
             this.resetRequestButton = new System.Windows.Forms.Button();
             this.connectButton = new System.Windows.Forms.Button();
-            this.usbConfigUserControl1 = new GOSTool.UsbConfigUserControl();
             this.label1 = new System.Windows.Forms.Label();
             this.wirelessComRadioButton = new System.Windows.Forms.RadioButton();
             this.usbComRadioButton = new System.Windows.Forms.RadioButton();
@@ -69,6 +67,8 @@ namespace GOSTool
             this.taskPrioCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.taskCpuLimitCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.taskPrivCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.wirelessConfigUserControl1 = new GOSTool.SystemMonitoring.WirelessConfigUserControl();
+            this.usbConfigUserControl1 = new GOSTool.UsbConfigUserControl();
             this.cpuLoadGraph = new GOSTool.LoadGraphUserControl();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.sampleNUD)).BeginInit();
@@ -98,7 +98,7 @@ namespace GOSTool
             this.groupBox1.Controls.Add(this.currentCpuUtil);
             this.groupBox1.Location = new System.Drawing.Point(12, 224);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(439, 176);
+            this.groupBox1.Size = new System.Drawing.Size(439, 174);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Monitoring parameters";
@@ -106,15 +106,15 @@ namespace GOSTool
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(291, 69);
+            this.label6.Location = new System.Drawing.Point(291, 70);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(61, 16);
+            this.label6.Size = new System.Drawing.Size(62, 17);
             this.label6.TabIndex = 29;
             this.label6.Text = "Samples";
             // 
             // sampleNUD
             // 
-            this.sampleNUD.Location = new System.Drawing.Point(359, 67);
+            this.sampleNUD.Location = new System.Drawing.Point(359, 68);
             this.sampleNUD.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -139,7 +139,7 @@ namespace GOSTool
             // 
             this.monitoringButton.BackColor = System.Drawing.Color.Green;
             this.monitoringButton.ForeColor = System.Drawing.Color.White;
-            this.monitoringButton.Location = new System.Drawing.Point(313, 114);
+            this.monitoringButton.Location = new System.Drawing.Point(313, 118);
             this.monitoringButton.Name = "monitoringButton";
             this.monitoringButton.Size = new System.Drawing.Size(102, 32);
             this.monitoringButton.TabIndex = 6;
@@ -152,10 +152,10 @@ namespace GOSTool
             this.linkActiveCheckBox.AutoCheck = false;
             this.linkActiveCheckBox.AutoSize = true;
             this.linkActiveCheckBox.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.linkActiveCheckBox.Location = new System.Drawing.Point(307, 35);
+            this.linkActiveCheckBox.Location = new System.Drawing.Point(307, 40);
             this.linkActiveCheckBox.Name = "linkActiveCheckBox";
             this.linkActiveCheckBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.linkActiveCheckBox.Size = new System.Drawing.Size(102, 20);
+            this.linkActiveCheckBox.Size = new System.Drawing.Size(108, 21);
             this.linkActiveCheckBox.TabIndex = 27;
             this.linkActiveCheckBox.Text = "Link inactive";
             this.linkActiveCheckBox.UseVisualStyleBackColor = true;
@@ -163,72 +163,72 @@ namespace GOSTool
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(15, 129);
+            this.label5.Location = new System.Drawing.Point(15, 133);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(100, 16);
+            this.label5.Size = new System.Drawing.Size(108, 17);
             this.label5.TabIndex = 26;
             this.label5.Text = "Monitoring time:";
             // 
             // monitoringTimeLabel
             // 
             this.monitoringTimeLabel.AutoSize = true;
-            this.monitoringTimeLabel.Location = new System.Drawing.Point(171, 129);
+            this.monitoringTimeLabel.Location = new System.Drawing.Point(171, 133);
             this.monitoringTimeLabel.Name = "monitoringTimeLabel";
-            this.monitoringTimeLabel.Size = new System.Drawing.Size(79, 16);
+            this.monitoringTimeLabel.Size = new System.Drawing.Size(92, 17);
             this.monitoringTimeLabel.TabIndex = 25;
             this.monitoringTimeLabel.Text = "00:00:00.000";
             // 
             // sysRuntimeLabel
             // 
             this.sysRuntimeLabel.AutoSize = true;
-            this.sysRuntimeLabel.Location = new System.Drawing.Point(171, 98);
+            this.sysRuntimeLabel.Location = new System.Drawing.Point(170, 103);
             this.sysRuntimeLabel.Name = "sysRuntimeLabel";
-            this.sysRuntimeLabel.Size = new System.Drawing.Size(79, 16);
+            this.sysRuntimeLabel.Size = new System.Drawing.Size(92, 17);
             this.sysRuntimeLabel.TabIndex = 24;
             this.sysRuntimeLabel.Text = "00:00:00.000";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(15, 98);
+            this.label4.Location = new System.Drawing.Point(14, 103);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(101, 16);
+            this.label4.Size = new System.Drawing.Size(109, 17);
             this.label4.TabIndex = 23;
             this.label4.Text = "System runtime:";
             // 
             // avgCpuUtil
             // 
             this.avgCpuUtil.AutoSize = true;
-            this.avgCpuUtil.Location = new System.Drawing.Point(171, 67);
+            this.avgCpuUtil.Location = new System.Drawing.Point(171, 73);
             this.avgCpuUtil.Name = "avgCpuUtil";
-            this.avgCpuUtil.Size = new System.Drawing.Size(30, 16);
+            this.avgCpuUtil.Size = new System.Drawing.Size(31, 17);
             this.avgCpuUtil.TabIndex = 22;
             this.avgCpuUtil.Text = "N/A";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(15, 67);
+            this.label2.Location = new System.Drawing.Point(15, 73);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(120, 16);
+            this.label2.Size = new System.Drawing.Size(124, 17);
             this.label2.TabIndex = 8;
             this.label2.Text = "Average CPU load";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(15, 37);
+            this.label3.Location = new System.Drawing.Point(15, 41);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(110, 16);
+            this.label3.Size = new System.Drawing.Size(118, 17);
             this.label3.TabIndex = 7;
             this.label3.Text = "Current CPU load";
             // 
             // currentCpuUtil
             // 
             this.currentCpuUtil.AutoSize = true;
-            this.currentCpuUtil.Location = new System.Drawing.Point(171, 37);
+            this.currentCpuUtil.Location = new System.Drawing.Point(171, 41);
             this.currentCpuUtil.Name = "currentCpuUtil";
-            this.currentCpuUtil.Size = new System.Drawing.Size(30, 16);
+            this.currentCpuUtil.Size = new System.Drawing.Size(31, 17);
             this.currentCpuUtil.TabIndex = 6;
             this.currentCpuUtil.Text = "N/A";
             // 
@@ -246,14 +246,14 @@ namespace GOSTool
             this.groupBox2.Controls.Add(this.usbComRadioButton);
             this.groupBox2.Location = new System.Drawing.Point(457, 224);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(790, 176);
+            this.groupBox2.Size = new System.Drawing.Size(790, 174);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Communication configuration";
             // 
             // timeSyncButton
             // 
-            this.timeSyncButton.Location = new System.Drawing.Point(350, 129);
+            this.timeSyncButton.Location = new System.Drawing.Point(350, 126);
             this.timeSyncButton.Name = "timeSyncButton";
             this.timeSyncButton.Size = new System.Drawing.Size(141, 32);
             this.timeSyncButton.TabIndex = 7;
@@ -261,20 +261,9 @@ namespace GOSTool
             this.timeSyncButton.UseVisualStyleBackColor = true;
             this.timeSyncButton.Click += new System.EventHandler(this.timeSyncButton_Click);
             // 
-            // wirelessConfigUserControl1
-            // 
-            this.wirelessConfigUserControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.wirelessConfigUserControl1.Ip = "192.168.1.184";
-            this.wirelessConfigUserControl1.Location = new System.Drawing.Point(6, 63);
-            this.wirelessConfigUserControl1.Name = "wirelessConfigUserControl1";
-            this.wirelessConfigUserControl1.Port = 3000;
-            this.wirelessConfigUserControl1.Size = new System.Drawing.Size(778, 60);
-            this.wirelessConfigUserControl1.TabIndex = 6;
-            // 
             // resetRequestButton
             // 
-            this.resetRequestButton.Location = new System.Drawing.Point(178, 129);
+            this.resetRequestButton.Location = new System.Drawing.Point(178, 126);
             this.resetRequestButton.Name = "resetRequestButton";
             this.resetRequestButton.Size = new System.Drawing.Size(124, 32);
             this.resetRequestButton.TabIndex = 5;
@@ -284,7 +273,7 @@ namespace GOSTool
             // 
             // connectButton
             // 
-            this.connectButton.Location = new System.Drawing.Point(25, 129);
+            this.connectButton.Location = new System.Drawing.Point(25, 126);
             this.connectButton.Name = "connectButton";
             this.connectButton.Size = new System.Drawing.Size(102, 32);
             this.connectButton.TabIndex = 4;
@@ -292,32 +281,21 @@ namespace GOSTool
             this.connectButton.UseVisualStyleBackColor = true;
             this.connectButton.Click += new System.EventHandler(this.connectButton_Click);
             // 
-            // usbConfigUserControl1
-            // 
-            this.usbConfigUserControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.usbConfigUserControl1.Baud = -2147483648;
-            this.usbConfigUserControl1.Location = new System.Drawing.Point(6, 64);
-            this.usbConfigUserControl1.Name = "usbConfigUserControl1";
-            this.usbConfigUserControl1.Port = null;
-            this.usbConfigUserControl1.Size = new System.Drawing.Size(470, 56);
-            this.usbConfigUserControl1.TabIndex = 3;
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(22, 37);
+            this.label1.Location = new System.Drawing.Point(22, 31);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(128, 16);
+            this.label1.Size = new System.Drawing.Size(135, 17);
             this.label1.TabIndex = 2;
             this.label1.Text = "Communication type";
             // 
             // wirelessComRadioButton
             // 
             this.wirelessComRadioButton.AutoSize = true;
-            this.wirelessComRadioButton.Location = new System.Drawing.Point(252, 37);
+            this.wirelessComRadioButton.Location = new System.Drawing.Point(252, 31);
             this.wirelessComRadioButton.Name = "wirelessComRadioButton";
-            this.wirelessComRadioButton.Size = new System.Drawing.Size(81, 20);
+            this.wirelessComRadioButton.Size = new System.Drawing.Size(83, 21);
             this.wirelessComRadioButton.TabIndex = 1;
             this.wirelessComRadioButton.Text = "Wireless";
             this.wirelessComRadioButton.UseVisualStyleBackColor = true;
@@ -327,9 +305,9 @@ namespace GOSTool
             // 
             this.usbComRadioButton.AutoSize = true;
             this.usbComRadioButton.Checked = true;
-            this.usbComRadioButton.Location = new System.Drawing.Point(178, 37);
+            this.usbComRadioButton.Location = new System.Drawing.Point(178, 31);
             this.usbComRadioButton.Name = "usbComRadioButton";
-            this.usbComRadioButton.Size = new System.Drawing.Size(56, 20);
+            this.usbComRadioButton.Size = new System.Drawing.Size(57, 21);
             this.usbComRadioButton.TabIndex = 0;
             this.usbComRadioButton.TabStop = true;
             this.usbComRadioButton.Text = "USB";
@@ -341,7 +319,7 @@ namespace GOSTool
             this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.splitContainer1.Location = new System.Drawing.Point(12, 406);
+            this.splitContainer1.Location = new System.Drawing.Point(12, 404);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -351,7 +329,7 @@ namespace GOSTool
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.taskListView);
-            this.splitContainer1.Size = new System.Drawing.Size(1235, 380);
+            this.splitContainer1.Size = new System.Drawing.Size(1235, 401);
             this.splitContainer1.SplitterDistance = 410;
             this.splitContainer1.TabIndex = 6;
             // 
@@ -363,7 +341,7 @@ namespace GOSTool
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(410, 380);
+            this.tabControl1.Size = new System.Drawing.Size(410, 401);
             this.tabControl1.TabIndex = 5;
             // 
             // softwareInfoPage
@@ -372,7 +350,7 @@ namespace GOSTool
             this.softwareInfoPage.Location = new System.Drawing.Point(4, 25);
             this.softwareInfoPage.Name = "softwareInfoPage";
             this.softwareInfoPage.Padding = new System.Windows.Forms.Padding(3);
-            this.softwareInfoPage.Size = new System.Drawing.Size(402, 351);
+            this.softwareInfoPage.Size = new System.Drawing.Size(402, 372);
             this.softwareInfoPage.TabIndex = 0;
             this.softwareInfoPage.Text = "Software Info";
             this.softwareInfoPage.UseVisualStyleBackColor = true;
@@ -386,7 +364,7 @@ namespace GOSTool
             this.swInfoListView.HideSelection = false;
             this.swInfoListView.Location = new System.Drawing.Point(3, 3);
             this.swInfoListView.Name = "swInfoListView";
-            this.swInfoListView.Size = new System.Drawing.Size(396, 345);
+            this.swInfoListView.Size = new System.Drawing.Size(396, 366);
             this.swInfoListView.TabIndex = 0;
             this.swInfoListView.UseCompatibleStateImageBehavior = false;
             this.swInfoListView.View = System.Windows.Forms.View.Details;
@@ -404,7 +382,7 @@ namespace GOSTool
             this.hardwareInfoPage.Controls.Add(this.hwInfoListView);
             this.hardwareInfoPage.Location = new System.Drawing.Point(4, 25);
             this.hardwareInfoPage.Name = "hardwareInfoPage";
-            this.hardwareInfoPage.Size = new System.Drawing.Size(402, 351);
+            this.hardwareInfoPage.Size = new System.Drawing.Size(402, 357);
             this.hardwareInfoPage.TabIndex = 1;
             this.hardwareInfoPage.Text = "Hardware Info";
             this.hardwareInfoPage.UseVisualStyleBackColor = true;
@@ -418,7 +396,7 @@ namespace GOSTool
             this.hwInfoListView.HideSelection = false;
             this.hwInfoListView.Location = new System.Drawing.Point(0, 0);
             this.hwInfoListView.Name = "hwInfoListView";
-            this.hwInfoListView.Size = new System.Drawing.Size(402, 351);
+            this.hwInfoListView.Size = new System.Drawing.Size(503, 446);
             this.hwInfoListView.TabIndex = 0;
             this.hwInfoListView.UseCompatibleStateImageBehavior = false;
             this.hwInfoListView.View = System.Windows.Forms.View.Details;
@@ -444,7 +422,7 @@ namespace GOSTool
             this.taskListView.HideSelection = false;
             this.taskListView.Location = new System.Drawing.Point(0, 0);
             this.taskListView.Name = "taskListView";
-            this.taskListView.Size = new System.Drawing.Size(821, 380);
+            this.taskListView.Size = new System.Drawing.Size(821, 401);
             this.taskListView.TabIndex = 6;
             this.taskListView.UseCompatibleStateImageBehavior = false;
             this.taskListView.View = System.Windows.Forms.View.Details;
@@ -480,6 +458,28 @@ namespace GOSTool
             this.taskPrivCol.Text = "Privileges";
             this.taskPrivCol.Width = 73;
             // 
+            // wirelessConfigUserControl1
+            // 
+            this.wirelessConfigUserControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.wirelessConfigUserControl1.Ip = "192.168.100.184";
+            this.wirelessConfigUserControl1.Location = new System.Drawing.Point(6, 64);
+            this.wirelessConfigUserControl1.Name = "wirelessConfigUserControl1";
+            this.wirelessConfigUserControl1.Port = 3000;
+            this.wirelessConfigUserControl1.Size = new System.Drawing.Size(778, 56);
+            this.wirelessConfigUserControl1.TabIndex = 6;
+            // 
+            // usbConfigUserControl1
+            // 
+            this.usbConfigUserControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.usbConfigUserControl1.Baud = -2147483648;
+            this.usbConfigUserControl1.Location = new System.Drawing.Point(6, 64);
+            this.usbConfigUserControl1.Name = "usbConfigUserControl1";
+            this.usbConfigUserControl1.Port = null;
+            this.usbConfigUserControl1.Size = new System.Drawing.Size(778, 56);
+            this.usbConfigUserControl1.TabIndex = 3;
+            // 
             // cpuLoadGraph
             // 
             this.cpuLoadGraph.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -495,7 +495,7 @@ namespace GOSTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1259, 798);
+            this.ClientSize = new System.Drawing.Size(1259, 817);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);

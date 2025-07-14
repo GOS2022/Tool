@@ -1,4 +1,5 @@
 ﻿using GOSTool.SystemMonitoring;
+using GOSTool.Test;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -130,6 +131,12 @@ namespace GOSTool
         {
             DevicesWindow devicesWindow = new DevicesWindow();
             devicesWindow.Show();
+        }
+
+        private void manageTestSequencesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ManageTests testManager = new ManageTests();
+            testManager.Show();
         }
     }
 }

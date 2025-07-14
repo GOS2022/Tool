@@ -47,9 +47,15 @@ namespace GOSTool
             this.monitoringDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eventsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.projectDataAndConfigurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.devicesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.graphicsDesignerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createFLASHImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.testsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.manageTestSequencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.runTestsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.monitoringSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -70,7 +76,6 @@ namespace GOSTool
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.devicesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -87,6 +92,8 @@ namespace GOSTool
             this.monitoringToolToolStripMenuItem,
             this.graphicsDesignerToolStripMenuItem,
             this.imageToolToolStripMenuItem,
+            this.testsToolStripMenuItem,
+            this.settingsToolStripMenuItem,
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -211,6 +218,13 @@ namespace GOSTool
             this.projectDataAndConfigurationToolStripMenuItem.Text = "Project data and configuration";
             this.projectDataAndConfigurationToolStripMenuItem.Click += new System.EventHandler(this.projectDataAndConfigurationToolStripMenuItem_Click);
             // 
+            // devicesToolStripMenuItem
+            // 
+            this.devicesToolStripMenuItem.Name = "devicesToolStripMenuItem";
+            this.devicesToolStripMenuItem.Size = new System.Drawing.Size(294, 26);
+            this.devicesToolStripMenuItem.Text = "Devices";
+            this.devicesToolStripMenuItem.Click += new System.EventHandler(this.devicesToolStripMenuItem_Click);
+            // 
             // graphicsDesignerToolStripMenuItem
             // 
             this.graphicsDesignerToolStripMenuItem.Enabled = false;
@@ -232,6 +246,44 @@ namespace GOSTool
             this.createFLASHImageToolStripMenuItem.Name = "createFLASHImageToolStripMenuItem";
             this.createFLASHImageToolStripMenuItem.Size = new System.Drawing.Size(228, 26);
             this.createFLASHImageToolStripMenuItem.Text = "Create FLASH image";
+            // 
+            // testsToolStripMenuItem
+            // 
+            this.testsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.manageTestSequencesToolStripMenuItem,
+            this.runTestsToolStripMenuItem});
+            this.testsToolStripMenuItem.Name = "testsToolStripMenuItem";
+            this.testsToolStripMenuItem.Size = new System.Drawing.Size(55, 24);
+            this.testsToolStripMenuItem.Text = "Tests";
+            // 
+            // manageTestSequencesToolStripMenuItem
+            // 
+            this.manageTestSequencesToolStripMenuItem.Name = "manageTestSequencesToolStripMenuItem";
+            this.manageTestSequencesToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.manageTestSequencesToolStripMenuItem.Text = "Manage tests";
+            this.manageTestSequencesToolStripMenuItem.Click += new System.EventHandler(this.manageTestSequencesToolStripMenuItem_Click);
+            // 
+            // runTestsToolStripMenuItem
+            // 
+            this.runTestsToolStripMenuItem.Enabled = false;
+            this.runTestsToolStripMenuItem.Name = "runTestsToolStripMenuItem";
+            this.runTestsToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.runTestsToolStripMenuItem.Text = "Run tests";
+            // 
+            // settingsToolStripMenuItem
+            // 
+            this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.monitoringSettingsToolStripMenuItem});
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(76, 24);
+            this.settingsToolStripMenuItem.Text = "Settings";
+            // 
+            // monitoringSettingsToolStripMenuItem
+            // 
+            this.monitoringSettingsToolStripMenuItem.Enabled = false;
+            this.monitoringSettingsToolStripMenuItem.Name = "monitoringSettingsToolStripMenuItem";
+            this.monitoringSettingsToolStripMenuItem.Size = new System.Drawing.Size(221, 26);
+            this.monitoringSettingsToolStripMenuItem.Text = "Monitoring settings";
             // 
             // aboutToolStripMenuItem
             // 
@@ -321,7 +373,7 @@ namespace GOSTool
             this.bldVersionLabel.AutoSize = true;
             this.bldVersionLabel.Location = new System.Drawing.Point(283, 67);
             this.bldVersionLabel.Name = "bldVersionLabel";
-            this.bldVersionLabel.Size = new System.Drawing.Size(26, 16);
+            this.bldVersionLabel.Size = new System.Drawing.Size(30, 17);
             this.bldVersionLabel.TabIndex = 10;
             this.bldVersionLabel.Text = "X.X";
             // 
@@ -330,7 +382,7 @@ namespace GOSTool
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(191, 67);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(80, 16);
+            this.label6.Size = new System.Drawing.Size(85, 17);
             this.label6.TabIndex = 9;
             this.label6.Text = "BLD version";
             // 
@@ -339,7 +391,7 @@ namespace GOSTool
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(191, 31);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(61, 16);
+            this.label7.Size = new System.Drawing.Size(64, 17);
             this.label7.TabIndex = 8;
             this.label7.Text = "Use BLD";
             // 
@@ -358,7 +410,7 @@ namespace GOSTool
             this.libVersionLabel.AutoSize = true;
             this.libVersionLabel.Location = new System.Drawing.Point(98, 131);
             this.libVersionLabel.Name = "libVersionLabel";
-            this.libVersionLabel.Size = new System.Drawing.Size(26, 16);
+            this.libVersionLabel.Size = new System.Drawing.Size(30, 17);
             this.libVersionLabel.TabIndex = 6;
             this.libVersionLabel.Text = "X.X";
             // 
@@ -367,7 +419,7 @@ namespace GOSTool
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(6, 131);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(73, 16);
+            this.label5.Size = new System.Drawing.Size(78, 17);
             this.label5.TabIndex = 5;
             this.label5.Text = "LIB version";
             // 
@@ -376,7 +428,7 @@ namespace GOSTool
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(6, 95);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(54, 16);
+            this.label3.Size = new System.Drawing.Size(57, 17);
             this.label3.TabIndex = 4;
             this.label3.Text = "Use LIB";
             // 
@@ -385,7 +437,7 @@ namespace GOSTool
             this.osVersionLabel.AutoSize = true;
             this.osVersionLabel.Location = new System.Drawing.Point(98, 61);
             this.osVersionLabel.Name = "osVersionLabel";
-            this.osVersionLabel.Size = new System.Drawing.Size(26, 16);
+            this.osVersionLabel.Size = new System.Drawing.Size(30, 17);
             this.osVersionLabel.TabIndex = 3;
             this.osVersionLabel.Text = "X.X";
             // 
@@ -404,7 +456,7 @@ namespace GOSTool
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(6, 61);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(73, 16);
+            this.label2.Size = new System.Drawing.Size(78, 17);
             this.label2.TabIndex = 1;
             this.label2.Text = "OS version";
             // 
@@ -413,7 +465,7 @@ namespace GOSTool
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(6, 31);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(54, 16);
+            this.label1.Size = new System.Drawing.Size(57, 17);
             this.label1.TabIndex = 0;
             this.label1.Text = "Use OS";
             // 
@@ -428,13 +480,6 @@ namespace GOSTool
             this.groupBox3.TabIndex = 5;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Project Tree";
-            // 
-            // devicesToolStripMenuItem
-            // 
-            this.devicesToolStripMenuItem.Name = "devicesToolStripMenuItem";
-            this.devicesToolStripMenuItem.Size = new System.Drawing.Size(294, 26);
-            this.devicesToolStripMenuItem.Text = "Devices";
-            this.devicesToolStripMenuItem.Click += new System.EventHandler(this.devicesToolStripMenuItem_Click);
             // 
             // MainWindow
             // 
@@ -502,5 +547,10 @@ namespace GOSTool
         private System.Windows.Forms.ToolStripMenuItem eventsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem projectDataAndConfigurationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem devicesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem testsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem manageTestSequencesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem runTestsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem monitoringSettingsToolStripMenuItem;
     }
 }

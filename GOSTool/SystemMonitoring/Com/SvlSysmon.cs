@@ -9,22 +9,22 @@ namespace GOSTool
     /// </summary>
     public enum SysmonMessageId
     {
-        GOS_SYSMON_MSG_UNKNOWN_ID = 0,        //!< Unknown message ID.
-        GOS_SYSMON_MSG_PING_ID = 0x0001,   //!< Ping message ID.
-        GOS_SYSMON_MSG_PING_RESP_ID = 0x0A01,   //!< Ping response message ID.
-        GOS_SYSMON_MSG_CPU_USAGE_GET_ID = 0x0002,   //!< CPU usage get message ID.
-        GOS_SYSMON_MSG_CPU_USAGE_GET_RESP_ID = 0x0A02,   //!< CPU usage get response message ID.
-        GOS_SYSMON_MSG_TASK_GET_DATA_ID = 0x0003,   //!< Task data get message ID.
-        GOS_SYSMON_MSG_TASK_GET_DATA_RESP_ID = 0x0A03,   //!< Task data get response message ID.
-        GOS_SYSMON_MSG_TASK_GET_VAR_DATA_ID = 0x0004,   //!< Task variable data get message ID.
-        GOS_SYSMON_MSG_TASK_GET_VAR_DATA_RESP_ID = 0x0A04,   //!< Task variable data get response message ID.
-        GOS_SYSMON_MSG_TASK_MODIFY_STATE_ID = 0x0005,   //!< Task modify state message ID.
-        GOS_SYSMON_MSG_TASK_MODIFY_STATE_RESP_ID = 0x0A05,   //!< Task modify state response ID.
-        GOS_SYSMON_MSG_SYSRUNTIME_GET_ID = 0x0006,   //!< System runtime get message ID.
-        GOS_SYSMON_MSG_SYSRUNTIME_GET_RESP_ID = 0x0A06,   //!< System runtime get response message ID.
-        GOS_SYSMON_MSG_SYSTIME_SET_ID = 0x0007,   //!< System time set message ID.
-        GOS_SYSMON_MSG_SYSTIME_SET_RESP_ID = 0x0A07,   //!< System time set response ID.
-        GOS_SYSMON_MSG_RESET_REQ_ID = 0x0FFF,   //!< System reset request ID.
+        SVL_SYSMON_MSG_UNKNOWN_ID = 0,        //!< Unknown message ID.
+        SVL_SYSMON_MSG_PING_ID = 0x0001,   //!< Ping message ID.
+        SVL_SYSMON_MSG_PING_RESP_ID = 0x0A01,   //!< Ping response message ID.
+        SVL_SYSMON_MSG_CPU_USAGE_GET_ID = 0x0002,   //!< CPU usage get message ID.
+        SVL_SYSMON_MSG_CPU_USAGE_GET_RESP_ID = 0x0A02,   //!< CPU usage get response message ID.
+        SVL_SYSMON_MSG_TASK_GET_DATA_ID = 0x0003,   //!< Task data get message ID.
+        SVL_SYSMON_MSG_TASK_GET_DATA_RESP_ID = 0x0A03,   //!< Task data get response message ID.
+        SVL_SYSMON_MSG_TASK_GET_VAR_DATA_ID = 0x0004,   //!< Task variable data get message ID.
+        SVL_SYSMON_MSG_TASK_GET_VAR_DATA_RESP_ID = 0x0A04,   //!< Task variable data get response message ID.
+        SVL_SYSMON_MSG_TASK_MODIFY_STATE_ID = 0x0005,   //!< Task modify state message ID.
+        SVL_SYSMON_MSG_TASK_MODIFY_STATE_RESP_ID = 0x0A05,   //!< Task modify state response ID.
+        SVL_SYSMON_MSG_SYSRUNTIME_GET_ID = 0x0006,   //!< System runtime get message ID.
+        SVL_SYSMON_MSG_SYSRUNTIME_GET_RESP_ID = 0x0A06,   //!< System runtime get response message ID.
+        SVL_SYSMON_MSG_SYSTIME_SET_ID = 0x0007,   //!< System time set message ID.
+        SVL_SYSMON_MSG_SYSTIME_SET_RESP_ID = 0x0A07,   //!< System time set response ID.
+        SVL_SYSMON_MSG_RESET_REQ_ID = 0x0FFF,   //!< System reset request ID.
 
         SVL_SDH_SYSMON_MSG_BINARY_NUM_REQ = 0x1001,
         SVL_SDH_SYSMON_MSG_BINARY_NUM_RESP = 0x1A01,
@@ -98,6 +98,56 @@ namespace GOSTool
         GOS_SYSMON_MSG_SYSTIME_SET_PV = 1,
         GOS_SYSMON_MSG_SYSTIME_SET_RESP_PV = 1,
         GOS_SYSMON_MSG_RESET_REQ_PV = 1,
+
+        SVL_SDH_SYSMON_MSG_BINARY_NUM_REQ_PV = 1,
+        SVL_SDH_SYSMON_MSG_BINARY_NUM_RESP_PV = 1,
+        SVL_SDH_SYSMON_MSG_BINARY_INFO_REQ_PV = 1,
+        SVL_SDH_SYSMON_MSG_BINARY_INFO_RESP_PV = 1,
+        SVL_SDH_SYSMON_MSG_DOWNLOAD_REQ_PV = 1,
+        SVL_SDH_SYSMON_MSG_DOWNLOAD_RESP_PV= 1,
+        SVL_SDH_SYSMON_MSG_BINARY_CHUNK_REQ_PV = 1,
+        SVL_SDH_SYSMON_MSG_BINARY_CHUNK_RESP_PV = 1,
+        SVL_SDH_SYSMON_MSG_SOFTWARE_INSTALL_REQ_PV = 1,
+        SVL_SDH_SYSMON_MSG_SOFTWARE_INSTALL_RESP_PV = 1,
+        SVL_SDH_SYSMON_MSG_BINARY_ERASE_REQ_PV = 1,
+        SVL_SDH_SYSMON_MSG_BINARY_ERASE_RESP_PV = 1,
+
+        SVL_PDH_SYSMON_MSG_SOFTWARE_INFO_GET_REQ_PV = 1,
+        SVL_PDH_SYSMON_MSG_SOFTWARE_INFO_GET_RESP_PV = 1,
+        SVL_PDH_SYSMON_MSG_HARDWARE_INFO_GET_REQ_PV = 1,
+        SVL_PDH_SYSMON_MSG_HARDWARE_INFO_GET_RESP_PV = 1,
+        SVL_PDH_SYSMON_MSG_WIFI_CONFIG_GET_REQ_PV = 1,
+        SVL_PDH_SYSMON_MSG_WIFI_CONFIG_GET_RESP_PV = 1,
+        SVL_PDH_SYSMON_MSG_BLD_CONFIG_GET_REQ_PV = 1,
+        SVL_PDH_SYSMON_MSG_BLD_CONFIG_GET_RESP_PV = 1,
+        SVL_PDH_SYSMON_MSG_SOFTWARE_INFO_SET_REQ_PV = 1,
+        SVL_PDH_SYSMON_MSG_SOFTWARE_INFO_SET_RESP_PV = 1,
+        SVL_PDH_SYSMON_MSG_HARDWARE_INFO_SET_REQ_PV = 1,
+        SVL_PDH_SYSMON_MSG_HARDWARE_INFO_SET_RESP_PV = 1,
+        SVL_PDH_SYSMON_MSG_WIFI_CONFIG_SET_REQ_PV = 1,
+        SVL_PDH_SYSMON_MSG_WIFI_CONFIG_SET_RESP_PV = 1,
+        SVL_PDH_SYSMON_MSG_BLD_CONFIG_SET_REQ_PV = 1,
+        SVL_PDH_SYSMON_MSG_BLD_CONFIG_SET_RESP_PV = 1,
+
+        SVL_MDI_SYSMON_MSG_MONITORING_DATA_NUM_GET_REQ_PV = 1,
+        SVL_MDI_SYSMON_MSG_MONITORING_DATA_NUM_GET_RESP_PV = 1,
+        SVL_MDI_SYSMON_MSG_MONITORING_DATA_GET_REQ_PV = 1,
+        SVL_MDI_SYSMON_MSG_MONITORING_DATA_GET_RESP_PV = 1,
+
+        SVL_ERS_SYSMON_MSG_EVENTS_GET_NUM_REQ_PV = 1,
+        SVL_ERS_SYSMON_MSG_EVENTS_GET_NUM_RESP_PV = 1,
+        SVL_ERS_SYSMON_MSG_EVENTS_GET_REQ_PV = 1,
+        SVL_ERS_SYSMON_MSG_EVENTS_GET_RESP_PV = 1,
+        SVL_ERS_SYSMON_MSG_EVENTS_CLEAR_REQ_PV = 1,
+        SVL_ERS_SYSMON_MSG_EVENTS_CLEAR_RESP_PV = 1,
+
+        SVL_DHS_SYSMON_MSG_DEVICE_NUM_REQ_PV = 1,
+        SVL_DHS_SYSMON_MSG_DEVICE_NUM_RESP_PV = 1,
+        SVL_DHS_SYSMON_MSG_DEVICE_INFO_REQ_PV = 1,
+        SVL_DHS_SYSMON_MSG_DEVICE_INFO_RESP_PV = 1,
+
+        APP_SYSMON_MSG_RTC_SET_REQ_PV = 1,
+        APP_SYSMON_MSG_RTC_SET_RESP_PV = 1
     }
 
     /// <summary>
@@ -139,7 +189,14 @@ namespace GOSTool
         /// <param name="bytes"></param>
         public void GetFromBytes(byte[] bytes)
         {
-            MessageResult = (SysmonMessageResult)(bytes[0]);
+            if (bytes is null || bytes.Length == 0)
+            {
+                MessageResult = SysmonMessageResult.GOS_SYSMON_MSG_RES_ERROR;
+            }
+            else
+            {
+                MessageResult = (SysmonMessageResult)(bytes[0]);
+            }
         }
 
         /// <summary>
@@ -174,7 +231,7 @@ namespace GOSTool
         /// <param name="bytes"></param>
         public void GetFromBytes(byte[] bytes)
         {
-            if (bytes.Length >= ExpectedSize)
+            if (!(bytes is null) && bytes.Length >= ExpectedSize)
             {
                 int idx = 0;
                 MessageResult = (SysmonMessageResult)Helper<byte>.GetVariable(bytes, ref idx);
@@ -197,7 +254,7 @@ namespace GOSTool
         /// <param name="bytes"></param>
         public void GetFromBytes(byte[] bytes)
         {
-            if (bytes.Length >= ExpectedSize)
+            if (!(bytes is null) && bytes.Length >= ExpectedSize)
             {
                 int idx = 0;
                 ChunkIndex = Helper<UInt16>.GetVariable(bytes, ref idx);
@@ -518,7 +575,7 @@ namespace GOSTool
         /// <param name="bytes"></param>
         public void GetFromBytes(byte[] bytes)
         {
-            if (bytes.Length >= ExpectedSize)
+            if (!(bytes is null) && bytes.Length >= ExpectedSize)
             {
                 MessageResult = (SysmonMessageResult)(bytes[0]);
                 byte[] sysruntimeBytes = new byte[9];

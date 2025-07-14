@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace GOSTool
 {
@@ -66,56 +61,6 @@ namespace GOSTool
                 ReadCounter = Helper<UInt32>.GetVariable(bytes, ref idx);
                 WriteCounter = Helper<UInt32>.GetVariable(bytes, ref idx);
             }
-        }
-    }
-    public class SvlDhs
-    {
-        public static int GetDeviceNum()
-        {
-            byte[] recvBuf;
-            int devNum = 0;
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_DHS_SYSMON_MSG_DEVICE_NUM_REQ;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = 0;
-
-            SysmonFunctions.SemaphoreWait();
-            if (GCP.TransmitMessage(0, messageHeader, new byte[] { }, 0xffff) == true)
-            {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 1000) == true)
-                {
-                    devNum = ((recvBuf[1] << 8) + recvBuf[0]);
-                }
-            }
-            Thread.Sleep(10);
-            SysmonFunctions.SemaphoreRelease();
-
-            return devNum;
-        }
-
-        public static DhsDeviceDescriptor GetDeviceInfo(int index)
-        {
-            byte[] recvBuf;
-            DhsDeviceDescriptor deviceInfo = new DhsDeviceDescriptor();
-            GcpMessageHeader messageHeader = new GcpMessageHeader();
-
-            messageHeader.MessageId = (UInt16)SysmonMessageId.SVL_DHS_SYSMON_MSG_DEVICE_INFO_REQ;
-            messageHeader.ProtocolVersion = 1;
-            messageHeader.PayloadSize = 2;
-
-            SysmonFunctions.SemaphoreWait();
-            if (GCP.TransmitMessage(0, messageHeader, new byte[] { (byte)(index), (byte)((int)index >> 8), }, 0xffff) == true)
-            {
-                if (GCP.ReceiveMessage(0, out messageHeader, out recvBuf, 0xffff, 1000) == true)
-                {
-                    deviceInfo.GetFromBytes(recvBuf);
-                }
-            }
-            Thread.Sleep(10);
-            SysmonFunctions.SemaphoreRelease();
-
-            return deviceInfo;
         }
     }
 }
