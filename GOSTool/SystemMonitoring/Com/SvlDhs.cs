@@ -10,6 +10,7 @@ namespace GOSTool
         public UInt32 DeviceId { get; set; }
         public string DeviceType { get; set; }
         public bool Enabled { get; set; }
+        public string RecoveryType { get; set; }
         public string DeviceState { get; set; }
         public UInt32 ErrorCode { get; set; }
         public UInt32 ErrorCounter { get; set; }
@@ -23,7 +24,7 @@ namespace GOSTool
         /// <param name="bytes"></param>
         public void GetFromBytes(byte[] bytes)
         {
-            if (bytes.Length >= ExpectedSize)
+            if (!(bytes is null) && (bytes.Length >= ExpectedSize))
             {
                 int idx = 0;
                 Name = Helper.GetString(bytes, 32, ref idx);
@@ -41,10 +42,20 @@ namespace GOSTool
                 }
 
                 Enabled = Helper<bool>.GetVariable(bytes, ref idx);
-                idx += 4;
-                idx += 4;
-                idx += 4 * 4;
-                idx += 4 * 4;
+                idx += 4; // Initializer
+                idx += 4; // Error handler
+
+                byte recoveryType = Helper<byte>.GetVariable(bytes, ref idx);
+                RecoveryType = "Unknown";
+                switch (recoveryType)
+                {
+                    case 0: RecoveryType = "None"; break;
+                    case 1: RecoveryType = "On single error"; break;
+                    case 2: RecoveryType = "On limit"; break;
+                }
+
+                idx += 4 * 4; // Read functions
+                idx += 4 * 4; // Write functions
                 byte devState = Helper<byte>.GetVariable(bytes, ref idx);
                 DeviceState = "Unknown";
                 switch (devState)
@@ -53,6 +64,7 @@ namespace GOSTool
                     case 1: DeviceState = "Healthy"; break;
                     case 2: DeviceState = "Warning"; break;
                     case 3: DeviceState = "Error"; break;
+                    case 4: DeviceState = "Not present"; break;
                 }
 
                 ErrorCode = Helper<UInt32>.GetVariable(bytes, ref idx);

@@ -233,12 +233,15 @@ namespace GOSTool
         public void GetFromBytes(byte[] bytes)
         {
             int idx = 0;
-            Ssid = Helper.GetString(bytes, 48, ref idx);
-            Pwd = Helper.GetString(bytes, 48, ref idx);
-            IpAddress = bytes[idx++] + "." + bytes[idx++] + "." + bytes[idx++] + "." + bytes[idx++];
-            GateWay = bytes[idx++] + "." + bytes[idx++] + "." + bytes[idx++] + "." + bytes[idx++];
-            Subnet = bytes[idx++] + "." + bytes[idx++] + "." + bytes[idx++] + "." + bytes[idx++];
-            Port = Helper<UInt16>.GetVariable(bytes, ref idx);
+            if (!(bytes is null))
+            {
+                Ssid = Helper.GetString(bytes, 48, ref idx);
+                Pwd = Helper.GetString(bytes, 48, ref idx);
+                IpAddress = bytes[idx++] + "." + bytes[idx++] + "." + bytes[idx++] + "." + bytes[idx++];
+                GateWay = bytes[idx++] + "." + bytes[idx++] + "." + bytes[idx++] + "." + bytes[idx++];
+                Subnet = bytes[idx++] + "." + bytes[idx++] + "." + bytes[idx++] + "." + bytes[idx++];
+                Port = Helper<UInt16>.GetVariable(bytes, ref idx);
+            }
         }
 
         public byte[] GetBytes()
