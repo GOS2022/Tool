@@ -38,7 +38,7 @@ namespace GOSTool
 
                 foreach (var dir in osVersions)
                 {
-                    if (!Directory.Exists(ProgramData.OSPath + "\\" + Path.GetFileName(Path.GetDirectoryName(dir))))
+                    if (!Directory.Exists(ProgramData.OSPath + "\\" + Path.GetFileName(dir)))
                     {
                         allDirectories = Directory.GetDirectories(dir, "*", SearchOption.AllDirectories);
                         foreach (string subdir in allDirectories)

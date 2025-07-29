@@ -611,6 +611,26 @@ namespace GOSTool.SystemMonitoring.Com
             return deviceInfo;
         }
 
+        public static DrvDiag SvlDhs_GetDriverDiag(bool isWireless)
+        {
+            DrvDiag driverDiag = new DrvDiag();
+
+            StatusUpdateEvent?.Invoke(null, new SysmonStatusUpdateEventArgs(isWireless, "Getting DHS driver diag..."));
+
+            if (isWireless)
+            {
+                driverDiag.GetFromBytes(SendReceiveMessageWireless(SysmonMessageId.SVL_DHS_SYSMON_MSG_DRIVER_DIAG_REQ, null));
+            }
+            else
+            {
+                driverDiag.GetFromBytes(SendReceiveMessageWired(SysmonMessageId.SVL_DHS_SYSMON_MSG_DRIVER_DIAG_REQ, null, SysmonMessagePv.SVL_DHS_SYSMON_MSG_DRIVER_DIAG_REQ_PV));
+            }
+
+            StatusUpdateEvent?.Invoke(null, new SysmonStatusUpdateEventArgs(isWireless, "DHS driver diag received."));
+
+            return driverDiag;
+        }
+
         public static List<SvlMdiVariable> SvlMdi_GetMonitoringData(bool isWireless)
         {
             List<SvlMdiVariable> variables = new List<SvlMdiVariable>();
